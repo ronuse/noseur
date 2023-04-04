@@ -1,0 +1,93 @@
+@use "../core/noseur" as noseur;
+
+.noseur-form-bd-cl {
+	border-color: #c7c7c7;
+}
+
+/* Button */
+
+.noseur-button {
+	outline: none;
+	cursor: pointer;
+	overflow: hidden;
+	border-width: 1px;
+	border-radius: 7px;
+	text-align: center;
+	position: relative;
+	width: fit-content;
+	align-items: center;
+	border-style: solid;
+	height: fit-content;
+	display: inline-flex;
+	text-decoration: none;
+	vertical-align: bottom;
+	padding: 10px 20px 10px 20px;
+}
+
+.noseur-button:hover {
+	filter: brightness(97%);
+}
+
+/* Input and TextArea */
+
+textarea {
+	height: 150px;
+}
+
+.noseur-input {
+	flex: 1;
+	outline: none;
+	color: #3e3f41;
+	padding: 0.7rem;
+	font-size: 15px;
+	border-radius: 6px;
+	box-sizing: border-box;
+	border: 1px solid #c7c7c7;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+
+.noseur-input:focus {
+	background-color: initial;
+}
+
+.noseur-input-filled {
+	background-color: #eff2f5;
+}
+
+.noseur-input-flushed {
+	border-radius: 0px;
+	padding: 0.7rem 0px 0.7rem 0px;
+	border-bottom: 1px solid #c7c7c7 !important;
+}
+
+/* Input and TextArea */
+
+.noseur-checkbox {
+	display: flex;
+	cursor: pointer;
+	width: fit-content;
+	align-items: center;
+}
+
+.noseur-checkbox > input {
+	display: none;
+}
+
+.noseur-checkbox-box {
+	width: 18px;
+    height: 18px;
+	outline: none;
+	user-select: none;
+	border-width: 1px;
+	border-radius: 5px;
+	border-style: solid;
+	align-items: center;
+	display: inline-flex;
+	vertical-align: bottom;
+    justify-content: center;
+}
+
+.noseur-checkbox-box > .noseur-icon {
+	font-size: 12px;
+}
