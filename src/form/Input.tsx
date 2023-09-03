@@ -31,7 +31,7 @@ interface InputState {
     hasValue: boolean;
 };
 
-export class Input extends React.Component<InputProps, InputState> {
+class Input extends React.Component<InputProps, InputState> {
 
     public static defaultProps: Partial<InputProps> = {
         type: "text",
@@ -89,17 +89,17 @@ export class Input extends React.Component<InputProps, InputState> {
     }
 
     onKeyDown(event: React.KeyboardEvent<NoseurFormElement>) {
-        if (this.props.onKeyDown) this.props.onKeyDown(event);
+        this.props.onKeyDown && this.props.onKeyDown(event);
         !this.props.inputFilter || InputHelper.validateEventKeyInput(this.props.inputFilter, event);
     }
 
     onPasteCapture(event: React.ClipboardEvent<NoseurFormElement>) {
-        if (this.props.onPasteCapture) this.props.onPasteCapture(event);
+        this.props.onPasteCapture && this.props.onPasteCapture(event);
         !this.props.inputFilter || InputHelper.validateEventValue(this.props.inputFilter, event, event.clipboardData.getData('Text'));
     }
 
     onInput(event: React.FormEvent<NoseurFormElement>) {
-        if (this.props.onInput) this.props.onInput(event);
+        this.props.onInput && this.props.onInput(event);
         if (this.props.mask) this.resolveMask(event.target as HTMLFormElement);
         if (!this.props.onFirstInput) return;
         if (!this.state.hasValue) this.props.onFirstInput(event);
@@ -118,10 +118,10 @@ export class Input extends React.Component<InputProps, InputState> {
                 'noseur-input-flushed': this.props.flushed,
                 'noseur-skeleton': this.props.scheme === Scheme.SKELETON,
                 'noseur-raised-bd': !this.props.noStyle && this.props.raised,
+                'noseur-no-bd': !this.props.noStyle && this.props.borderless,
                 'noseur-disabled': !this.props.noStyle && this.props.disabled,
                 'noseur-rounded-bd': !this.props.noStyle && this.props.rounded,
                 'noseur-input-filled': !this.props.noStyle && this.props.filled,
-                'noseur-no-bd': !this.props.noStyle && (this.props.borderless || this.props.flushed),
             }, "noseur-input", this.props.className);
         const props = {
             className,

@@ -1,0 +1,17 @@
+
+
+.noseur-fctrl {
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+}
+
+.noseur-fctrl > .noseur-fctrl-l {
+    margin-bottom: 5px;
+}
+
+.noseur-fctrl > .noseur-fctrl-il, .noseur-fctrl > .noseur-fctrl-hl {
+    margin-top: 5px;
+    font-size: 13px;
+}
+

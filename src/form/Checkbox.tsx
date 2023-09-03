@@ -27,7 +27,7 @@ interface CheckboxState {
     checkedIndex: number;
 };
 
-export class CheckboxComponent extends React.Component<CheckboxProps, CheckboxState> {
+class CheckboxComponent extends React.Component<CheckboxProps, CheckboxState> {
 
     public static defaultProps: Partial<CheckboxProps> = {
         scheme: Scheme.STATELESS,
@@ -60,23 +60,32 @@ export class CheckboxComponent extends React.Component<CheckboxProps, CheckboxSt
     }
 
     onClick(event: React.MouseEvent<HTMLLabelElement>) {
-        if (this.props.onClick) this.props.onClick(event);
+        this.props.onClick && this.props.onClick(event);
         event.stopPropagation();
-        this.onCheckBoxClicked();
+        this.onCheckBoxClicked(event);
     }
 
     onKeyDown(event: React.KeyboardEvent<NoseurFormElement>) {
-        if (this.props.onKeyDown) this.props.onKeyDown(event);
+        this.props.onKeyDown && this.props.onKeyDown(event);
         if (event.code == "Space") {
             event.preventDefault();
             event.stopPropagation();
-            this.onCheckBoxClicked();
+            this.onCheckBoxClicked(event);
         }
     }
 
-    onCheckBoxClicked() {
+    onCheckBoxClicked(event: React.FormEvent<NoseurFormElement | HTMLLabelElement>) {
         if (this.props.readOnly) return;
         let checkedIndex = this.getCheckStatesIndex();
+        if (this.props.onChange) {
+            const checkState = this.props.checkStates[checkedIndex+1];
+            this.props.onChange({
+                ...event,
+                checkState,
+                value: checkState?.value,
+                checked: !!checkState?.checked
+            } as any);
+        }
         this.setState({ checkedIndex: checkedIndex + 1 });
     }
 
@@ -108,9 +117,10 @@ export class CheckboxComponent extends React.Component<CheckboxProps, CheckboxSt
             checked: checkState.checked,
             required: this.props.required,
 
-            onChange: () => {}
+            onClick: () => {},
+            onChange: (e: React.FormEvent<NoseurFormElement>) => { e.stopPropagation();}
         };
-        return <input type="checkbox" {...props}/>
+        return <input type="checkbox" {...props} />
     }
 
     buildBox(checkState: NoseurCheckState) {
@@ -131,7 +141,7 @@ export class CheckboxComponent extends React.Component<CheckboxProps, CheckboxSt
         const props = {
             className,
             tabIndex: 1,
-            
+
             onClick: this.onClick,
             onKeyDown: this.onKeyDown,
         };
@@ -160,7 +170,7 @@ export class CheckboxComponent extends React.Component<CheckboxProps, CheckboxSt
             style: this.props.style,
         };
 
-        return (<label {...props}>{box}{label}{input}</label>)
+        return (<label ref={this.props.forwardRef as React.ForwardedRef<HTMLLabelElement>} {...props}>{box}{label}{input}</label>)
     }
 
 }

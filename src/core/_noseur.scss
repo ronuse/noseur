@@ -1,0 +1,316 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css");
+
+.noseur-reset-styles {
+	all: unset;
+}
+
+.noseur-reset-styles>* {
+	all: unset;
+}
+
+.noseur-noselect {
+	-webkit-touch-callout: none;
+	/* iOS Safari */
+	-webkit-user-select: none;
+	/* Safari */
+	-khtml-user-select: none;
+	/* Konqueror HTML */
+	-moz-user-select: none;
+	/* Old versions of Firefox */
+	-ms-user-select: none;
+	/* Internet Explorer/Edge */
+	user-select: none;
+	/* Non-prefixed version, currently
+									supported by Chrome, Edge, Opera and Firefox */
+}
+
+.noseur-no-pointer-event {
+	pointer-events: none;
+}
+
+.noseur-readonly {
+	@extend .noseur-no-pointer-event;
+	cursor: default;
+}
+
+.noseur-disabled {
+	@extend .noseur-no-pointer-event;
+	opacity: 0.6;
+}
+
+/* Sizes */
+
+.noseur-wd-100-pct {
+	width: 100%;
+}
+
+/* Margins, Padding */
+
+.noseur-mg-l-15 {
+	margin-left: 15px;
+}
+
+.noseur-mg-r-15 {
+	margin-right: 15px;
+}
+
+.noseur-mg-t-05rem {
+	margin-top: .5rem;
+}
+
+.noseur-mg-l-05rem {
+	margin-left: .5rem;
+}
+
+.noseur-mg-r-05rem {
+	margin-right: .5rem;
+}
+
+.noseur-mg-b-05rem {
+	margin-bottom: .5rem;
+}
+
+.noseur-pd-10 {
+	padding: 10px;
+}
+
+/* Styling */
+
+.noseur-no-bg {
+	background: none;
+	background-color: rgba(0, 0, 0, 0);
+	background-image: none;
+}
+
+/* Layout */
+
+.noseur-fl-d-r-r {
+	flex-direction: row-reverse;
+}
+
+.noseur-fl-d-c {
+	flex-direction: column;
+}
+
+.noseur-fl-d-c-r {
+	flex-direction: column-reverse;
+}
+
+/* Border Properties */
+
+.noseur-rounded-bd {
+	border-radius: 20px;
+}
+
+.noseur-no-bd {
+	border: none;
+}
+
+.noseur-raised-bd {
+	box-shadow: 1px 2.5px 5px rgba(0, 0, 0, 0.25);
+	-moz-box-shadow: 1px 2.5px 5px rgba(0, 0, 0, 0.25);
+	-webkit-box-shadow: 1px 2.5px 5px rgba(0, 0, 0, 0.25);
+}
+
+/* Skeleton  */
+
+span.noseur-skeleton {
+	display: inline-block;
+	max-height: 25px;
+}
+
+.noseur-skeleton {
+	position: relative;
+	color: #e4e4e4;
+	background-color: #e4e4e4;
+	pointer-events: none;
+	border: none;
+	overflow: hidden;
+	-webkit-touch-callout: none;
+	/* iOS Safari */
+	-webkit-user-select: none;
+	/* Safari */
+	-khtml-user-select: none;
+	/* Konqueror HTML */
+	-moz-user-select: none;
+	/* Old versions of Firefox */
+	-ms-user-select: none;
+	/* Internet Explorer/Edge */
+	user-select: none;
+	/* Non-prefixed version, currently
+									supported by Chrome, Edge, Opera and Firefox */
+}
+
+.noseur-skeleton>* {
+	visibility: hidden;
+}
+
+.noseur-skeleton::placeholder {
+	color: transparent;
+}
+
+.noseur-skeleton::after {
+	display: block;
+	content: "";
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0px;
+	overflow: hidden;
+	transform: translateX(-100%);
+	background: -webkit-gradient(linear, left top,
+			right top, from(transparent),
+			color-stop(rgba(255, 255, 255, 0.5)),
+			to(transparent));
+
+	background: linear-gradient(90deg, transparent,
+			rgba(255, 255, 255, 0.5), transparent);
+
+	animation: noseur-skeleton 1.0s infinite;
+}
+
+@keyframes noseur-skeleton {
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+/* Ripple */
+
+/* Ripple effect */
+
+.noseur-rp {
+	opacity: 1;
+	content: "";
+	width: 50%;
+	height: 50%;
+	display: block;
+	position: absolute;
+	border-radius: 50%;
+	animation: 0.9s ease 1 forwards noseur-rp-ef;
+	background-color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes noseur-rp-ef {
+
+	0% {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	50% {
+		opacity: 0.375;
+		transform: scale(10);
+	}
+
+	100% {
+		opacity: 0;
+		transform: scale(35);
+	}
+
+}
+
+/* End The loading Class */
+
+/* Scheme */
+
+$schemes: (
+	info: (#8950FC, white),
+	dark: (#000000, white),
+	light: (#FFFFFF, black),
+	retro: (#49f560, black),
+	danger: (#F64E60, white),
+	warning: (#FFA800, white),
+	primary: (#3699ff, white),
+	success: (#1BC5BD, white),
+	dracula: (#282a36, #f8f8f2),
+	secondary: (#E4E6EF, #3F4254),
+	retro-reverse: (black, #49f560),
+);
+
+@mixin noseur-scheme-tx($main: #293742) {
+	color: $main;
+}
+
+@mixin noseur-scheme($main: #f5f8fa, $accent: #293742) {
+	color: $accent;
+	border-color: $main;
+	background-color: $main;
+}
+
+@mixin noseur-scheme-bd-cl($main: #293742) {
+	border-color: $main;
+}
+
+@mixin noseur-scheme-bg-hv($main: #f5f8fa, $accent: #293742) {
+	color: $accent;
+	background-color: $main;
+}
+
+@mixin noseur-scheme-bd-3px-sw-ac($main: #f5f8fa) {
+	box-shadow: 0 0 0 3px rgba($main, .3);
+	-moz-box-shadow: 0 0 0 3px rgba($main, .3);
+	-webkit-box-shadow: 0 0 0 3px rgba($main, .3);
+}
+
+@mixin noseur-scheme-bd-rd($main: #f5f8fa) {
+	box-shadow: 1px 2.5px 5px rgba($main, 0.25);
+	-moz-box-shadow: 1px 2.5px 5px rgba($main, 0.25);
+	-webkit-box-shadow: 1px 2.5px 5px rgba($main, 0.25);
+}
+
+@mixin noseur-scheme-rp($accent: #f5f8fa) {
+	background-color: rgba($accent, 0.7);
+}
+
+.noseur-stateless {
+	@include noseur-scheme;
+	border-color: #a7b6c2;
+}
+
+@each $name,
+$palette in $schemes {
+
+	$main: nth($palette, 1);
+	$accent: nth($palette, 2);
+
+	.noseur-#{$name} {
+		@include noseur-scheme($main, $accent);
+	}
+
+	.noseur-#{$name}-tx {
+		@if $name == "secondary" {
+			@include noseur-scheme-tx($accent);
+		} @else {
+			@include noseur-scheme-tx($main);
+		}
+	}
+
+	.noseur-#{$name}-bd-cl,
+	.noseur-#{$name}-bd-cl-fc:focus,
+	.noseur-#{$name}-bd-cl-hv:hover {
+		@include noseur-scheme-bd-cl($main);
+	}
+
+	.noseur-#{$name}-bg-hv:hover {
+		@include noseur-scheme-bg-hv($main, $accent);
+	}
+
+	.noseur-#{$name}-bd-3px-bx-sw-ac:active,
+	.noseur-#{$name}-bd-3px-bx-sw-fc:focus {
+		@include noseur-scheme-bd-3px-sw-ac($main);
+	}
+
+	.noseur-#{$name}-bd-rd {
+		@include noseur-scheme-bd-rd($main);
+	}
+
+	.noseur-#{$name} > .noseur-rp {
+		@include noseur-scheme-rp($accent);
+	}
+
+	.noseur-#{$name}-rp > .noseur-rp {
+		@include noseur-scheme-rp($main);
+	}
+
+}

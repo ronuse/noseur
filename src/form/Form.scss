@@ -1,7 +1,7 @@
-@use "../core/noseur" as noseur;
+
 
 .noseur-form-bd-cl {
-	border-color: #c7c7c7;
+	border-color: #dfdfdf;
 }
 
 /* Button */
@@ -21,7 +21,7 @@
 	display: inline-flex;
 	text-decoration: none;
 	vertical-align: bottom;
-	padding: 10px 20px 10px 20px;
+	padding: 10px 15px 10px 15px;
 }
 
 .noseur-button:hover {
@@ -42,7 +42,7 @@ textarea {
 	font-size: 15px;
 	border-radius: 6px;
 	box-sizing: border-box;
-	border: 1px solid #c7c7c7;
+	border: 1px solid #dfdfdf;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 }
@@ -56,9 +56,10 @@ textarea {
 }
 
 .noseur-input-flushed {
+	border: none;
 	border-radius: 0px;
 	padding: 0.7rem 0px 0.7rem 0px;
-	border-bottom: 1px solid #c7c7c7 !important;
+	border-bottom: 1px solid #dfdfdf;
 }
 
 /* Input and TextArea */
@@ -79,7 +80,7 @@ textarea {
     height: 18px;
 	outline: none;
 	user-select: none;
-	border-width: 1px;
+	border-width: 2px;
 	border-radius: 5px;
 	border-style: solid;
 	align-items: center;
