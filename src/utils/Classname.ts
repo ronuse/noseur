@@ -9,8 +9,8 @@ export const Classname = {
     build(...args: Argument[]): string {
         const classNames = args.reduce((acc: string[], arg: Argument): string[] => {
             if (!arg) return acc;
-            if (TypeChecker.isString(arg)) {
-                acc.push(arg);
+            if (TypeChecker.isString(arg) && arg != "undefined") {
+                acc.push(arg.trim());
                 return acc;
             }
             const argObject = arg as Mapping;

@@ -4,13 +4,18 @@ import {
     TextInput, Scheme,
     TextAreaInput, NumberInput,
     MoneyInput, EmailInput, PasswordInput,
-    Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator
+    Checkbox, Alignment, ProgressBar, ProgressBarMode,
+    NoseurNummber, FormControl, Paginator, Popover, Portal, NoseurObject, Dropdown
 } from "@ronuse/noseur";
 
 function App() {
     let progress = React.useRef(0);
     const schemes = Object.values(Scheme);
-    const ref = React.useRef<HTMLButtonElement>(null);
+    const refs = React.useRef<NoseurObject<any>>({ "input1": { current: undefined } });
+    const onOpenRef = React.useRef<any>();
+    const onCloseRef = React.useRef<any>();
+    const [inputIsValid, setInputIsValid] = React.useState<boolean>(false);
+    const [dropdownIsValid, setDropdownIsValid] = React.useState<boolean>(false);
     //const [state, setState] = React.useState(false);
 
     const percent = (index: number): number => (index * 100) / schemes.length + 2;
@@ -23,7 +28,77 @@ function App() {
     }, [state]);*/
 
     return (
-        <div className="Apps">
+        <div className="Apps" style={{ background: "white" }}>
+            <div className="Apps">
+                <TextInput scheme={Scheme.RETRO} defaultValue="Hello" borderless/>
+                <FormControl invalid={!dropdownIsValid}>
+                    <Dropdown 
+                        options={[
+                            { code: "CA", c: "fa fa-flag", continent: "North America", label: "Canada", icon: "https://cdn.countryflags.com/thumbs/canada/flag-3d-round-250.png" },
+                            {
+                                label: "Africa",
+                                "items": [
+                                    { code: "UG", label: "Uganda", icon: "https://cdn.countryflags.com/thumbs/uganda/flag-3d-round-250.png" },
+                                    { code: "NG", label: "Nigeria", icon: "https://cdn.countryflags.com/thumbs/nigeria/flag-3d-round-250.png" },
+                                    { code: "TZ", label: "Tanzania", icon: "https://cdn.countryflags.com/thumbs/tanzania/flag-3d-round-250.png" },
+                                ]
+                            },
+                            {
+                                label: "Asia",
+                                "items": [
+                                    { code: "CH", label: "China", icon: "https://cdn.countryflags.com/thumbs/china/flag-3d-round-250.png" },
+                                    { code: "IN", label: "India", icon: "https://cdn.countryflags.com/thumbs/india/flag-3d-round-250.png" },
+                                    { code: "RU", label: "Russia", icon: "https://cdn.countryflags.com/thumbs/russia/flag-3d-round-250.png" },
+                                ]
+                            },
+                        ]}
+                        /*highlight*/
+                        cleareable
+                        scheme={Scheme.SUCCESS}
+                        placeholder='Select a country'
+                        optionMap={{
+                            label: "{label} - {code}"
+                        }}
+                        optionGroupTemplate={(option: any) => <span>{option?.label}</span>}
+                        popoverHeaderTemplate={() => <div style={{ fontWeight: "bold", margin: 0, padding: 10, background: "#f8f9fa", borderBottom:"1px solid #dee2e6" }}>
+                            <FormControl rightContent={"fa fa-search"}>
+                                <TextInput fill/>
+                            </FormControl>
+                        </div>}
+                        //selectedOptionTemplate={(option: any) => (<div><i className={option?.c}/><span>{option?.label || "Hello"}</span></div>)}
+                        popoverFooterTemplate={() => <div style={{ fontWeight: "bold", margin: 10 }}>Yahoo Footer</div>}
+                        onSelectOption={(option: any, event: any) => setDropdownIsValid(true)}
+                        onDeSelectOption={(event: any) => setDropdownIsValid(false)}/>
+
+                    </FormControl>
+            </div>
+            <div style={{ marginTop: 50 }}>
+                <Button text="Popover1" onClick={(e) => refs.current["popover1"].toggle(e/*, refs.current["portaldiv1"]*/)} />
+                <Popover selfRef={(e) => refs.current["popover1"] = e} matchTargetSize={false}
+                    onOpenFocusRef={onOpenRef} onCloseFocusRef={onCloseRef} pointingArrowClassName={""}
+                    style={{ backgroundColor: "white", padding: 10 }}
+                    onShow={() => console.log("onShow")} onHide={() => console.log("onHide")}>
+                    <span>Hello World pop 1</span><br />
+                    <span>Hello World pop 1</span><br />
+                    <span>Hello World pop 1</span><br />
+                    <span>Hello World pop 1</span><br />
+                    <span>Hello World pop 1</span><br />
+                    <TextInput ref={onOpenRef} scheme={Scheme.PRIMARY} fill /><br />
+                    <span>Hello World pop 1</span><br />
+                    <span>Hello World pop 1</span><br />
+                    <span>Hello World pop 1</span><br />
+                </Popover>
+                <TextInput ref={onCloseRef} scheme={Scheme.DANGER} fill /><br />
+            </div>
+            <div style={{ marginTop: 50 }}>
+                <div ref={(e) => refs.current["portaldiv1"] = e} style={{ background: "red" }}></div>
+                <Portal visible={true}>
+                    <span>Hello World</span>
+                </Portal>
+                <Portal visible={true} container={() => refs.current["portaldiv1"]}>
+                    <span>Hello World on a custom container</span>
+                </Portal>
+            </div>
             <div style={{ marginTop: 50 }}>
                 <Paginator scheme={Scheme.DARK} totalRecords={123} template={{
                     layout: "PreviousPageElement ActivePageLabel NextPageElement"
@@ -40,27 +115,34 @@ function App() {
                 <br />
                 {Object.keys(Scheme).map((scheme, index) => (
                     <Paginator key={index} expandOnHiddenPagesButtonClicked={true} scheme={schemes[index]} totalRecords={123}
-                        onPageChange={(e) => console.log("onPageChange:", scheme, e)} style={{ 
+                        onPageChange={(e) => console.log("onPageChange:", scheme, e)} style={{
                             color: index === 3 ? "white" : "inherit",
-                            background: index === 3 ? "black" : "inherit"}}
-                        rightContent={<span key={'rk'}>{`${schemes[index]}`}</span>}/>
+                            background: index === 3 ? "black" : "inherit"
+                        }}
+                        rightContent={<span key={'rk'}>{`${schemes[index]}`}</span>} />
                 ))}
             </div>
             <div style={{ marginTop: 50 }}>
                 <FormControl label="Email" infoLabel="Enter the email you'd like to receive the newsletter on."
-                    helpLabel="Email is required." labelFor="email-inp" isValid={true} required>
+                    helpLabel="Email is required 1." labelFor="email-inp" invalid={!inputIsValid} required scheme={Scheme.SUCCESS}
+                    leftContent="fas fa-shield-alt">
+                    <TextInput id="email-inp" style={{ background: "rgba(217, 217, 217, 0.2)", borderRadius: 0 }}
+                        onFirstInput={() => setInputIsValid(true)} onInputEmpty={() => setInputIsValid(false)} />
+                </FormControl>
+                <FormControl label="Email" infoLabel="Enter the email you'd like to receive the newsletter on."
+                    helpLabel="Email is required 2." labelFor="email-inp" invalid required>
                     <TextInput id="email-inp" scheme={Scheme.PRIMARY} />
                 </FormControl>
                 <br />
                 <br />
                 <FormControl label="Password" infoLabel="Your password is secure"
-                    helpLabel="Password is required." labelFor="pass-inp" isValid={false} required>
+                    helpLabel="Password is required." labelFor="pass-inp" invalid required>
                     <PasswordInput id="pass-inp" scheme={Scheme.PRIMARY} />
                 </FormControl>
                 <br />
                 <br />
                 <FormControl label="Terms and conditions" infoLabel="Check this box to sell your soul to us"
-                    helpLabel="You must check the box" labelFor="chk-inp" isValid={false}>
+                    helpLabel="You must check the box" labelFor="chk-inp" invalid>
                     <Checkbox id="chk-inp" scheme={Scheme.INFO} />
                 </FormControl>
             </div>
@@ -183,12 +265,12 @@ function App() {
                     text={<span key="title" style={{ fontWeight: "bold" }}>{scheme}</span>}
                     leftIcon="fab fa-twitter" id={schemes[index]}
                     scheme={schemes[index]} raised rippleEffect />))}
-                <Button ref={ref} style={{ margin: 10, fontSize: 15 }} onClick={() => console.log("yahoo", ref)}
+                <Button ref={(e: any) => refs.current["button1"] = e} style={{ margin: 10, fontSize: 15 }} onClick={() => console.log("yahoo", refs.current["button1"])}
                     link="https://thecarisma.github.io"
                     text="Thecarisma Website"
                     leftIcon={""} linkTarget="_blank"
                     scheme={Scheme.DARK} />
-                <Button noStyle ref={ref} style={{ margin: 10, fontSize: 15 }} onClick={() => console.log("yahoo", ref)}
+                <Button noStyle ref={(e: any) => refs.current["button2"] = e} style={{ margin: 10, fontSize: 15 }} onClick={() => console.log("yahoo", refs.current["button2"])}
                     link="https://github.com/Thecarisma"
                     text="Thecarisma Github"
                     leftIcon={""}
@@ -202,6 +284,9 @@ function App() {
                 <br />
                 <br />
                 <Button leftIcon="fa fa-angle-right" scheme={Scheme.SECONDARY} style={{ padding: "10px 15px 10px 15px" }} iconOnly raised />
+                <br />
+                <br />
+                <br />
                 <br />
                 <br />
                 <br />

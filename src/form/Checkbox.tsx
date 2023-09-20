@@ -9,7 +9,7 @@ import { MicroBuilder } from "../utils/MicroBuilder";
 import { ComponentBaseProps } from '../core/ComponentBaseProps';
 import { NoseurFormElement, NoseurCheckState, NoseurLabel, NoseurNummber } from "../constants/Types";
 
-interface CheckboxProps extends ComponentBaseProps<NoseurFormElement | HTMLLabelElement> {
+export interface CheckboxProps extends ComponentBaseProps<NoseurFormElement | HTMLLabelElement> {
     checked: boolean;
     readOnly: boolean;
     required: boolean;

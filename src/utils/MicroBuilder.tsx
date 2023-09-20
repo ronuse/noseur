@@ -11,7 +11,7 @@ export const MicroBuilder = {
     ICON_COUNTER: 0,
     LABEL_COUNTER: 0,
 
-    buildIcon(icon: NoseurIconElement, props: { scheme: Scheme, className?: string, relativeAlignment?: Alignment, fillIcon?: boolean }, events?: NoseurObject) {
+    buildIcon(icon: NoseurIconElement, props: { scheme: Scheme, className?: string, relativeAlignment?: Alignment, fillIcon?: boolean }, events?: NoseurObject<any>) {
         if (!icon) { return null; }
         const isFontAwesomeIcon = TypeChecker.isTypeOfAny(icon, ["string"]);
         const className = Classname.build(isFontAwesomeIcon ? icon : (icon as React.ReactElement).props.className, {
@@ -30,7 +30,7 @@ export const MicroBuilder = {
         return <i key={key} className={className} {...events}></i>;
     },
 
-    buildLabel(label: NoseurLabel, props: { scheme: Scheme, type?: string, htmlFor?: string, className?: string, relativeAlignment?: Alignment }, events?: NoseurObject) {
+    buildLabel(label: NoseurLabel, props: { scheme: Scheme, type?: string, htmlFor?: string, className?: string, relativeAlignment?: Alignment }, events?: NoseurObject<any>) {
         if (!label) { return null; }
         const isRawString = TypeChecker.isTypeOfAny(label, ["string"]);
         const className = Classname.build(!isRawString && props.scheme ? `${props.scheme} ${(label as React.ReactElement).props.className}` : null, {
@@ -47,7 +47,7 @@ export const MicroBuilder = {
             (label as React.ReactElement).props.className = Classname.build(className, (label as React.ReactElement).props.className);
             return label;
         }
-        const rProps: NoseurObject = {
+        const rProps: NoseurObject<any> = {
             key,
             ...events,
             className,

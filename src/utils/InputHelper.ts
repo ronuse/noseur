@@ -1,4 +1,5 @@
-import { DOMHelper } from "./DOMHelper";
+
+import { DOMHelper } from "./DOMUtils";
 
 export class InputFilter {
 	static INT = /[\d\-]/;

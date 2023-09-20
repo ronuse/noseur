@@ -8,7 +8,7 @@ import { ComponentBaseProps } from '../core/ComponentBaseProps';
 import { InputFilter, InputHelper } from "../utils/InputHelper";
 import { NoseurFormElement, NoseurInputValue } from "../constants/Types";
 
-interface InputProps extends ComponentBaseProps<NoseurFormElement> {
+export interface InputProps extends ComponentBaseProps<NoseurFormElement> {
     type: string;
     mask: string;
     fill: boolean;
@@ -24,6 +24,8 @@ interface InputProps extends ComponentBaseProps<NoseurFormElement> {
     inputFilter: RegExp;
     placeholder: string;
     defaultValue: NoseurInputValue;
+    
+    onInputEmpty: React.FormEventHandler<NoseurFormElement> | undefined;
     onFirstInput: React.FormEventHandler<NoseurFormElement> | undefined;
 };
 
@@ -45,6 +47,7 @@ class Input extends React.Component<InputProps, InputState> {
 
     constructor(props: InputProps) {
         super(props);
+
         this.onInput = this.onInput.bind(this);
         this.onKeyDown = this.onKeyDown.bind(this);
         this.resolveMask = this.resolveMask.bind(this);
@@ -100,15 +103,16 @@ class Input extends React.Component<InputProps, InputState> {
 
     onInput(event: React.FormEvent<NoseurFormElement>) {
         this.props.onInput && this.props.onInput(event);
+        const valueLength = (event.target as HTMLFormElement).value.length;
         if (this.props.mask) this.resolveMask(event.target as HTMLFormElement);
-        if (!this.props.onFirstInput) return;
-        if (!this.state.hasValue) this.props.onFirstInput(event);
-        if (!this.state.hasValue && (event.target as HTMLFormElement).value.length) this.setState({ hasValue: true });
-        if (!(event.target as HTMLFormElement).value.length) this.setState({ hasValue: false });
+        if (this.props.onFirstInput && !this.state.hasValue) this.props.onFirstInput(event);
+        if (this.props.onInputEmpty && this.state.hasValue && !valueLength) this.props.onInputEmpty(event);
+        if (!this.state.hasValue && valueLength) this.setState({ hasValue: true });
+        if (!valueLength) this.setState({ hasValue: false });
     }
 
     render() {
-        const eventProps = ObjectHelper.extractEventProps(this.props, [ "onFirstInput" ]);
+        const eventProps = ObjectHelper.extractEventProps(this.props, [ "onInputEmpty", "onFirstInput" ]);
         const className = Classname.build(
             (!this.props.noStyle && this.props.highlight) ? `${this.props.scheme}-bd-cl` : null,
             (!this.props.noStyle && this.props.scheme && !this.props.flushed) ? `${this.props.scheme}-bd-3px-bx-sw-fc` : null,

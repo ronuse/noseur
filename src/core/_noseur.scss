@@ -1,4 +1,4 @@
-@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css");
 
 .noseur-reset-styles {
 	all: unset;
@@ -31,6 +31,10 @@
 .noseur-readonly {
 	@extend .noseur-no-pointer-event;
 	cursor: default;
+}
+
+.noseur-cursor-pointer {
+	cursor: pointer;
 }
 
 .noseur-disabled {
@@ -278,7 +282,8 @@ $palette in $schemes {
 		@include noseur-scheme($main, $accent);
 	}
 
-	.noseur-#{$name}-tx {
+	.noseur-#{$name}-tx,
+	.noseur-#{$name}-tx-hv:hover {
 		@if $name == "secondary" {
 			@include noseur-scheme-tx($accent);
 		} @else {

@@ -13,7 +13,7 @@ export enum ProgressBarMode {
 }
 
 
-interface ProgressBarProps extends MicroComponentBaseProps {
+export interface ProgressBarProps extends MicroComponentBaseProps {
     stripped: boolean;
     noLabel: boolean;
     mode: ProgressBarMode;

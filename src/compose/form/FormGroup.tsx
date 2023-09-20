@@ -1,18 +1,11 @@
 
-import React from "react";
 import "../Composed.css";
+import React from "react";
+import { NoseurObject } from "../../constants/Types";
 import { ObjectHelper } from "../../utils/ObjectHelper";
-import { MicroBuilder } from "../../utils/MicroBuilder";
 import { ComponentBaseProps } from "../../core/ComponentBaseProps";
-import { NoseurLabel, NoseurObject } from "../../constants/Types";
 
-interface FormGroupProps extends ComponentBaseProps<HTMLDivElement> {
-    isValid: boolean;
-    labelFor: string;
-    label: NoseurLabel;
-    infoLabel: NoseurLabel;
-    helpLabel: NoseurLabel;
-    children: React.ReactNode;
+export interface FormGroupProps extends ComponentBaseProps<HTMLDivElement> {
 }
 
 interface FormGroupState {
@@ -21,11 +14,9 @@ interface FormGroupState {
 class FormGroupComponent extends React.Component<FormGroupProps, FormGroupState> {
 
     public static defaultProps: Partial<FormGroupProps> = {
-        isValid: true,
     }
 
     state: FormGroupState = {
-        
     };
 
     constructor(props: FormGroupProps) {
@@ -33,12 +24,8 @@ class FormGroupComponent extends React.Component<FormGroupProps, FormGroupState>
     }
 
     render() {
-        const helpLabelClassName = !this.props.isValid && !this.props.scheme ? "noseur-fgrp-hl noseur-danger-tx" : "noseur-fgrp-hl";
-        const label = MicroBuilder.buildLabel(this.props.label, { scheme: this.props.scheme, className: "noseur-fgrp-l" });
-        const helpLabel = MicroBuilder.buildLabel(this.props.helpLabel, { scheme: this.props.scheme, className: helpLabelClassName });
-        const infoLabel = MicroBuilder.buildLabel(this.props.infoLabel, { scheme: this.props.scheme, className: "noseur-fgrp-il" });
         const eventProps = ObjectHelper.extractEventProps(this.props);
-        const props: NoseurObject = {
+        const props: NoseurObject<any> = {
             ...eventProps,
             key: this.props.key,
             style: this.props.style,
@@ -47,9 +34,10 @@ class FormGroupComponent extends React.Component<FormGroupProps, FormGroupState>
         delete props.children;
 
         return (<div {...props}>
-            {label}
-            {this.props.children}
-            {this.props.isValid ? infoLabel : helpLabel}
+            {[ this.props.children ].map(child => {
+                if (!child) return;
+                return React.isValidElement(child) ? React.cloneElement(child, { scheme: this.props.scheme } as any) : child;
+            })}
         </div>);
     }
 

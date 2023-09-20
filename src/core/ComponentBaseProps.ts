@@ -3,6 +3,7 @@ import { Scheme } from "../constants/Scheme";
 import { NoseurInputValue } from "../constants/Types";
 
 export interface ComponentBaseProps<T> extends MicroComponentBaseProps, React.DOMAttributes<T> {
+    selfRef: React.ForwardedRef<T>;
     forwardRef: React.ForwardedRef<T>;
 }
 

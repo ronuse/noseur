@@ -62,7 +62,7 @@ textarea {
 	border-bottom: 1px solid #dfdfdf;
 }
 
-/* Input and TextArea */
+/* Checkbox */
 
 .noseur-checkbox {
 	display: flex;
@@ -92,3 +92,83 @@ textarea {
 .noseur-checkbox-box > .noseur-icon {
 	font-size: 12px;
 }
+
+/* Dropdown */
+
+.noseur-dropdown { 
+	min-width: auto;
+	cursor: pointer;
+}
+
+.noseur-dropdown > .noseur-fctrl-c > .noseur-fctrl-lc { 
+	min-width: auto;
+}
+
+.noseur-dropdown > .noseur-fctrl-c > .noseur-fctrl-lc > img {
+	width: auto;
+    margin: 9px;
+	height: 22px;
+}
+
+.noseur-dropdown-inputtext {
+	min-width: auto;
+}
+
+.noseur-dropdown-right-content {
+	margin: 0px;
+}
+
+.noseur-dropdown-right-content > * {
+	margin: 10px;
+}
+
+.noseur-dropdown-popover {
+	min-width: 190px;
+	background-color: white;
+	border-radius: 0px 0px 3px 3px;
+	box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%) !important;
+}
+
+.noseur-dropdown-popover-list {
+	margin: 0px;
+	padding: 0px;
+	height: 350px;
+	overflow: auto;
+	margin-top: 7px;
+	margin-bottom: 7px;
+}
+
+.noseur-dropdown-popover-list > li {
+	border: none;
+	font-size: 14px;
+	cursor: pointer;
+	list-style-type: none;
+	padding: 12px 15px 12px 15px;
+}
+
+.noseur-dropdown-popover-list > li.default-style:hover {
+	cursor: pointer;
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.noseur-dropdown-popover-list > li.default-style[aria-selected="true"] {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.noseur-dropdown-popover-li-grp {
+	pointer-events: none;
+	font-weight: bold;
+}
+
+.noseur-dropdown-popover-li-item {
+	display: flex;
+}
+
+.noseur-dropdown-popover-li-item > img {
+	width: 20px;
+	height: 20px;
+	max-width: 20px;
+	max-height: 20px;
+	margin-right: 10px;
+}
+

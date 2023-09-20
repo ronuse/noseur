@@ -15,11 +15,14 @@ type Enumerate<N extends number, Acc extends number[] = []> = Acc['length'] exte
 
 export type NoseurNummber = number | null;
 export type NoseurLabel = React.ReactNode;
+export type NoseurDivElement = HTMLDivElement;
 export type NoseurInputValue = string | number;
-export type NoseurObject = { [key: string]: any };
+export type NoseurObject<T> = { [key: string]: T };
 export type NoseurCheckState = NoseurCheckStateInterface;
-export type NoseurElement2 = React.ReactNode | React.ReactElement | null;
-export type NoseurElement = React.ReactNode | React.ReactElement | string | null;
+export type NoseurRawElement = Element | DocumentFragment;
+export type NoseurDomElement = React.ReactNode | React.ReactElement | HTMLElement | null;
+export type _NoseurElement = React.ReactNode | React.ReactElement | string | number | null;
+export type NoseurElement = _NoseurElement | _NoseurElement[];
 export type NoseurIconElement = NoseurElement;
 export type NoseurFormElement = HTMLTextAreaElement | HTMLInputElement;
 export type NoseurButtonElement = HTMLButtonElement | HTMLAnchorElement;

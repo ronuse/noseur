@@ -1,7 +1,9 @@
 
 
 .noseur-fctrl {
+    margin: 0px;
     display: flex;
+    width: fit-content;
     align-items: stretch;
     flex-direction: column;
 }
@@ -13,5 +15,47 @@
 .noseur-fctrl > .noseur-fctrl-il, .noseur-fctrl > .noseur-fctrl-hl {
     margin-top: 5px;
     font-size: 13px;
+}
+
+.noseur-fctrl-c {
+    margin: 0px;
+    display: flex;
+    position: relative;
+	border-radius: 6px;
+    align-items: center;
+	box-sizing: border-box;
+    justify-content: center;
+	border: 1px solid #dfdfdf;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+
+.noseur-fctrl-lc, .noseur-fctrl-rc, .noseur-fctrl-coc {
+    top: 0px;
+    margin: 0px;
+    height: 100%;
+    display: flex;
+    min-width: 40px;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.noseur-fctrl-lc {
+    top: 0px;
+    left: 0px;
+}
+
+.noseur-fctrl-rc {
+    right: 0px;
+}
+
+.noseur-fctrl-coc {
+    left: 10px;
+}
+
+.noseur-fctrl-cc {
+    margin: 0px;
+    padding: 0px;
 }
 

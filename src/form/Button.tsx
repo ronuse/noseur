@@ -9,7 +9,7 @@ import { MicroBuilder } from "../utils/MicroBuilder";
 import { ComponentBaseProps } from '../core/ComponentBaseProps';
 import { NoseurButtonElement, NoseurIconElement, NoseurLabel, NoseurObject } from '../constants/Types';
 
-interface ButtonProps extends ComponentBaseProps<NoseurButtonElement> {
+export interface ButtonProps extends ComponentBaseProps<NoseurButtonElement> {
     link: string;
     fill: boolean;
     raised: boolean;
@@ -120,7 +120,7 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
             };
             children.push((<span className="noseur-rp" style={style}></span>));
         }
-        const props: NoseurObject = {
+        const props: NoseurObject<any> = {
             children,
             className,
             ...eventProps,

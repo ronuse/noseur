@@ -1,0 +1,55 @@
+
+/* Popover */
+
+.noseur-popover {
+	border: 0 none;
+	min-width: 50px;
+	position: absolute;
+	border: 1ps solid #f5f2f2;
+    --popoverArrowLeftOffset: 0px;
+    --componentMarginTopOrBottom: 0px;
+	box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+}
+
+.noseur-popover-arrow:before {
+	top: -5px;
+	content: " ";
+	display: block;
+	position: absolute;
+	pointer-events: none;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+    left: calc(var(--popoverArrowLeftOffset, 0px) + 1.25rem);
+	border-bottom: var(--componentMarginTopOrBottom, 5px) solid #f2f2f2;
+}
+
+.noseur-popover-arrow-flipped:before {
+	top: 100%;
+	border-bottom: 0px;
+	border-top: 5px solid white;
+}
+
+.noseur-popover-enter {
+	opacity: 0;
+	transform: scaleY(0.8);
+}
+
+.noseur-popover-enter-active {
+	opacity: 1;
+	transform: scaleY(1);
+	transition: transform .12s cubic-bezier(0, 0, 0.2, 1), opacity .12s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.noseur-popover-enter-done {
+	transform: none;
+}
+
+.noseur-popover-exit {
+	opacity: 1;
+}
+
+.noseur-popover-exit-active {
+	opacity: 0;
+	transition: opacity .1s linear;
+}
+

@@ -8,21 +8,70 @@ export { Classname } from "./utils/Classname";
 export { BoolHelper } from "./utils/BoolHelper";
 export { TypeChecker } from "./utils/TypeChecker";
 export { ObjectHelper } from "./utils/ObjectHelper";
+export { DOMHelper, ScrollHandler } from "./utils/DOMUtils";
 export { InputFilter, InputSpecialKey, InputHelper } from "./utils/InputHelper";
 
-// form
-export { Button } from "./form/Button";
-export { Checkbox } from "./form/Checkbox";
-export { TextInput, EmailInput, NumberInput, MoneyInput, TextAreaInput, PasswordInput } from "./form/Input";
-
 // compose
-export { FormGroup } from "./compose/form/FormGroup"
-export { FormControl } from "./compose/form/FormControl"
+export {
+    FormGroup,
+    FormGroupProps,
+} from "./compose/form/FormGroup"
+export {
+    FormControl,
+    FormControlProps,
+} from "./compose/form/FormControl"
+
+// overlay
+export {
+    Portal,
+    PortalProps,
+} from "./overlay/Portal";
+export {
+    Popover,
+    PopoverProps,
+    PopoverEvent,
+} from "./overlay/Popover";
 
 // misc
-export { ProgressBar, ProgressBarMode } from "./misc/ProgressBar";
+export {
+    ProgressBar,
+    ProgressBarMode,
+    ProgressBarProps,
+} from "./misc/ProgressBar";
 
 // presentation
-export { Paginator } from "./presentation/Paginator"
+export {
+    Paginator,
+    PaginatorProps,
+    PaginatorDirection,
+    PaginatorTemplateOptions,
+    PaginatorPageChangeOption,
+    PaginatorPageElementOption,
+    PaginatorTemplateLabelEventHandler,
+    PaginatorTemplateElementEventHandler,
+} from "./presentation/Paginator";
 
-import "./core/noseur.css"
+// form
+export {
+    Button,
+    ButtonProps,
+} from "./form/Button";
+export {
+    Checkbox,
+    CheckboxProps,
+} from "./form/Checkbox";
+export {
+    Dropdown,
+    DropdownProps,
+} from "./form/Dropdown";
+export {
+    TextInput,
+    InputProps,
+    EmailInput,
+    MoneyInput,
+    NumberInput,
+    TextAreaInput,
+    PasswordInput,
+} from "./form/Input";
+
+import "./core/noseur.css";
