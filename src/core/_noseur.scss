@@ -42,6 +42,10 @@
 	opacity: 0.6;
 }
 
+.noseur-overflow-hidden {
+	overflow: hidden !important;
+}
+
 /* Sizes */
 
 .noseur-wd-100-pct {
@@ -100,6 +104,10 @@
 	flex-direction: column-reverse;
 }
 
+.noseur-p-stk {
+	position: sticky;
+}
+
 /* Border Properties */
 
 .noseur-rounded-bd {
@@ -108,6 +116,10 @@
 
 .noseur-no-bd {
 	border: none;
+}
+
+.noseur-no-bd-t {
+	border-top: none !important;
 }
 
 .noseur-raised-bd {

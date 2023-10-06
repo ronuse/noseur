@@ -96,4 +96,10 @@ export const BoolHelper = {
         return true;
     },
 
+	compare(a: any, b: any): any {
+		if (a < b) return -1;
+		if (a > b) return 1;
+		return 0;
+	}
+
 }

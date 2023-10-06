@@ -31,6 +31,10 @@ export {
     PopoverProps,
     PopoverEvent,
 } from "./overlay/Popover";
+export {
+    Dialog,
+    DialogProps,
+} from "./overlay/Dialog";
 
 // misc
 export {
@@ -63,6 +67,14 @@ export {
 export {
     Dropdown,
     DropdownProps,
+    DropdownOption,
+    DropdownEventHandler,
+    DropdownSelectedIndex,
+    DropdownPanelsHandler,
+    DropdownOnSearchHandler,
+    DropdownTemplateHandler,
+    DropdownOnSelectHandler,
+    DropdownOnDeSelectHandler,
 } from "./form/Dropdown";
 export {
     TextInput,
@@ -73,5 +85,24 @@ export {
     TextAreaInput,
     PasswordInput,
 } from "./form/Input";
+
+// data
+export {
+    Column,
+    ColumnProps,
+    ColumnTemplateHandler,
+    ValuedColumnTemplateHandler,
+} from "./data/Column";
+export {
+    Table,
+    RowProps,
+    TableProps,
+    SelectionMode,
+    TableTemplateHandler,
+    TableRowSelectionHandler,
+    TableSelectionEventHandler,
+    TableColumnTemplateHandler,
+    TableSelectionElementtemplateHandler,
+} from "./data/Table";
 
 import "./core/noseur.css";

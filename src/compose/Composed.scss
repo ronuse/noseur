@@ -19,7 +19,9 @@
 
 .noseur-fctrl-c {
     margin: 0px;
+    width: 100%;
     display: flex;
+    outline: none;
     position: relative;
 	border-radius: 6px;
     align-items: center;
@@ -41,6 +43,10 @@
     justify-content: center;
 }
 
+.noseur-fctrl-coc {
+    position: absolute;
+}
+
 .noseur-fctrl-lc {
     top: 0px;
     left: 0px;
@@ -55,7 +61,7 @@
 }
 
 .noseur-fctrl-cc {
-    margin: 0px;
+    flex: 1;
     padding: 0px;
 }
 

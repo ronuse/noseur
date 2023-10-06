@@ -10,10 +10,11 @@ import { ObjectHelper } from "../utils/ObjectHelper";
 import { FormControl } from "../compose/form/FormControl";
 import { ComponentBaseProps } from "../core/ComponentBaseProps";
 import { FunctionStackManager } from "../utils/FunctionStackManager";
-import { NoseurDivElement, NoseurElement, NoseurFormElement, NoseurObject } from '../constants/Types';
+import { NoseurDivElement, NoseurElement, NoseurObject } from '../constants/Types';
 
 export type DropdownEventHandler = () => void | undefined;
 export type DropdownOnDeSelectHandler = (event: any) => void;
+export type DropdownOnSearchHandler = (value: string) => void;
 export type DropdownPanelsHandler = () => NoseurElement | undefined;
 export type DropdownOnSelectHandler = (option: any, event: any) => void;
 export type DropdownOption = { label?: string, value?: any, icon?: any };
@@ -27,6 +28,7 @@ export interface DropdownProps extends ComponentBaseProps<NoseurDivElement> {
     highlight: boolean;
     placeholder: string;
     cleareable: boolean;
+    borderless: boolean;
     matchTargetSize: boolean;
     optionMap: DropdownOption;
     optionGroupChildrenKey: string;
@@ -38,6 +40,7 @@ export interface DropdownProps extends ComponentBaseProps<NoseurDivElement> {
     textInputRef: React.ForwardedRef<HTMLInputElement>;
     selectedOptionIndex: DropdownSelectedIndex | number;
 
+    onSearch?: DropdownOnSearchHandler;
     onDropdownShow: DropdownEventHandler;
     onDropdownHide: DropdownEventHandler;
     optionTemplate: DropdownTemplateHandler;
@@ -47,7 +50,6 @@ export interface DropdownProps extends ComponentBaseProps<NoseurDivElement> {
     popoverFooterTemplate: DropdownPanelsHandler;
     optionGroupTemplate: DropdownTemplateHandler;
     selectedOptionTemplate?: DropdownTemplateHandler;
-    onSearch: React.FormEventHandler<NoseurFormElement> | undefined;
 
 }
 
@@ -56,12 +58,14 @@ interface DropdownState {
     selectedOptionIndex: DropdownSelectedIndex;
 }
 
+// TODO implements keyboard and mouse shortcuts
 class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
 
     public static defaultProps: Partial<DropdownProps> = {
         disabled: false,
         highlight: false,
         popoverProps: {},
+        borderless: false,
         textInputProps: {},
         formControlProps: {},
         matchTargetSize: true,
@@ -103,7 +107,6 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
 
     togglePopover(e: any, ignoreEditable: boolean = true) {
         e.stopPropagation();
-        if (ignoreEditable && this.internalTextInputElement && this.internalTextInputElement.focus) this.internalTextInputElement.focus();
         if (!this.internalPopoverElement || (!ignoreEditable && this.props.editable && e.target === this.internalTextInputElement)) return;
         this.internalPopoverElement.toggle(e, this.compoundElement);
     }
@@ -212,19 +215,21 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
         return listItems;
     }
 
-    buildSelectedOption(selectedOption: any) {
-        const placeholder = selectedOption && this.props.selectedOptionTemplate ? null : this.props.placeholder;
-        const selectedOptionLabel = this.props.selectedOptionTemplate ? null : this.resolveOptionLabel(selectedOption);
+    buildSelectedOption(selectedOption: any): any {
+        if (selectedOption && this.props.selectedOptionTemplate) return this.props.selectedOptionTemplate(selectedOption);
+        const selectedOptionLabel = this.resolveOptionLabel(selectedOption);
         const inputProps: NoseurObject<any> = {
+            noStyle: true,
             borderless: true,
             id: this.props.id,
-            style: this.props.style,
-            placeholder: placeholder,
             scheme: this.props.scheme,
             ...this.props.textInputProps,
+            disabled: this.props.disabled,
+            style: this.props.style || {},
             readOnly: !this.props.editable,
             highlight: this.props.highlight,
             defaultValue: selectedOptionLabel,
+            placeholder: this.props.placeholder,
             ref: (el: any) => {
                 this.internalTextInputElement = el;
                 if (!this.props.textInputRef) return;
@@ -235,6 +240,14 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
                 'noseur-cursor-pointer': !this.props.editable,
             }, (this.props.textInputProps || {}).className, this.props.className),
         };
+        if (!this.props.editable) {
+            inputProps.style.cursor = "pointer";
+        } else if (this.props.onSearch) {
+            inputProps.onInput = (e: any) => {
+                this.props.onSearch && this.props.onSearch(e.target.value);
+            }
+        }
+
         return (<TextInput {...inputProps} onClick={(e) => this.togglePopover(e, false)} />)
     }
 
@@ -264,27 +277,27 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
     }
 
     renderRightContent(optionIsSelected: boolean) {
-        if (!this.props.cleareable || !optionIsSelected) return this.props.toggleIcon;
-
-        const closeIconClassname = Classname.build("fa fa-close", this.props.scheme ? `${this.props.scheme}-tx-hv` : null);
+        let closeIconClassname;
+        if (this.props.cleareable && optionIsSelected) {
+            closeIconClassname = (<i className={Classname.build("fa fa-close", `${Scheme.DANGER}-tx-hv`)} onClick={(e: any) => {
+                e.stopPropagation();
+                this.selectOption(e, { primaryIndex: -1, secondaryIndex: -1 });
+            }}/>);
+        }
         const toggleIcon = TypeChecker.isString(this.props.toggleIcon) ? <i className={this.props.toggleIcon}/> : this.props.toggleIcon;
-        return (<div className={"noseur-dropdown-right-content"}><i className={closeIconClassname} onClick={(e: any) => {
-            e.stopPropagation();
-            this.selectOption(e, { primaryIndex: -1, secondaryIndex: -1 });
-        }}/>{toggleIcon}</div>)
+        return (<div className={"noseur-dropdown-right-content"}>{closeIconClassname}{toggleIcon}</div>)
     }
 
     render() {
         const popover = this.renderPopover();
         const selectedOption = this.getSelectedOption();
         const selectedOptionElement = this.buildSelectedOption(selectedOption);
-        const className = Classname.build('noseur-dropdown', this.props.formControlProps.className);
+        const className = Classname.build('noseur-dropdown', this.props.formControlProps?.className, { "noseur-disabled": this.props.disabled });
 
         return (<React.Fragment>
-            <FormControl {...this.props.formControlProps} tabIndex={1} className={className} 
-                leftContent={this.props.selectedOptionTemplate ? null : this.resolveOptionIcon(selectedOption)}
-                ref={(r: any) => this.compoundElement = r} rightContent={this.renderRightContent(!!selectedOption)} onClick={this.togglePopover}
-                centerOverlayContent={selectedOption && this.props.selectedOptionTemplate ? this.props.selectedOptionTemplate(selectedOption) : null}>
+            <FormControl {...(this.props.formControlProps || {})} className={className} borderless={this.props.borderless}
+                leftContent={this.props.selectedOptionTemplate ? null : this.resolveOptionIcon(selectedOption)}  contentStyle={{ width: "initial" }}
+                scheme={this.props.scheme} ref={(r: any) => this.compoundElement = r} rightContent={this.renderRightContent(!!selectedOption)} onClick={this.togglePopover}>
                     {selectedOptionElement}
             </FormControl>
             {popover}

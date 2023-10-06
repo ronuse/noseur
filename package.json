@@ -13,7 +13,8 @@
     "build:css:production": "sass --no-source-map --style=compressed src:dist/esm",
     "lint": "eslint \"{**/*,*}.{js,ts,jsx,tsx}\"",
     "pack": "npm run clean && npm run build && npm run build:css && npm pack",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "showcase": "cd showcase & npm run watch"
   },
   "files": [
     "dist",

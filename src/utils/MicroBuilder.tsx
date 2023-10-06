@@ -11,7 +11,7 @@ export const MicroBuilder = {
     ICON_COUNTER: 0,
     LABEL_COUNTER: 0,
 
-    buildIcon(icon: NoseurIconElement, props: { scheme: Scheme, className?: string, relativeAlignment?: Alignment, fillIcon?: boolean }, events?: NoseurObject<any>) {
+    buildIcon(icon: NoseurIconElement, props: { scheme?: Scheme, className?: string, relativeAlignment?: Alignment, fillIcon?: boolean }, events?: NoseurObject<any>) {
         if (!icon) { return null; }
         const isFontAwesomeIcon = TypeChecker.isTypeOfAny(icon, ["string"]);
         const className = Classname.build(isFontAwesomeIcon ? icon : (icon as React.ReactElement).props.className, {
@@ -33,19 +33,20 @@ export const MicroBuilder = {
     buildLabel(label: NoseurLabel, props: { scheme: Scheme, type?: string, htmlFor?: string, className?: string, relativeAlignment?: Alignment }, events?: NoseurObject<any>) {
         if (!label) { return null; }
         const isRawString = TypeChecker.isTypeOfAny(label, ["string"]);
-        const className = Classname.build(!isRawString && props.scheme ? `${props.scheme} ${(label as React.ReactElement).props.className}` : null, {
+        const className = Classname.build(!isRawString && props.scheme ? `${props.scheme}-tx` : null, {
                 "noseur-mg-b-05rem": props.relativeAlignment == Alignment.TOP,
                 "noseur-mg-r-05rem": props.relativeAlignment == Alignment.LEFT,
                 "noseur-mg-l-05rem": props.relativeAlignment == Alignment.RIGHT,
                 "noseur-mg-t-05rem": props.relativeAlignment == Alignment.BOTTOM,
-        }, "noseur-label", props.className);
+        }, "noseur-label", props.className, (label as React.ReactElement).props?.className);
         const key = `icon-${MicroBuilder.LABEL_COUNTER++}`;
         if (!isRawString) {
-            ObjectHelper.addAll((label as React.ReactElement).props, events);
-            (label as React.ReactElement).props.key = (label as React.ReactElement).props.key = key;
-            (label as React.ReactElement).props.key = (label as React.ReactElement).props.scheme = props.scheme;
-            (label as React.ReactElement).props.className = Classname.build(className, (label as React.ReactElement).props.className);
-            return label;
+            const labelProps = { ...((label as any).props || {}) };
+            ObjectHelper.addAll(labelProps, events);
+            labelProps.key = labelProps.key ||  key;
+            labelProps.scheme = labelProps.scheme;
+            labelProps.className = className;
+            return React.cloneElement(label as React.ReactElement, labelProps);
         }
         const rProps: NoseurObject<any> = {
             key,

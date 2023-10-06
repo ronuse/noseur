@@ -1,40 +1,161 @@
 import React from 'react';
 import {
-    Button,
-    TextInput, Scheme,
-    TextAreaInput, NumberInput,
+    Button, Dialog,
+    TextInput, Dropdown, Scheme,
     MoneyInput, EmailInput, PasswordInput,
-    Checkbox, Alignment, ProgressBar, ProgressBarMode,
-    NoseurNummber, FormControl, Paginator, Popover, Portal, NoseurObject, Dropdown
+    TextAreaInput, NumberInput, NoseurObject,
+    Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator,
+    Popover, Portal, Table, Column, PaginatorPageChangeOption
 } from "@ronuse/noseur";
 
 function App() {
     let progress = React.useRef(0);
     const schemes = Object.values(Scheme);
-    const refs = React.useRef<NoseurObject<any>>({ "input1": { current: undefined } });
     const onOpenRef = React.useRef<any>();
     const onCloseRef = React.useRef<any>();
+    const [state, setState] = React.useState(false);
+    const [showDialog, setShowDialog] = React.useState<boolean>(false);
     const [inputIsValid, setInputIsValid] = React.useState<boolean>(false);
     const [dropdownIsValid, setDropdownIsValid] = React.useState<boolean>(false);
-    //const [state, setState] = React.useState(false);
+    const [showRivtnDialog, setShowRivtnDialog] = React.useState<boolean>(false);
+    const refs = React.useRef<NoseurObject<any>>({ "input1": { current: undefined } });
+    const [dialogAlignment, setDialogAlignment] = React.useState<Alignment>(Alignment.CENTER);
+    const [dynamicDataTable, setDynamicDataTable] = React.useState<number[]>(Array(5).fill(0));
 
     const percent = (index: number): number => (index * 100) / schemes.length + 2;
 
-    /*React.useEffect(() => {
-        if (progress.current < 100) setTimeout(() => {
+    React.useEffect(() => {
+        /*if (progress.current < 100) setTimeout(() => {
             setState(!state);
-            progress.current += 50;
-        }, 1000);
-    }, [state]);*/
+            progress.current += 7;
+        }, 1000);*/
+    }, [state]);
+
+    const tableData = [
+        {
+            logo: "fa fa-user",
+            name: "Rivtn User",
+            service_code: "janus-lunarius",
+        },
+        {
+            logo: "fa fa-flag",
+            name: "Admin",
+            service_code: "janus-geminus",
+        },
+        {
+            logo: "fa fa-shield-alt",
+            name: "Security System",
+            service_code: "soteria",
+        },
+        {
+            logo: "fa fa-gamepad",
+            name: "Rideon",
+            service_code: "rideon",
+        },
+        {
+            logo: "fa fa-search",
+            name: "Logging System",
+            service_code: "mnemosyne",
+        },
+    ];
 
     return (
         <div className="Apps" style={{ background: "white" }}>
-            <div className="Apps">
-                <TextInput scheme={Scheme.RETRO} defaultValue="Hello" borderless/>
+            <div style={{ margin: 30 }}>
+                <Table paginate scheme={Scheme.PRIMARY} stripedRows={false} showGridlines={false} hideHeaders={false}
+                    header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
+                        <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
+                            <TextInput fill />
+                        </FormControl>
+                    </div>)} rowsPerPage={5} totalRecords={300} 
+                    paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }}
+                    data={dynamicDataTable.map((o, i) => ({ name: "Platform " + (i + o + 1), service_code: "svc_" + (i + o + 1), logo: "fa fa-" + Math.min(9, i + o + 1), }))}
+                    onPageChange={(e: PaginatorPageChangeOption) => {
+                        setDynamicDataTable(Array(5).fill(e.currentPage - 1));
+                    }}>
+                    <Column sortable style={{ width: '25%' }} header={() => "Icon"} template={(v: any) => <i className={v.logo} />} />
+                    <Column sortable style={{ width: '25%' }} header="Name" dataKey="name" />
+                    <Column sortable style={{ width: '25%' }} header="Service Code" dataKey="service_code" canUnsort/>
+                </Table>
+                <Table paginate scheme={Scheme.PRIMARY} stripedRows showGridlines={true} hideHeaders={false}
+                    header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
+                        <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
+                            <TextInput fill />
+                        </FormControl>
+                    </div>)} style={{ marginTop: 20 }} rowsPerPage={5}
+                    paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }} footer={() => "The foooter"}
+                    data={Array(30).fill(null).map((_, i) => ({ name: "Platform " + (i + 1), service_code: "svc_" + (i + 1), logo: "fa fa-" + Math.min(9, i + 1), }))}>
+                    <Column template={(logo: any) => <i className={logo} />} dataKey="logo" />
+                    <Column header="Name" dataKey="name" />
+                    <Column header="Service Code" dataKey="service_code" />
+                </Table>
+                <Table paginate scheme={Scheme.PRIMARY} data={tableData} stripedRows showGridlines={true} hideHeaders={false}
+                    header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
+                        <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
+                            <TextInput fill />
+                        </FormControl>
+                    </div>)} style={{ marginTop: 20 }}
+                    paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }}>
+                    <Column template={(logo: any) => <i className={logo} />} dataKey="logo" />
+                    <Column canUnsort sortable header="Name" footer="Number 20" dataKey="name" />
+                    <Column canUnsort sortable header="Service Code" footer="Number 30" dataKey="service_code" />
+                </Table>
+                <Table data={[]} stripedRows showGridlines={true} hideHeaders={false} style={{ marginTop: 20 }}
+                    emptyState={(<div>No data</div>)}>
+                    <Column template={(logo: any) => <i className={logo} />} dataKey="logo" />
+                    <Column header="Name" dataKey="name" />
+                    <Column header="Service Code" dataKey="service_code" />
+                </Table>
+            </div>
+            <div style={{ margin: 30 }}>
+                <Button text="Show Alert Dialog" leftIcon="fa fa-check" scheme={Scheme.DARK} onClick={() => alert(!showDialog)} />
+            </div>
+            <div style={{ margin: 30 }}>
+                <Dropdown options={Object.keys(Alignment).map((alignment, index) => ({ label: alignment, value: Object.values(Alignment)[index] }))}
+                    onSelectOption={(option) => setDialogAlignment(option.value || Alignment.CENTER)} />
+                <br />
+                <Button text="Show Basic" leftIcon="fa fa-clone fa-flip-vertical" scheme={Scheme.PRIMARY} onClick={() => setShowDialog(!showDialog)} />
+                <Button text="Show Basic" leftIcon="fa fa-clone fa-flip-vertical" scheme={Scheme.SUCCESS} onClick={() => setShowRivtnDialog(!showRivtnDialog)} />
+
+                <Dialog isVisible={showRivtnDialog} style={{ maxWidth: 400 }} onHide={() => setShowRivtnDialog(false)} alignment={dialogAlignment} notClosable>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <span>Request New 2fa Authenticator</span>
+                        <p>A new 2fa QR code and plain text has been sent to your email address.</p>
+                        <svg width="168" height="168" viewBox="0 0 168 168" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginTop: 30, marginBottom: 40 }}>
+                            <path d="M72.3337 99L54.417 81.0833C52.8892 79.5556 50.9448 78.7917 48.5837 78.7917C46.2225 78.7917 44.2781 79.5556 42.7503 81.0833C41.2225 82.6111 40.4587 84.5556 40.4587 86.9167C40.4587 89.2778 41.2225 91.2222 42.7503 92.75L66.5003 116.5C68.167 118.167 70.1114 119 72.3337 119C74.5559 119 76.5003 118.167 78.167 116.5L125.25 69.4167C126.778 67.8889 127.542 65.9445 127.542 63.5833C127.542 61.2222 126.778 59.2778 125.25 57.75C123.723 56.2222 121.778 55.4583 119.417 55.4583C117.056 55.4583 115.111 56.2222 113.584 57.75L72.3337 99ZM84.0003 167.333C72.4725 167.333 61.6392 165.144 51.5003 160.767C41.3614 156.389 32.542 150.453 25.042 142.958C17.542 135.458 11.6059 126.639 7.23366 116.5C2.86144 106.361 0.672548 95.5278 0.666992 84C0.666992 72.4722 2.85588 61.6389 7.23366 51.5C11.6114 41.3611 17.5475 32.5417 25.042 25.0417C32.542 17.5417 41.3614 11.6056 51.5003 7.23334C61.6392 2.86112 72.4725 0.672227 84.0003 0.666672C95.5281 0.666672 106.361 2.85556 116.5 7.23334C126.639 11.6111 135.459 17.5472 142.959 25.0417C150.459 32.5417 156.398 41.3611 160.775 51.5C165.153 61.6389 167.339 72.4722 167.334 84C167.334 95.5278 165.145 106.361 160.767 116.5C156.389 126.639 150.453 135.458 142.959 142.958C135.459 150.458 126.639 156.397 116.5 160.775C106.361 165.153 95.5281 167.339 84.0003 167.333Z" fill="#0FA883" />
+                        </svg>
+                        <Button text="Close" scheme={Scheme.SUCCESS} onClick={() => setShowRivtnDialog(false)} fill />
+                    </div>
+                </Dialog>
+                <Dialog isVisible={showDialog} disableScroll={true} alignment={dialogAlignment} notClosable={false}
+                    icons={["One", "two",]} header={<i className='fa fa-user' />} noOverlay={false} modalProps={{ style: { background: "rgba(35, 97, 204, 0.4)" } }}
+                    closeIcon={<span>Close</span>} dismissableModal={false} container={refs.current["dialogDiv1"]}
+                    contentProps={{ style: { background: "red" } }} headerProps={{ style: { background: "green", borderBottom: "none" } }}
+                    footer={<div style={{ background: "yellow", borderTop: "none" }}>
+                        <Button text="Cancel" leftIcon="fa fa-times" textOnly scheme={Scheme.DANGER} onClick={() => setShowDialog(false)} />
+                        <Button text="Continue" leftIcon="fa fa-check" scheme={Scheme.PRIMARY} onClick={() => setShowDialog(false)} style={{ marginLeft: 20 }} />
+                    </div>} onOpenFocusRef={onOpenRef} onCloseFocusRef={onCloseRef} maximizeIcons={{
+                        maximize: "fa fa-plus",
+                        minimize: "fa fa-minus",
+                    }} onHide={() => { console.log("onHide"); setShowDialog(false) }} onShow={() => console.log("onShow")}
+                    onMaximize={() => { console.log("onMaximize"); return true }}
+                    onMinimize={() => { console.log("onMinimize"); return true }}
+                    maximizable>
+                    <span>{basicText()}</span>
+                    <br />
+                    <br />
+                    <TextInput ref={onOpenRef} scheme={Scheme.PRIMARY} fill /><br />
+                    <br />
+                </Dialog>
+                <div ref={(e) => refs.current["dialogDiv1"] = e} style={{ background: "red", height: 500, overflow: "auto" }}>
+                    <div style={{ height: 900, background: "green", width: 300 }}></div>
+                </div>
+            </div>
+            <div style={{ margin: 30 }}>
                 <FormControl invalid={!dropdownIsValid}>
-                    <Dropdown 
+                    <Dropdown
                         options={[
-                            { code: "CA", c: "fa fa-flag", continent: "North America", label: "Canada", icon: "https://cdn.countryflags.com/thumbs/canada/flag-3d-round-250.png" },
+                            { code: "CA", c: "fa fa-flag", continent: "North America", label: "Canadanadanadanadanadanada", icon: "https://cdn.countryflags.com/thumbs/canada/flag-3d-round-250.png" },
                             {
                                 label: "Africa",
                                 "items": [
@@ -52,27 +173,28 @@ function App() {
                                 ]
                             },
                         ]}
-                        /*highlight*/
                         cleareable
+                        /*highlight editable*/
                         scheme={Scheme.SUCCESS}
                         placeholder='Select a country'
                         optionMap={{
                             label: "{label} - {code}"
-                        }}
+                        }} editable
+                        onSearch={(v) => console.log(v)}
                         optionGroupTemplate={(option: any) => <span>{option?.label}</span>}
-                        popoverHeaderTemplate={() => <div style={{ fontWeight: "bold", margin: 0, padding: 10, background: "#f8f9fa", borderBottom:"1px solid #dee2e6" }}>
-                            <FormControl rightContent={"fa fa-search"}>
-                                <TextInput fill/>
+                        popoverHeaderTemplate={() => <div style={{ fontWeight: "bold", margin: 0, padding: 10, background: "#f8f9fa", borderBottom: "1px solid #dee2e6" }}>
+                            <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
+                                <TextInput fill />
                             </FormControl>
                         </div>}
                         //selectedOptionTemplate={(option: any) => (<div><i className={option?.c}/><span>{option?.label || "Hello"}</span></div>)}
                         popoverFooterTemplate={() => <div style={{ fontWeight: "bold", margin: 10 }}>Yahoo Footer</div>}
                         onSelectOption={(option: any, event: any) => setDropdownIsValid(true)}
-                        onDeSelectOption={(event: any) => setDropdownIsValid(false)}/>
+                        onDeSelectOption={(event: any) => setDropdownIsValid(false)} />
 
-                    </FormControl>
+                </FormControl>
             </div>
-            <div style={{ marginTop: 50 }}>
+            <div style={{ margin: 30 }}>
                 <Button text="Popover1" onClick={(e) => refs.current["popover1"].toggle(e/*, refs.current["portaldiv1"]*/)} />
                 <Popover selfRef={(e) => refs.current["popover1"] = e} matchTargetSize={false}
                     onOpenFocusRef={onOpenRef} onCloseFocusRef={onCloseRef} pointingArrowClassName={""}
@@ -90,7 +212,7 @@ function App() {
                 </Popover>
                 <TextInput ref={onCloseRef} scheme={Scheme.DANGER} fill /><br />
             </div>
-            <div style={{ marginTop: 50 }}>
+            <div style={{ margin: 30 }}>
                 <div ref={(e) => refs.current["portaldiv1"] = e} style={{ background: "red" }}></div>
                 <Portal visible={true}>
                     <span>Hello World</span>
@@ -99,7 +221,7 @@ function App() {
                     <span>Hello World on a custom container</span>
                 </Portal>
             </div>
-            <div style={{ marginTop: 50 }}>
+            <div style={{ margin: 30 }}>
                 <Paginator scheme={Scheme.DARK} totalRecords={123} template={{
                     layout: "PreviousPageElement ActivePageLabel NextPageElement"
                 }} leftContent={<Button className="fa fa-search" scheme={Scheme.PRIMARY} />}
@@ -122,7 +244,7 @@ function App() {
                         rightContent={<span key={'rk'}>{`${schemes[index]}`}</span>} />
                 ))}
             </div>
-            <div style={{ marginTop: 50 }}>
+            <div style={{ margin: 30 }}>
                 <FormControl label="Email" infoLabel="Enter the email you'd like to receive the newsletter on."
                     helpLabel="Email is required 1." labelFor="email-inp" invalid={!inputIsValid} required scheme={Scheme.SUCCESS}
                     leftContent="fas fa-shield-alt">
@@ -135,20 +257,37 @@ function App() {
                 </FormControl>
                 <br />
                 <br />
+                <FormControl scheme={Scheme.SUCCESS} contentStyle={{ border: "none", borderRadius: 0, display: "flex", flexDirection: "column" }} childrenInvalidPropsMap={{
+                    "highlight": true,
+                    "scheme": "{invalidScheme}"
+                }} childrenValidPropsMap={{ contentStyle: { borderColor: "rgba(217, 217, 217, 0.2)" } }}
+                    helpLabel={<div style={{ marginTop: 15, color: "red" }}>Incorrect login detail</div>} invalid={!inputIsValid} highlight>
+                    <FormControl required scheme={Scheme.SUCCESS} style={{ width: "100%", background: "rgba(217, 217, 217, 0.2)" }}
+                        contentStyle={{ borderRadius: 0 }} leftContent="fas fa-shield-alt">
+                        <TextInput id="email-inp" style={{ borderRadius: 0 }} placeholder='Email'
+                            onFirstInput={() => setInputIsValid(true)} noStyle />
+                    </FormControl>
+                    <FormControl scheme={Scheme.SUCCESS} style={{ marginTop: 20 }} contentStyle={{ borderRadius: 0, width: "100%", background: "rgba(217, 217, 217, 0.2)" }}
+                        leftContent="fas fa-key" rightContent={<i className="fas fa-eye" />} >
+                        <PasswordInput id="pass-inp" placeholder='Password'
+                            onFirstInput={() => setInputIsValid(true)} noStyle />
+                    </FormControl>
+                </FormControl>
+                <br />
                 <FormControl label="Password" infoLabel="Your password is secure"
-                    helpLabel="Password is required." labelFor="pass-inp" invalid required>
-                    <PasswordInput id="pass-inp" scheme={Scheme.PRIMARY} />
+                    helpLabel="Password is required." labelFor="pass-inp2" required>
+                    <PasswordInput id="pass-inp2" scheme={Scheme.PRIMARY} />
                 </FormControl>
                 <br />
                 <br />
                 <FormControl label="Terms and conditions" infoLabel="Check this box to sell your soul to us"
-                    helpLabel="You must check the box" labelFor="chk-inp" invalid>
+                    helpLabel="You must check the box" labelFor="chk-inp" invalid contentStyle={{ border: "none" }}>
                     <Checkbox id="chk-inp" scheme={Scheme.INFO} />
                 </FormControl>
             </div>
             <br />
             <br />
-            <div style={{ marginTop: 50 }}>
+            <div style={{ margin: 30 }}>
                 {Object.keys(Scheme).map((scheme, index) => (
                     <ProgressBar key={scheme} scheme={schemes[index]} id={schemes[index]} name={schemes[index]}
                         value={percent(index) as any} labeltemplate={(value: NoseurNummber) => `${scheme} ${value}%`} />
@@ -175,7 +314,7 @@ function App() {
                     <ProgressBar key={scheme} scheme={schemes[index]} value={progress.current} noLabel />
                 ))}
             </div>
-            <div style={{ marginTop: 50 }}>
+            <div style={{ margin: 30 }}>
                 <Checkbox />
                 {Object.keys(Scheme).map((scheme, index) => (
                     <Checkbox key={scheme} scheme={schemes[index]} id={schemes[index]} name={schemes[index]} label={schemes[index]}
@@ -239,7 +378,7 @@ function App() {
                 <Checkbox scheme={Scheme.PRIMARY} label={"Align Label RIGHT"} alignLabel={Alignment.RIGHT} />
                 <Checkbox scheme={Scheme.PRIMARY} label={"Align Label BOTTOM"} alignLabel={Alignment.BOTTOM} />
             </div>
-            <div style={{ marginTop: 50 }}>
+            <div style={{ margin: 30 }}>
                 {Object.keys(Scheme).map((scheme, index) => (
                     <TextInput key={scheme} scheme={schemes[index]} placeholder={scheme} style={{ margin: 10, fontSize: 15 }}
                         id={schemes[index]} name={schemes[index]} raised required />
@@ -259,7 +398,7 @@ function App() {
                 <TextInput scheme={Scheme.SUCCESS} style={{ margin: 10 }} defaultValue="012345678901" />
                 <TextInput scheme={Scheme.SUCCESS} style={{ margin: 10 }} placeholder="+234 (XXX) XXXX XXXX" mask="+234 (XXX) XXXX XXXX" maskSlot="X" />
             </div>
-            <div style={{ marginTop: 50 }}>
+            <div style={{ margin: 30 }}>
                 {Object.keys(Scheme).map((scheme, index) => (<Button key={scheme} onClick={() => console.log("Button.onClick", scheme)}
                     className='yahoo' style={{ margin: 10, fontSize: 15 }}
                     text={<span key="title" style={{ fontWeight: "bold" }}>{scheme}</span>}
@@ -303,6 +442,15 @@ function App() {
 
         </div>
     );
+
+    function basicText() {
+        return `
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut 
+            labore et dolore magna aliqua. Morbi tempus iaculis urna id. Ut ornare lectus 
+            sit amet est placerat in egestas. Sit amet mauris commodo quis imperdiet massa. 
+            Dictum sit amet justo donec enim diam vulputate ut pharetra.
+        `;
+    }
 
 }
 //https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input#input_types

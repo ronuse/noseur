@@ -7,19 +7,19 @@ type Argument = Value | Mapping | Argument[];
 export const Classname = {
 
     build(...args: Argument[]): string {
-        const classNames = args.reduce((acc: string[], arg: Argument): string[] => {
+        const classNames = args.reduce((acc: Set<string>, arg: Argument): Set<string> => {
             if (!arg) return acc;
             if (TypeChecker.isString(arg) && arg != "undefined") {
-                acc.push(arg.trim());
+                acc.add(arg.trim());
                 return acc;
             }
             const argObject = arg as Mapping;
             for (const key of Object.keys(arg)) {
-                if (argObject[key]) acc.push(key);
+                if (argObject[key]) acc.add(key);
             }
             return acc;
-        }, []);
-        return classNames.join(" ");
+        }, new Set<string>());
+        return Array.from(classNames.values()).join(" ");
     }
 
 }

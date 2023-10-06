@@ -24,7 +24,7 @@ export interface InputProps extends ComponentBaseProps<NoseurFormElement> {
     inputFilter: RegExp;
     placeholder: string;
     defaultValue: NoseurInputValue;
-    
+
     onInputEmpty: React.FormEventHandler<NoseurFormElement> | undefined;
     onFirstInput: React.FormEventHandler<NoseurFormElement> | undefined;
 };
@@ -119,10 +119,10 @@ class Input extends React.Component<InputProps, InputState> {
             (!this.props.noStyle && this.props.scheme) ? `${this.props.scheme}-bd-cl-fc ${this.props.scheme}-bd-cl-hv` : null,
             {
                 'noseur-wd-100-pct': this.props.fill,
+                'noseur-no-bd': this.props.borderless,
                 'noseur-input-flushed': this.props.flushed,
                 'noseur-skeleton': this.props.scheme === Scheme.SKELETON,
                 'noseur-raised-bd': !this.props.noStyle && this.props.raised,
-                'noseur-no-bd': !this.props.noStyle && this.props.borderless,
                 'noseur-disabled': !this.props.noStyle && this.props.disabled,
                 'noseur-rounded-bd': !this.props.noStyle && this.props.rounded,
                 'noseur-input-filled': !this.props.noStyle && this.props.filled,

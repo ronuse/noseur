@@ -14,7 +14,7 @@ export const TypeChecker = {
     
     isFunction(obj: any) {
         if (!obj) return false;
-		return (obj instanceof Function) || !!(obj && obj.constructor && obj.call && obj.apply);
+		return typeof obj == "function" && (obj instanceof Function) || !!(obj && obj.constructor && obj.call && obj.apply);
 	},
     
     isReactElement(obj: any) {

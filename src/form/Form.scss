@@ -21,6 +21,7 @@
 	display: inline-flex;
 	text-decoration: none;
 	vertical-align: bottom;
+	justify-content: center;
 	padding: 10px 15px 10px 15px;
 }
 
@@ -41,14 +42,11 @@ textarea {
 	padding: 0.7rem;
 	font-size: 15px;
 	border-radius: 6px;
+	background: transparent;
 	box-sizing: border-box;
 	border: 1px solid #dfdfdf;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
-}
-
-.noseur-input:focus {
-	background-color: initial;
 }
 
 .noseur-input-filled {
@@ -96,8 +94,8 @@ textarea {
 /* Dropdown */
 
 .noseur-dropdown { 
-	min-width: auto;
 	cursor: pointer;
+    min-width: 350px;
 }
 
 .noseur-dropdown > .noseur-fctrl-c > .noseur-fctrl-lc { 
@@ -106,8 +104,8 @@ textarea {
 
 .noseur-dropdown > .noseur-fctrl-c > .noseur-fctrl-lc > img {
 	width: auto;
-    margin: 9px;
 	height: 22px;
+    margin-left: 9px;
 }
 
 .noseur-dropdown-inputtext {
@@ -116,6 +114,8 @@ textarea {
 
 .noseur-dropdown-right-content {
 	margin: 0px;
+	margin-right: 5px;
+	align-self: flex-end;
 }
 
 .noseur-dropdown-right-content > * {
@@ -126,6 +126,7 @@ textarea {
 	min-width: 190px;
 	background-color: white;
 	border-radius: 0px 0px 3px 3px;
+	--componentMarginTopOrBottom: 3px;
 	box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%) !important;
 }
 

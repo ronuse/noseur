@@ -2,14 +2,12 @@
 import "../Composed.css";
 import React from "react";
 import { Scheme } from "../../constants/Scheme";
-import { DOMHelper } from "../../utils/DOMUtils"; 
 import { Classname } from "../../utils/Classname";
 import { TypeChecker } from "../../utils/TypeChecker";
 import { ObjectHelper } from "../../utils/ObjectHelper";
 import { MicroBuilder } from "../../utils/MicroBuilder";
 import { ComponentBaseProps } from "../../core/ComponentBaseProps";
-import { NoseurLabel, NoseurObject } from "../../constants/Types";
-import { BoolHelper } from "../../utils/BoolHelper";
+import { NoseurLabel, NoseurObject, NoseurElement } from "../../constants/Types";
 
 export interface FormControlProps extends ComponentBaseProps<HTMLDivElement> {
     invalid: boolean;
@@ -18,12 +16,17 @@ export interface FormControlProps extends ComponentBaseProps<HTMLDivElement> {
     leftContent: any;
     rightContent: any;
     required: boolean;
+    highlight: boolean;
     label: NoseurLabel;
+    borderless: boolean;
+    contentStyle: Object;
     invalidScheme: Scheme;
     infoLabel: NoseurLabel;
     helpLabel: NoseurLabel;
+    children?: NoseurElement;
     centerOverlayContent: any;
-    children: React.ReactElement;
+    childrenProps: NoseurObject<any>;
+    childrenValidPropsMap: NoseurObject<any>;
     childrenInvalidPropsMap: NoseurObject<any>;
 }
 
@@ -33,12 +36,15 @@ interface FormControlState {
 class FormControlComponent extends React.Component<FormControlProps, FormControlState> {
 
     public static defaultProps: Partial<FormControlProps> = {
-        tabIndex: -1,
+        tabIndex: 0,
         invalid: false,
         invalidScheme: Scheme.DANGER,
+        childrenValidPropsMap: {
+            "borderless": true,
+        },
         childrenInvalidPropsMap: {
             "highlight": true,
-            "borderless": false,
+            "borderless": true,
             "scheme": "{invalidScheme}"
         }
     }
@@ -46,54 +52,22 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
     state: FormControlState = {
     };
 
-    leftContentInternalElement: any;
-    rightContentInternalElement: any;
-    centerContentInternalElement: any;
-    centerOverlayContentInternalElement: any;
-
     constructor(props: FormControlProps) {
         super(props);
     }
 
-    componentDidMount() {
-        this.resolveRelativeness(this.leftContentInternalElement);
-        this.resolveRelativeness(this.rightContentInternalElement, "right");
-    }
-
-    componentDidUpdate(prevProps: any, _: any) {
-        if (this.props.leftContent && !BoolHelper.deepEqual(prevProps.leftContent, this.props.leftContent, ["id", "style", "className", "img", "key", "props", "type"])) {
-            this.resolveRelativeness(this.leftContentInternalElement);
-        }
-        if (!this.props.leftContent && prevProps.leftContent) this.centerContentInternalElement.style["paddingLeft"] = "11.2px";
-        if (this.props.rightContent && !BoolHelper.deepEqual(prevProps.rightContent, this.props.rightContent, ["id", "style", "className", "img", "key", "props", "type"])) {
-            this.resolveRelativeness(this.rightContentInternalElement, "right");
-        }
-        if (!this.props.rightContent && prevProps.rightContent) this.centerContentInternalElement.style["paddingRight"] = "11.2px";
-    }
-
-    resolveRelativeness(internalElement: any, side: any = "left") {
-        if (!internalElement) return;
-        const styleKey = side == "left" ? "paddingLeft" : "paddingRight";
-        const elementComputedStyle = window.getComputedStyle(internalElement, null);
-        const contentPadding = DOMHelper.sanitizeStyleValue(elementComputedStyle.width)
-            + DOMHelper.sanitizeStyleValue(elementComputedStyle[side]);
-        if (this.centerContentInternalElement) this.centerContentInternalElement.style[styleKey] = contentPadding + "px";
-        if (this.centerOverlayContentInternalElement) {
-            delete this.centerOverlayContentInternalElement.style["left"];
-            delete this.centerOverlayContentInternalElement.style["right"];
-            delete this.centerOverlayContentInternalElement.style["paddingLeft"];
-            delete this.centerOverlayContentInternalElement.style["paddingRight"];
-            this.centerOverlayContentInternalElement.style[styleKey] = contentPadding + "px";
-        }
-    }
-
-    mapInvalidProperties(childrenProps: NoseurObject<any>) {
-        Object.keys(this.props.childrenInvalidPropsMap || {}).forEach((prop: string) => {
-            let propValue = this.props.childrenInvalidPropsMap[prop];
+    mapComponentProperties(childrenProps: NoseurObject<any>, propsMap: NoseurObject<any>) {
+        Object.keys(propsMap || {}).forEach((prop: string) => {
+            let propValue = propsMap[prop];
             if (TypeChecker.isString(propValue) && propValue.startsWith("{") && propValue.endsWith("}")) {
-                propValue = (this.props as any)[(propValue as string).substring(1, propValue.length-1)];
+                propValue = (this.props as any)[(propValue as string).substring(1, propValue.length - 1)];
             }
-            childrenProps[prop] = propValue;
+            const previousValue = childrenProps[prop];
+            if (previousValue && !TypeChecker.isString(previousValue)) {
+                childrenProps[prop] = ObjectHelper.joinValues(previousValue, propValue);
+            } else {
+                childrenProps[prop] = propValue;
+            }
         })
     }
 
@@ -104,9 +78,9 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
         const scheme = !this.props.invalid ? this.props.scheme : this.props.invalidScheme;
         if (TypeChecker.isString(leftContent)) {
             if (scheme) className += ` ${scheme}-tx`;
-            leftContent = <i className={leftContent}/>;
+            leftContent = <i className={leftContent} />;
         }
-        return (<div ref={(r) => this.leftContentInternalElement = r} className={className}>{leftContent}</div>);
+        return (<div className={className}>{leftContent}</div>);
     }
 
     renderRightContent() {
@@ -116,9 +90,9 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
         const scheme = !this.props.invalid ? this.props.scheme : this.props.invalidScheme;
         if (TypeChecker.isString(rightContent)) {
             if (scheme) className += ` ${scheme}-tx`;
-            rightContent = <i className={rightContent}/>;
+            rightContent = <i className={rightContent} />;
         }
-        return (<div ref={(r) => this.rightContentInternalElement = r} className={className}>{rightContent}</div>);
+        return (<div className={className}>{rightContent}</div>);
     }
 
     renderCenterOverlayContent() {
@@ -128,47 +102,56 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
         const scheme = !this.props.invalid ? this.props.scheme : this.props.invalidScheme;
         if (TypeChecker.isString(centerOverlayContent)) {
             if (scheme) className += ` ${scheme}-tx`;
-            centerOverlayContent = <i className={centerOverlayContent}/>;
+            centerOverlayContent = <i className={centerOverlayContent} />;
         }
-        return (<div ref={(r) => this.centerOverlayContentInternalElement = r} className={className}>{centerOverlayContent}</div>);
+        return (<div className={className}>{centerOverlayContent}</div>);
+    }
+
+    renderChildren() {
+        const children = [].concat(this.props.children as any);
+        return children.map((child: any, index: number) => {
+            if (!child) return child;
+            const childrenOwnScheme = child.props?.scheme;
+            const childrenProps: NoseurObject<any> = { ...(this.props.childrenProps || {}),  ...(child.props || {}) };
+            if (this.props.required) childrenProps.required = true;
+            if (!childrenOwnScheme) childrenProps.scheme = this.props.scheme;
+            childrenProps.className = Classname.build("noseur-fctrl-cc", childrenProps.className);
+            if (!childrenProps.key) childrenProps.key = index;
+            this.mapComponentProperties(childrenProps, (!this.props.invalid ? this.props.childrenValidPropsMap : this.props.childrenInvalidPropsMap));
+            return React.cloneElement(child, childrenProps);
+        });
     }
 
     render() {
         const leftContent = this.renderLeftContent();
         const rightContent = this.renderRightContent();
         const centerOverlayContent = this.renderCenterOverlayContent();
+        const scheme = this.props.invalid ? this.props.invalidScheme : this.props.scheme;
         const helpLabelClassName = this.props.invalid && !this.props.scheme ? "noseur-fctrl-hl noseur-invalid-tx" : "noseur-fctrl-hl";
         const infoLabel = !this.props.invalid ? MicroBuilder.buildLabel(this.props.infoLabel, { scheme: this.props.scheme, className: "noseur-fctrl-il" }) : null;
         const helpLabel = this.props.invalid ? MicroBuilder.buildLabel(this.props.helpLabel, { scheme: this.props.scheme, className: helpLabelClassName }) : null;
         const label = MicroBuilder.buildLabel(this.props.label, { scheme: this.props.scheme, type: "label", htmlFor: this.props.labelFor, className: "noseur-fctrl-l" });
-        const childrenOwnScheme = this.props.children.props?.scheme;
         const eventProps = ObjectHelper.extractEventProps(this.props);
-        const cachedChildrenRef: any = (this.props.children as any)?.ref;
         const props: NoseurObject<any> = {
             ...eventProps,
+            id: this.props.id,
             key: this.props.key,
             style: this.props.style,
-            tabIndex: this.props.tabIndex,
             required: this.props.required,
             className: Classname.build("noseur-fctrl", this.props.className),
         };
         delete props.children;
-        const childrenProps: NoseurObject<any> = {};
-        if (this.props.required) childrenProps.required = true;
-        if (!childrenOwnScheme) childrenProps.scheme = this.props.scheme;
-        if (this.props.invalid) this.mapInvalidProperties(childrenProps);
-        childrenProps.ref = (r: any) => {
-            this.centerContentInternalElement = r;
-            if (cachedChildrenRef) {
-                if (TypeChecker.isFunction(cachedChildrenRef)) cachedChildrenRef(r);
-                else cachedChildrenRef.current = r;
-            }
-        };
-        const children = Object.keys(childrenProps).length ? React.cloneElement(this.props.children, childrenProps) : this.props.children;
+        const className = Classname.build("noseur-fctrl-c", {
+                'noseur-no-bd': this.props.borderless,
+            },
+            (scheme && this.props.highlight) ? `${scheme}-bd-cl` : null,
+            this.props.invalid ? `${this.props.invalidScheme}-bd-cl` : null,
+            (scheme) ? `${scheme}-bd-3px-bx-sw-fc ${scheme}-bd-cl-fc ${scheme}-bd-cl-hv` : null);
+        const children = this.renderChildren();
 
         return (<div ref={this.props.forwardRef as React.ForwardedRef<HTMLDivElement>} {...props}>
             {label}
-            <div className="noseur-fctrl-c">
+            <div className={className} tabIndex={this.props.tabIndex} style={this.props.contentStyle}>
                 {leftContent}
                 {children}
                 {centerOverlayContent}

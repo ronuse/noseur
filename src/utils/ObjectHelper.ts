@@ -1,5 +1,6 @@
 
 import { NoseurObject } from "../constants/Types";
+import { TypeChecker } from "./TypeChecker";
 
 export const ObjectHelper = {
 
@@ -114,5 +115,28 @@ export const ObjectHelper = {
 		}
 	  	return value;
 	},
+
+    joinValues(...values: any[]) {
+        if (!values.length) return;
+        if (TypeChecker.isObject(values[0])) {
+            return values.reduce((acc: any, value: any) => {
+                if (value) Object.keys(value).forEach((key: string) => acc[key] = value[key]);
+                return acc;
+            }, {});
+        }
+        if (TypeChecker.isArray(values[0])) {
+            return values.reduce((acc: any, value: any) => {
+                if (!value) return acc;
+                return acc.concat(value);
+            }, []);
+        }
+        if (TypeChecker.isString(values[0]) || TypeChecker.isNumber(values[0])) {
+            return values.reduce((acc: any, value: any) => {
+                if (!value) return acc;
+                return acc + value;
+            }, "");
+        }
+        return values;
+    }
 
 }

@@ -1,0 +1,131 @@
+/* Table */
+
+.noseur-column {
+    display: flex;
+    align-items: center;
+}
+
+.noseur-column > .noseur-column-sort-icon {
+    margin-left: 7px;
+}
+
+.noseur-column-sort {
+    cursor: pointer;
+}
+
+/* Table */
+
+.noseur-table-compound {
+    overflow: auto;
+    --tableStripColor: #f9f9f9;
+    --tableBorderColor: rgb(222, 226, 230);
+    --tableFixtureBackgroundColor: #f6f6f6;
+}
+
+.noseur-table-header,
+.noseur-table-footer,
+.noseur-table-compound>.noseur-table-empty-state {
+    padding: 15px;
+}
+
+.noseur-table-header {
+    border-top: 1px solid var(--tableBorderColor, rgb(222, 226, 230));
+    border-bottom: 1px solid var(--tableBorderColor, rgb(222, 226, 230));
+}
+
+.noseur-table-footer {
+    border-top: 1px solid var(--tableBorderColor, rgb(222, 226, 230));
+    border-bottom: 1px solid var(--tableBorderColor, rgb(222, 226, 230));
+}
+
+.noseur-table-compound.noseur-table-grid>.noseur-table,
+.noseur-table-compound.noseur-table-grid>.noseur-table-header,
+.noseur-table-compound.noseur-table-grid>.noseur-table-footer {
+    border-left: 1px solid var(--tableBorderColor, rgb(222, 226, 230));
+    border-right: 1px solid var(--tableBorderColor, rgb(222, 226, 230));
+}
+
+.noseur-table {
+    width: 100%;
+    border-spacing: 0px;
+}
+
+.noseur-table.noseur-table-grid-h {
+    border-top: 1px solid var(--tableBorderColor, rgb(222, 226, 230));
+}
+
+.noseur-table.noseur-table-grid-f,
+.noseur-table-compound.noseur-table-grid>.noseur-paginator.noseur-table-grid-f {
+    border-bottom: 1px solid var(--tableBorderColor, rgb(222, 226, 230));
+}
+
+.noseur-table-header,
+.noseur-table-footer,
+.noseur-table>.noseur-thead,
+.noseur-table>.noseur-tfoot {
+    background-color: var(--tableFixtureBackgroundColor, #f6f6f6);
+}
+
+.noseur-table>.noseur-thead>tr>th,
+.noseur-table>.noseur-tbody>tr>td,
+.noseur-table>.noseur-tfoot>tr>th {
+    padding: 15px;
+    border-style: solid;
+    border-width: 0px 0px 1px;
+    border-color: var(--tableBorderColor, rgb(222, 226, 230));
+}
+
+.noseur-table>.noseur-tfoot>tr>th {
+    border-width: 0px;
+}
+
+.noseur-table.noseur-table-striped>.noseur-tbody>tr:nth-child(even) {
+    background-color: var(--tableStripColor, #f9f9f9);
+}
+
+.noseur-table-compound.noseur-table-grid>.noseur-table>.noseur-thead>tr>th,
+.noseur-table-compound.noseur-table-grid>.noseur-table>.noseur-tbody>tr>td,
+.noseur-table-compound.noseur-table-grid>.noseur-table>.noseur-tfoot>tr>th {
+    border-right-width: 1px;
+}
+
+.noseur-table-compound.noseur-table-grid>.noseur-table>.noseur-thead>tr>th:last-child,
+.noseur-table-compound.noseur-table-grid>.noseur-table>.noseur-tbody>tr>td:last-child,
+.noseur-table-compound.noseur-table-grid>.noseur-table>.noseur-tfoot>tr>th:last-child {
+    border-right-width: 0px;
+}
+
+
+.noseur-table-compound.noseur-table-grid>.noseur-table>.noseur-tfoot>tr>th {
+    border-bottom-width: 0px;
+}
+
+.noseur-column-body,
+.noseur-column-header,
+.noseur-column-footer {
+    display: flex;
+}
+
+.noseur-table-compound>.noseur-table-empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.noseur-table-compound.noseur-table-grid>.noseur-table-empty-state {
+    border: 1px solid var(--tableBorderColor, rgb(222, 226, 230));
+    border-top: none;
+}
+
+.noseur-table-compound>.noseur-paginator {
+    padding: 15px;
+}
+
+.noseur-table-compound>.noseur-paginator {
+    border-bottom: 1px solid var(--tableBorderColor, rgb(222, 226, 230));
+}
+
+.noseur-table-compound.noseur-table-grid>.noseur-paginator {
+    border: 1px solid var(--tableBorderColor, rgb(222, 226, 230));
+    border-bottom: none;
+}

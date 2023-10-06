@@ -1,8 +1,13 @@
 import { NoseurObject } from "../constants/Types";
 
+let uniqueElementIdsCount = 0;;
 let __noseurGlobal__Browser: NoseurObject<any>;
 
 export const DOMHelper = {
+
+	uniqueElementId() {
+		return 'noseur-auto-id-' + (uniqueElementIdsCount++)
+	},
 
 	getBrowser() {
 		if (!__noseurGlobal__Browser) {

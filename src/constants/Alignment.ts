@@ -13,3 +13,5 @@ export enum Alignment {
 	BOTTOM_RIGHT = 'bottom-right',
 	BOTTOM_CENTER = 'bottom-center'
 }
+
+export const Position = Alignment;
