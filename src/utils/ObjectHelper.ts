@@ -91,6 +91,16 @@ export const ObjectHelper = {
         }
     },
 
+    resolveRef<T>(ref: React.ForwardedRef<T>, value: T) {
+        if (!value || !ref) return;
+
+        if (ref instanceof Function) {
+            ref(value);
+        } else {
+            ref.current = value;
+        }
+    },
+
     expandStringTemplate(unprocessed: string, valueMap: NoseurObject<any>) {
 		let value = "";
 		let teamplateValue = "";

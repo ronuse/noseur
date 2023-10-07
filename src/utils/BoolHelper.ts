@@ -61,8 +61,8 @@ export const BoolHelper = {
 	},
 
     deepEqual(value1: any, value2: any, keys: any[] | undefined = undefined, recurse = false, processedKeys: any[] = []) {
-        if (BoolHelper.allEquals(TypeChecker.isDict, value1, value2) && BoolHelper.objectDeepEquals(value1, value2, keys, recurse, processedKeys)) return true;
-        if (BoolHelper.allEquals(TypeChecker.isArray, value1, value2) && BoolHelper.arrayDeepEquals(value1, value2, keys, recurse, processedKeys)) return true;
+        if (BoolHelper.allEquals(TypeChecker.isDict, value1, value2)) return BoolHelper.objectDeepEquals(value1, value2, keys, recurse, processedKeys);
+        if (BoolHelper.allEquals(TypeChecker.isArray, value1, value2)) return BoolHelper.arrayDeepEquals(value1, value2, keys, recurse, processedKeys);
         return value1 === value2;
     },
 
@@ -73,7 +73,7 @@ export const BoolHelper = {
         for (let index = 0; index < arr1.length; index++) {
             const arr1Value: any = arr1[index];
             const arr2Value: any = arr2[index];
-            if (BoolHelper.deepEqual(arr1Value, arr2Value, keys, recurse, processedKeys)) return false;
+            if (!BoolHelper.deepEqual(arr1Value, arr2Value, keys, recurse, processedKeys)) return false;
         }
         return true;
     },

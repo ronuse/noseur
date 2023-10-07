@@ -228,20 +228,24 @@ span.noseur-skeleton {
 
 /* End The loading Class */
 
+@function toRgba($color, $a: 1) {
+    @return "rgba(" + red($color) + ", " + green($color) + ", " + blue($color)+ "," $a + ")";
+}
+
 /* Scheme */
 
 $schemes: (
-	info: (#8950FC, white),
-	dark: (#000000, white),
-	light: (#FFFFFF, black),
-	retro: (#49f560, black),
-	danger: (#F64E60, white),
-	warning: (#FFA800, white),
-	primary: (#3699ff, white),
-	success: (#1BC5BD, white),
-	dracula: (#282a36, #f8f8f2),
-	secondary: (#E4E6EF, #3F4254),
-	retro-reverse: (black, #49f560),
+	info: (#8950FC, white, #e5dee6),
+	dark: (#000000, white, #dee2e6),
+	light: (#FFFFFF, black, #dee2e6),
+	retro: (#49f560, black, #dee2e6),
+	danger: (#F64E60, white, #e6dede),
+	warning: (#FFA800, white, #e6e4de),
+	primary: (#3699ff, white, #dee4e6),
+	success: (#1BC5BD, white, #dee6df),
+	dracula: (#282a36, #f8f8f2, #dee2e6),
+	secondary: (#E4E6EF, #3F4254, #dee2e6),
+	retro-reverse: (black, #49f560, #dee2e6),
 );
 
 @mixin noseur-scheme-tx($main: #293742) {
@@ -279,6 +283,13 @@ $schemes: (
 	background-color: rgba($accent, 0.7);
 }
 
+@mixin noseur-scheme-vars($main: #f5f8fa, $accent: #293742, $secondary-accent: #e5dee6) {
+	--tableFixtureColor: #{$accent};
+	--tableFixtureBackgroundColor: #{$main};
+	--tableBorderColor: #{$secondary-accent};
+	--tableStripColor: #{toRgba($main, 0.07)};
+}
+
 .noseur-stateless {
 	@include noseur-scheme;
 	border-color: #a7b6c2;
@@ -289,16 +300,23 @@ $palette in $schemes {
 
 	$main: nth($palette, 1);
 	$accent: nth($palette, 2);
+	$secondary-accent: nth($palette, 3);
 
 	.noseur-#{$name} {
 		@include noseur-scheme($main, $accent);
 	}
 
+	.noseur-#{$name}-vars {
+		@include noseur-scheme-vars($main, $accent, $secondary-accent);
+	}
+
 	.noseur-#{$name}-tx,
 	.noseur-#{$name}-tx-hv:hover {
-		@if $name == "secondary" {
+		@if $name =="secondary" {
 			@include noseur-scheme-tx($accent);
-		} @else {
+		}
+
+		@else {
 			@include noseur-scheme-tx($main);
 		}
 	}
@@ -322,11 +340,11 @@ $palette in $schemes {
 		@include noseur-scheme-bd-rd($main);
 	}
 
-	.noseur-#{$name} > .noseur-rp {
+	.noseur-#{$name}>.noseur-rp {
 		@include noseur-scheme-rp($accent);
 	}
 
-	.noseur-#{$name}-rp > .noseur-rp {
+	.noseur-#{$name}-rp>.noseur-rp {
 		@include noseur-scheme-rp($main);
 	}
 

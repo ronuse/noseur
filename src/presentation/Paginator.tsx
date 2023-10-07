@@ -102,7 +102,7 @@ function buildTemplate(_: PaginatorState, props: PaginatorProps): PaginatorTempl
             const key = (option.label || (option.className || direction));
             const outlined = !option.active && option.scheme != Scheme.SKELETON;
             return (<Button key={key} text={option.label} scheme={option.scheme} disabled={option.disabled}
-                className={`${option.className} ${direction}`} style={{ marginLeft: 10 }}
+                className={Classname.build(option.className, direction)} style={{ marginLeft: 10 }}
                 onClick={option.onClick} outlined={outlined} iconOnly fillOnHover borderless />);
         };
     }

@@ -5,6 +5,7 @@ import { Scheme } from "../constants/Scheme";
 import { Classname } from "../utils/Classname";
 import { TypeChecker } from "../utils/TypeChecker";
 import { MicroBuilder } from "../utils/MicroBuilder";
+import { ObjectHelper } from "../utils/ObjectHelper";
 import { NoseurElement, NoseurObject, SortDirection, SortIcons } from '../constants/Types';
 import { ComponentBaseProps, extractMicroComponentBaseProps } from '../core/ComponentBaseProps';
 
@@ -49,7 +50,18 @@ export class ColumnComponent extends React.Component<ColumnProps, ColumnState> {
     constructor(props: ColumnProps) {
         super(props);
 
+        this.unSort = this.unSort.bind(this);
         this.onClick = this.onClick.bind(this);
+    }
+
+	componentDidMount() {
+        ObjectHelper.resolveSelfRef(this, {
+            unSort: this.unSort,
+        });
+	}
+
+    unSort() {
+        this.setState({ sortDirection: SortDirection.NONE });
     }
 
     onClick(_: any) {
@@ -85,7 +97,7 @@ export class ColumnComponent extends React.Component<ColumnProps, ColumnState> {
         const cachedOnClick = props.onClick;
         props.className = Classname.build(props.className, {
             "noseur-column-sort": this.props.sortable
-        });
+        }, (this.props.scheme ? `${this.props.scheme}-bd-3px-bx-sw-ac ${this.props.scheme}-bd-3px-bx-sw-fc` : null));
         if (this.props.sortable) {
             props.tabIndex = 0;
             props.onClick = (e: any) => {

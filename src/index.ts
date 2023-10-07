@@ -45,6 +45,12 @@ export {
 
 // presentation
 export {
+    Chart,
+    ChartData,
+    ChartType,
+    ChartProps,
+} from "./presentation/Chart";
+export {
     Paginator,
     PaginatorProps,
     PaginatorDirection,

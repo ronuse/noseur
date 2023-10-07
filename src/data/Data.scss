@@ -63,6 +63,7 @@
 .noseur-table-footer,
 .noseur-table>.noseur-thead,
 .noseur-table>.noseur-tfoot {
+    color: var(--tableFixtureColor);
     background-color: var(--tableFixtureBackgroundColor, #f6f6f6);
 }
 
@@ -128,4 +129,16 @@
 .noseur-table-compound.noseur-table-grid>.noseur-paginator {
     border: 1px solid var(--tableBorderColor, rgb(222, 226, 230));
     border-bottom: none;
+}
+
+
+.noseur-table-compound.noseur-table-no-divider>.noseur-table-header {
+    border-top-width: 0px;
+}
+
+.noseur-table-compound.noseur-table-no-divider>.noseur-paginator,
+.noseur-table-compound.noseur-table-no-divider>.noseur-table>.noseur-thead>tr>th,
+.noseur-table-compound.noseur-table-no-divider>.noseur-table>.noseur-tfoot>tr>th,
+.noseur-table-compound.noseur-table-no-divider>.noseur-table>.noseur-tbody>tr>td {
+    border-bottom-width: 0px;
 }

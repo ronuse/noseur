@@ -32,6 +32,7 @@ export interface RowProps {
 export interface TableProps extends ComponentBaseProps<HTMLTableElement> {
     sortField: string;
     paginate: boolean;
+    noDivider: boolean;
     sortMode: SortMode;
     rowProps: RowProps;
     scrollable: boolean;
@@ -90,17 +91,36 @@ class TableComponent extends React.Component<TableProps, TableState> {
         activeData: this.props.data,
     };
 
+
+    usedDataKeys: string[] = [];
+    columnSelfRefs: NoseurObject<any> = {};
+
     constructor(props: TableProps) {
         super(props);
 
         this.onSort = this.onSort.bind(this);
     }
 
+    componentDidUpdate(prevProps: Readonly<TableProps>, _: Readonly<TableState>) {
+        if (!BoolHelper.deepEqual(prevProps.data, this.props.data, this.usedDataKeys)) {
+            this.setState({ activeData: this.props.data });
+            Object.keys(this.columnSelfRefs).forEach((dk: string) => {
+                this.columnSelfRefs[dk]!.unSort();
+            });
+        }
+    }
+
     onSort(sortDirection: SortDirection, dataKey: string) {
         if (!dataKey) return;
         let data = ((this.props.sortMode == SortMode.MULTIPLE || this.state.lastSortColumn == dataKey) ? this.state.activeData : this.props.data).map(a => {return {...a}});
+        if (this.props.sortMode != SortMode.MULTIPLE) {
+            Object.keys(this.columnSelfRefs).forEach((dk: string) => {
+                if (dk == dataKey) return;
+                this.columnSelfRefs[dk]!.unSort();
+            });
+        }
         if (sortDirection == SortDirection.NONE) {
-            this.setState({ activeData: (this.props.sortMode == SortMode.MULTIPLE ? data : this.props.data).map((v: NoseurObject<any>, index: number) => {
+            this.setState({ activeData: this.props.data.map((v: NoseurObject<any>, index: number) => {
                 v[dataKey] = this.props.data[index][dataKey];
                 return v;
             }), lastSortColumn: dataKey });
@@ -131,6 +151,7 @@ class TableComponent extends React.Component<TableProps, TableState> {
             const columns = this.props.children.map((child: React.ReactElement<ColumnProps>, sindex: number) => {
                 return React.createElement(ColumnComponent, {
                     ...(child.props),
+                    sortable: false,
                     key: (child.props.key || sindex),
                     value: (child.props.dataKey ? data[child.props.dataKey] : data),
                 });
@@ -145,18 +166,32 @@ class TableComponent extends React.Component<TableProps, TableState> {
 
     renderTableHeader() {
         const columns = this.props.children.map((child: React.ReactElement<ColumnProps>, index: number) => {
-
             const cachedOnSort = child.props.onSort;
             const onSort = (sortDirection: SortDirection) => {
                 if (cachedOnSort) cachedOnSort(sortDirection);
                 this.onSort(sortDirection, child.props.dataKey);
             };
+            if (child.props.dataKey && !this.usedDataKeys.includes(child.props.dataKey)) this.usedDataKeys.push(child.props.dataKey);
+            let columnSelfRef: React.ForwardedRef<any>;
+            if (child.props.sortable && this.props.sortMode !+ SortMode.MULTIPLE) {
+                const cachedSelfRef = child.props.selfRef;
+                columnSelfRef = (r: any) => {
+                    if (cachedSelfRef) {
+                        if (typeof cachedSelfRef == "function") cachedSelfRef(r);
+                        else cachedSelfRef.current = r;
+                    }
+                    this.columnSelfRefs[child.props.dataKey] = r;
+                }
+            } else {
+                columnSelfRef = child.props.selfRef;
+            }
             return React.createElement(ColumnComponent, {
                 ...(child.props),
                 element: "th",
                 onSort: onSort,
                 template: undefined,
                 group: "column-header",
+                selfRef: columnSelfRef!,
                 key: (child.props.key || index),
                 valueClassName: "noseur-column-header",
                 sortIcons: (this.props.sortIcons || child.props.sortIcons),
@@ -230,6 +265,7 @@ class TableComponent extends React.Component<TableProps, TableState> {
             ...(this.props.paginatorProps || {}),
             rowsPerPage: this.props.rowsPerPage,
             template: this.props.paginatorTemplate,
+            scheme: this.props.paginatorProps?.scheme || this.props.scheme,
             totalRecords: this.props.totalRecords || this.props.data?.length,
         };
         const cachedOnPageChange = props.onPageChange;
@@ -256,7 +292,8 @@ class TableComponent extends React.Component<TableProps, TableState> {
         const footer = this.renderTableFixtures(this.props.footer, "noseur-table-footer");
         const className = Classname.build('noseur-table-compound', {
             "noseur-table-grid": this.props.showGridlines,
-        }, this.props.className);
+            "noseur-table-no-divider": this.props.noDivider && !this.props.showGridlines,
+        }, this.props.className, (this.props.scheme ? `${this.props.scheme}-vars` : null));
         const paginator = this.renderPaginator(!!footer);
         const table = this.renderTable(!!header, !!footer);
 

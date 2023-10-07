@@ -1,11 +1,11 @@
 import React from 'react';
 import {
-    Button, Dialog,
+    Button, Dialog, ChartData,
     TextInput, Dropdown, Scheme,
     MoneyInput, EmailInput, PasswordInput,
     TextAreaInput, NumberInput, NoseurObject,
     Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator,
-    Popover, Portal, Table, Column, PaginatorPageChangeOption
+    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType
 } from "@ronuse/noseur";
 
 function App() {
@@ -14,6 +14,7 @@ function App() {
     const onOpenRef = React.useRef<any>();
     const onCloseRef = React.useRef<any>();
     const [state, setState] = React.useState(false);
+    const [charty, setCharty] = React.useState<any>(ChartType.NONE);
     const [showDialog, setShowDialog] = React.useState<boolean>(false);
     const [inputIsValid, setInputIsValid] = React.useState<boolean>(false);
     const [dropdownIsValid, setDropdownIsValid] = React.useState<boolean>(false);
@@ -21,6 +22,212 @@ function App() {
     const refs = React.useRef<NoseurObject<any>>({ "input1": { current: undefined } });
     const [dialogAlignment, setDialogAlignment] = React.useState<Alignment>(Alignment.CENTER);
     const [dynamicDataTable, setDynamicDataTable] = React.useState<number[]>(Array(5).fill(0));
+    const chartyMap: NoseurObject<any> = {
+        "bar": {
+            data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+                datasets: [{
+                    label: 'My First Dataset',
+                    data: [65, 59, 80, 81, 56, 55, 40],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 205, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(201, 203, 207, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(255, 159, 64)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)',
+                        'rgb(153, 102, 255)',
+                        'rgb(201, 203, 207)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        },
+        "pie": {
+            data: {
+                labels: [
+                    'Red',
+                    'Blue',
+                    'Yellow'
+                ],
+                datasets: [{
+                    label: 'My First Dataset',
+                    data: [300, 50, 100],
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)'
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {},
+        },
+        "line": {
+            data: {
+                labels: [
+                    'Red',
+                    'Blue',
+                    'Yellow'
+                ],
+                datasets: [{
+                    label: 'My First Dataset',
+                    data: [300, 50, 100],
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)'
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {}
+        },
+        "radar": {
+            data: {
+                labels: [
+                    'Eating',
+                    'Drinking',
+                    'Sleeping',
+                    'Designing',
+                    'Coding',
+                    'Cycling',
+                    'Running'
+                ],
+                datasets: [{
+                    label: 'My First Dataset',
+                    data: [65, 59, 90, 81, 56, 55, 40],
+                    fill: true,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    pointBackgroundColor: 'rgb(255, 99, 132)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(255, 99, 132)'
+                }, {
+                    label: 'My Second Dataset',
+                    data: [28, 48, 40, 19, 96, 27, 100],
+                    fill: true,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    pointBackgroundColor: 'rgb(54, 162, 235)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(54, 162, 235)'
+                }]
+            },
+            options: {},
+        },
+        "bubble": {
+            data: {
+                datasets: [{
+                    label: 'First Dataset',
+                    data: [{
+                        x: 20,
+                        y: 30,
+                        r: 15
+                    }, {
+                        x: 40,
+                        y: 10,
+                        r: 10
+                    }],
+                    backgroundColor: 'rgb(255, 99, 132)'
+                }]
+            },
+            options: {},
+        },
+        "scatter": {
+            data: {
+                datasets: [{
+                    label: 'Scatter Dataset',
+                    data: [{
+                        x: -10,
+                        y: 0
+                    }, {
+                        x: 0,
+                        y: 10
+                    }, {
+                        x: 10,
+                        y: 5
+                    }, {
+                        x: 0.5,
+                        y: 5.5
+                    }],
+                    backgroundColor: 'rgb(255, 99, 132)'
+                }],
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom'
+                    }
+                }
+            },
+        },
+        "doughnut": {
+            data: {
+                labels: [
+                    'Red',
+                    'Blue',
+                    'Yellow'
+                ],
+                datasets: [{
+                    label: 'My First Dataset',
+                    data: [300, 50, 100],
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)'
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {},
+        },
+        "polarArea": {
+            data: {
+                labels: [
+                    'Red',
+                    'Green',
+                    'Yellow',
+                    'Grey',
+                    'Blue'
+                ],
+                datasets: [{
+                    label: 'My First Dataset',
+                    data: [11, 16, 7, 3, 14],
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(75, 192, 192)',
+                        'rgb(255, 205, 86)',
+                        'rgb(201, 203, 207)',
+                        'rgb(54, 162, 235)'
+                    ]
+                }]
+            },
+            options: {},
+        },
+        "none": {
+            data: {},
+            options: {},
+        },
+    };
 
     const percent = (index: number): number => (index * 100) / schemes.length + 2;
 
@@ -62,20 +269,26 @@ function App() {
     return (
         <div className="Apps" style={{ background: "white" }}>
             <div style={{ margin: 30 }}>
-                <Table paginate scheme={Scheme.PRIMARY} stripedRows={false} showGridlines={false} hideHeaders={false}
+                <Dropdown options={Object.keys(chartyMap).map((value) => ({ label: value, value }))}
+                    onSelectOption={(option) => setCharty(option.value)} selectedOptionIndex={0} />
+                <br />
+                <Chart style={{ width: 700 }} type={charty} data={chartyMap[charty].data} options={chartyMap[charty].options} />
+            </div>
+            <div style={{ margin: 30 }}>
+                <Table paginate scheme={Scheme.SECONDARY} stripedRows={false} showGridlines={false} hideHeaders={false}
                     header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
                         <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
                             <TextInput fill />
                         </FormControl>
-                    </div>)} rowsPerPage={5} totalRecords={300} 
+                    </div>)} rowsPerPage={5} totalRecords={300}
                     paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }}
                     data={dynamicDataTable.map((o, i) => ({ name: "Platform " + (i + o + 1), service_code: "svc_" + (i + o + 1), logo: "fa fa-" + Math.min(9, i + o + 1), }))}
                     onPageChange={(e: PaginatorPageChangeOption) => {
-                        setDynamicDataTable(Array(5).fill(e.currentPage - 1));
+                        setDynamicDataTable(Array(5).fill((e.currentPage - 1) * 5));
                     }}>
                     <Column sortable style={{ width: '25%' }} header={() => "Icon"} template={(v: any) => <i className={v.logo} />} />
                     <Column sortable style={{ width: '25%' }} header="Name" dataKey="name" />
-                    <Column sortable style={{ width: '25%' }} header="Service Code" dataKey="service_code" canUnsort/>
+                    <Column sortable style={{ width: '25%' }} header="Service Code" dataKey="service_code" canUnsort />
                 </Table>
                 <Table paginate scheme={Scheme.PRIMARY} stripedRows showGridlines={true} hideHeaders={false}
                     header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
@@ -89,16 +302,12 @@ function App() {
                     <Column header="Name" dataKey="name" />
                     <Column header="Service Code" dataKey="service_code" />
                 </Table>
-                <Table paginate scheme={Scheme.PRIMARY} data={tableData} stripedRows showGridlines={true} hideHeaders={false}
-                    header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
-                        <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
-                            <TextInput fill />
-                        </FormControl>
-                    </div>)} style={{ marginTop: 20 }}
+                <Table paginate scheme={Scheme.DANGER} data={tableData} stripedRows showGridlines={false} hideHeaders={false}
+                    sortMode={SortMode.MULTIPLE} style={{ marginTop: 20 }} noDivider
                     paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }}>
                     <Column template={(logo: any) => <i className={logo} />} dataKey="logo" />
-                    <Column canUnsort sortable header="Name" footer="Number 20" dataKey="name" />
-                    <Column canUnsort sortable header="Service Code" footer="Number 30" dataKey="service_code" />
+                    <Column canUnsort sortable header="Name" dataKey="name" />
+                    <Column canUnsort sortable header="Service Code" dataKey="service_code" />
                 </Table>
                 <Table data={[]} stripedRows showGridlines={true} hideHeaders={false} style={{ marginTop: 20 }}
                     emptyState={(<div>No data</div>)}>
