@@ -107,7 +107,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
     }
 
 	showPopover(event: Event, target: HTMLElement) {
-		this.target = target || event.currentTarget || event.target;
+		this.target = target || event.target || event.currentTarget;
 		if (this.state.visible) {
 			this.resolvePopoverStyle();
 			return;
@@ -122,7 +122,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
     isNotToggleElement(event: Event) {
         const target = this.target;
         const eventTarget = (event.target) as Node;
-		return target && target != eventTarget && !(target.isSameNode(eventTarget) || target.contains(eventTarget)) ;
+		return target && target != eventTarget && target.isSameNode && !(target.isSameNode(eventTarget) || target.contains(eventTarget)) ;
 	}
 
 	isOutsideClicked(target: any) {
@@ -196,7 +196,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
     }
 
 	resolvePopoverStyle() {
-		if (!this.target) return;
+		if (!this.target || !this.target.getBoundingClientRect) return;
 		if (this.props.matchTargetSize) {
 			DOMHelper.matchStyles(this.target, [ this.internalElement ], [ "width" ], this.matchTargetSizeCb);
 		}

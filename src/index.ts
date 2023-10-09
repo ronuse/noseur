@@ -18,16 +18,24 @@ export {
     ComposedPasswordToggleIcons,
     ComposedPasswordEventHandler,
     ComposedPasswordStrengthHandler,
-} from "./compose/form/ComposedPassword"
-// compose
+} from "./compose/form/ComposedPassword";
 export {
     FormGroup,
     FormGroupProps,
-} from "./compose/form/FormGroup"
+} from "./compose/form/FormGroup";
 export {
     FormControl,
     FormControlProps,
-} from "./compose/form/FormControl"
+} from "./compose/form/FormControl";
+export {
+    AlertEvent,
+    AlertProps,
+    AlertDialog,
+    alertDialog,
+    AlertPopover,
+    AlertControl,
+    alertPopover,
+} from "./compose/overlay/Alert";
 
 // overlay
 export {

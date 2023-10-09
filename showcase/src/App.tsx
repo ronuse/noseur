@@ -5,7 +5,7 @@ import {
     MoneyInput, EmailInput, PasswordInput,
     TextAreaInput, NumberInput, NoseurObject, ComposedPassword,
     Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator,
-    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType
+    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover
 } from "@ronuse/noseur";
 
 function App() {
@@ -19,6 +19,8 @@ function App() {
     const [inputIsValid, setInputIsValid] = React.useState<boolean>(false);
     const [dropdownIsValid, setDropdownIsValid] = React.useState<boolean>(false);
     const [showRivtnDialog, setShowRivtnDialog] = React.useState<boolean>(false);
+    const [showAlertDialog, setShowAlertDialog] = React.useState<boolean>(false);
+    const [showAlertPopover, setShowAlertPopover] = React.useState<boolean>(false);
     const refs = React.useRef<NoseurObject<any>>({ "input1": { current: undefined } });
     const [dialogAlignment, setDialogAlignment] = React.useState<Alignment>(Alignment.CENTER);
     const [dynamicDataTable, setDynamicDataTable] = React.useState<number[]>(Array(5).fill(0));
@@ -269,11 +271,30 @@ function App() {
     return (
         <div className="Apps" style={{ background: "white" }}>
             <div style={{ margin: 30 }}>
+                <Button text={"Show Alert Dialog"} onClick={() => setShowAlertDialog(!showAlertDialog)} />
+                <AlertDialog visible={showAlertDialog} onHide={() => setShowAlertDialog(!showAlertDialog)} message={
+                    (<p>
+                        Are you sure you want to delete the email <br />
+                        <b>address@domain.com</b> from this account. <br />
+                        You can always add another email.
+                    </p>)
+                } alignFooter={Alignment.CENTER} alignment={Alignment.TOP}/>
+                
+                <Button text={"Show Alert Popover"} onClick={() => setShowAlertPopover(!showAlertPopover)} />
+                <AlertPopover visible={showAlertPopover} onHide={() => setShowAlertPopover(!showAlertPopover)} message={
+                    (<p>
+                        Are you sure you want to delete the email <br />
+                        <b>address@domain.com</b> from this account. <br />
+                        You can always add another email.
+                    </p>)
+                } alignFooter={Alignment.CENTER} alignment={Alignment.TOP}/>
+            </div>
+            <div style={{ margin: 30 }}>
                 <FormControl scheme={Scheme.PRIMARY} leftContent="fa fa-user">
-                    <TextInput/>
+                    <TextInput />
                 </FormControl>
-                <ComposedPassword scheme={Scheme.PRIMARY} formControlProps={{ leftContent: "fa fa-user", invalid: !inputIsValid }} 
-                    inputProps={{ onFirstInput: () => setInputIsValid(true), onInputEmpty: () => setInputIsValid(false) }}/>
+                <ComposedPassword scheme={Scheme.PRIMARY} formControlProps={{ leftContent: "fa fa-user", invalid: !inputIsValid }}
+                    inputProps={{ onFirstInput: () => setInputIsValid(true), onInputEmpty: () => setInputIsValid(false) }} />
                 <br />
                 <ComposedPassword scheme={Scheme.SUCCESS} toggleIcons={{
                     show: (<span>Show</span>),
@@ -283,7 +304,7 @@ function App() {
                 <ComposedPassword scheme={Scheme.INFO} strengthIndicator progressProps={{ value: 34 }} inputProps={{ readOnly: true }}
                     formControlProps={{ invalid: true }} />
                 <br />
-                <ComposedPassword scheme={Scheme.PRIMARY} formControlProps={{ borderless: true }}/>
+                <ComposedPassword scheme={Scheme.PRIMARY} formControlProps={{ borderless: true }} />
                 <br />
                 <ComposedPassword />
             </div>
@@ -345,7 +366,7 @@ function App() {
                 <Button text="Show Basic" leftIcon="fa fa-clone fa-flip-vertical" scheme={Scheme.PRIMARY} onClick={() => setShowDialog(!showDialog)} />
                 <Button text="Show Basic" leftIcon="fa fa-clone fa-flip-vertical" scheme={Scheme.SUCCESS} onClick={() => setShowRivtnDialog(!showRivtnDialog)} />
 
-                <Dialog isVisible={showRivtnDialog} style={{ maxWidth: 400 }} onHide={() => setShowRivtnDialog(false)} alignment={dialogAlignment} notClosable>
+                <Dialog visible={showRivtnDialog} style={{ maxWidth: 400 }} onHide={() => setShowRivtnDialog(false)} alignment={dialogAlignment} notClosable>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                         <span>Request New 2fa Authenticator</span>
                         <p>A new 2fa QR code and plain text has been sent to your email address.</p>
@@ -355,7 +376,7 @@ function App() {
                         <Button text="Close" scheme={Scheme.SUCCESS} onClick={() => setShowRivtnDialog(false)} fill />
                     </div>
                 </Dialog>
-                <Dialog isVisible={showDialog} disableScroll={true} alignment={dialogAlignment} notClosable={false}
+                <Dialog visible={showDialog} disableScroll={true} alignment={dialogAlignment} notClosable={false}
                     icons={["One", "two",]} header={<i className='fa fa-user' />} noOverlay={false} modalProps={{ style: { background: "rgba(35, 97, 204, 0.4)" } }}
                     closeIcon={<span>Close</span>} dismissableModal={false} container={refs.current["dialogDiv1"]}
                     contentProps={{ style: { background: "red" } }} headerProps={{ style: { background: "green", borderBottom: "none" } }}

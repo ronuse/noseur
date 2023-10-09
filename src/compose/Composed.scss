@@ -84,3 +84,67 @@
     height: 5px;
     margin-top: 5px;
 }
+
+/* Alert */
+
+.noseur-alert {
+	max-width: 90%;
+    width: max-content !important;
+}
+
+.noseur-popover.noseur-alert {
+	padding: 1rem;
+    background-color: white;
+}
+
+.noseur-popover.noseur-alert,
+.noseur-alert>.noseur-dialog-content {
+	border-radius: 4px;
+}
+
+.noseur-popover.noseur-alert>.noseur-alert-content,
+.noseur-alert>.noseur-dialog-content>.noseur-alert-content {
+	display: flex;
+}
+
+.noseur-popover.noseur-alert>.noseur-alert-footer,
+.noseur-alert>.noseur-dialog-content>.noseur-alert-footer {
+	display: flex;
+	padding-top: 1rem;
+	align-items: flex-end;
+	justify-content: flex-end;
+}
+
+.noseur-alert-footer-left {
+	align-items: flex-start !important;
+	justify-content: flex-start !important;
+}
+
+.noseur-alert-footer-center {
+	align-items: center !important;
+	justify-content: center !important;
+}
+
+.noseur-alert-footer>* {
+    margin-left: 1rem;
+    margin-right: 0rem;
+}
+
+.noseur-alert-footer-left>* {
+    margin-left: 0px;
+    margin-right: 1rem;
+}
+
+.noseur-alert-footer-center>* {
+    margin-left: 0px;
+    margin-right: 1rem;
+}
+
+.noseur-alert-footer-center>*:last-child {
+    margin-right: 0px;
+}
+
+.noseur-alert .norseu-dialog-content .norseu-dialog-content-icon.norseu-dialog-content-icon-str {
+	margin: 0px 1.5rem 1.5rem 0px;
+	font-size: 3em;
+}

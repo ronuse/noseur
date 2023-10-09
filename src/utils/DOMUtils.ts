@@ -9,6 +9,10 @@ export const DOMHelper = {
 		return 'noseur-auto-id-' + (uniqueElementIdsCount++)
 	},
 
+	isElement(element: any) {
+		return element instanceof Element || element instanceof HTMLDocument;  
+	},
+
 	getBrowser() {
 		if (!__noseurGlobal__Browser) {
 			let matched = this.resolveUserAgent();
@@ -152,6 +156,16 @@ export const DOMHelper = {
 		}
 		element.style.left = (left - elementMarginLeft) + 'px';
 		element.style.top = `calc(${(top - elementMarginTop) + 'px'} ${operator} var(--componentMarginTopOrBottom, 0px))`;
+	},
+
+	appendChild(element: any, target: any) {
+		if (this.isElement(target)) {
+			target.appendChild(element);
+		} else if (target && target.el && target.el.nativeElement) {
+			target.el.nativeElement.appendChild(element);
+		} else {
+			throw new Error('AppendChild: Cannot append ' + target + ' to ' + element);
+		}
 	},
 
 	convertToCamelCase(styleKey: any) {

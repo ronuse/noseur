@@ -14,8 +14,8 @@ export type DialogEvent = () => void;
 export type DialogMaximizeEvent = (event?: any) => boolean;
 
 export interface DialogProps extends ComponentBaseProps<HTMLDivElement> {
+    visible: boolean,
     baseZIndex: number,
-    isVisible: boolean,
     maximized: boolean,
     noOverlay: boolean,
     icons: NoseurElement,
@@ -86,7 +86,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
     }
 
 	componentDidMount() {
-		if (this.props.isVisible) {
+		if (this.props.visible) {
 			this.setState({ visible: true }, () => {
 				ZIndexHandler.setElementZIndex(this.internalModalElement, this.props.baseZIndex);
 			});
@@ -94,15 +94,15 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
 	}
 
 	componentDidUpdate(prevProps: Readonly<DialogProps>) {
-		if (this.props.isVisible && !this.state.modalVisible) {
+		if (this.props.visible && !this.state.modalVisible) {
 			this.setState({ modalVisible: true }, () => {
 				ZIndexHandler.setElementZIndex(this.internalModalElement, this.props.baseZIndex);
 			});
 		}
 
-		if (this.props.isVisible !== this.state.visible && this.state.modalVisible) {
+		if (this.props.visible !== this.state.visible && this.state.modalVisible) {
 			this.setState({
-				visible: this.props.isVisible
+				visible: this.props.visible
 			});
 		}
 		if (prevProps.maximized !== this.props.maximized && this.props.onMaximize) {
@@ -118,7 +118,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
 		event.preventDefault();
 		event.stopPropagation();
 
-        this.setState({ visible: !this.props.isVisible });
+        this.setState({ visible: !this.props.visible });
 		if (this.props.onHide) this.props.onHide();
 	}
 	

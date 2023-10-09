@@ -12,6 +12,10 @@ code {
     monospace;
 }
 
+p {
+  margin: 0px;
+}
+
 .noseur-checkbox {
   margin: 5px;
 }
