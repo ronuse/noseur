@@ -4,8 +4,17 @@ import React from "react";
 import { NoseurObject } from "../../constants/Types";
 import { ObjectHelper } from "../../utils/ObjectHelper";
 import { ComponentBaseProps } from "../../core/ComponentBaseProps";
+import { Classname } from "../../utils/Classname";
+import { TypeChecker } from "../../utils/TypeChecker";
 
-export interface FormGroupProps extends ComponentBaseProps<HTMLDivElement> {
+export interface FormGroupProps extends ComponentBaseProps<HTMLFormElement> {
+    method: string;
+    action: string;
+    childrenClassname: string;
+    childrenProps: NoseurObject<any>;
+    childrenStyle: NoseurObject<any>;
+
+    onSubmit: React.FormEventHandler<HTMLFormElement>;
 }
 
 interface FormGroupState {
@@ -14,6 +23,9 @@ interface FormGroupState {
 class FormGroupComponent extends React.Component<FormGroupProps, FormGroupState> {
 
     public static defaultProps: Partial<FormGroupProps> = {
+        method: "POST",
+        childrenStyle: {},
+        childrenProps: {},
     }
 
     state: FormGroupState = {
@@ -21,6 +33,28 @@ class FormGroupComponent extends React.Component<FormGroupProps, FormGroupState>
 
     constructor(props: FormGroupProps) {
         super(props);
+
+        this.resolveChildren = this.resolveChildren.bind(this);
+    }
+
+    resolveChildren(parent: any) {
+        return parent.map((child: any, index: number) => {
+            if (!child) return;
+            if (TypeChecker.isArray(child)) return this.resolveChildren(child);
+            if (!React.isValidElement(child)) return child;
+            const props = {
+                ...(child.props as any),
+                ...this.props.childrenProps,
+                scheme: (child.props as any).scheme || this.props.scheme,
+            };
+            if (!props.key) props.key = index;
+            const cachedStyle = props.style || {};
+            const cachedClassname = props.className;
+            props.style = { ...this.props.childrenStyle, ...cachedStyle };
+            props.className = Classname.build(this.props.childrenClassname, cachedClassname);
+
+            return React.cloneElement(child, props);
+        });
     }
 
     render() {
@@ -29,21 +63,18 @@ class FormGroupComponent extends React.Component<FormGroupProps, FormGroupState>
             ...eventProps,
             key: this.props.key,
             style: this.props.style,
-            className: "noseur-fgrp",
+            className: Classname.build("noseur-fgrp", this.props.className),
         };
         delete props.children;
 
-        return (<div {...props}>
-            {[ this.props.children ].map(child => {
-                if (!child) return;
-                return React.isValidElement(child) ? React.cloneElement(child, { scheme: this.props.scheme } as any) : child;
-            })}
-        </div>);
+        return (<form {...props} method={this.props.method} action={this.props.action} onSubmit={this.props.onSubmit || ((e: any) => e.preventDefault())}>
+            {this.resolveChildren(this.props.children as any)}
+        </form>);
     }
 
 }
 
-export const FormGroup = React.forwardRef<HTMLDivElement, Partial<FormGroupProps>>((props, ref) => (
-    <FormGroupComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
+export const FormGroup = React.forwardRef<HTMLFormElement, Partial<FormGroupProps>>((props, ref) => (
+    <FormGroupComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLFormElement>} />
 ));
 

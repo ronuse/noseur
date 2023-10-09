@@ -16,14 +16,18 @@ export interface FormControlProps extends ComponentBaseProps<HTMLDivElement> {
     leftContent: any;
     rightContent: any;
     required: boolean;
+    validStyle: Object;
     highlight: boolean;
     label: NoseurLabel;
     borderless: boolean;
+    invalidStyle: Object;
     contentStyle: Object;
     invalidScheme: Scheme;
     infoLabel: NoseurLabel;
+    validClassname: string;
     helpLabel: NoseurLabel;
     children?: NoseurElement;
+    invalidClassname: string;
     centerOverlayContent: any;
     childrenProps: NoseurObject<any>;
     childrenValidPropsMap: NoseurObject<any>;
@@ -38,9 +42,12 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
     public static defaultProps: Partial<FormControlProps> = {
         tabIndex: 0,
         invalid: false,
+        invalidStyle: {},
+        contentStyle: {},
         invalidScheme: Scheme.DANGER,
         childrenValidPropsMap: {
             "borderless": true,
+            "scheme": "{scheme}"
         },
         childrenInvalidPropsMap: {
             "highlight": true,
@@ -79,6 +86,8 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
         if (TypeChecker.isString(leftContent)) {
             if (scheme) className += ` ${scheme}-tx`;
             leftContent = <i className={leftContent} />;
+        } else if (scheme) {
+            className += ` ${scheme}`;
         }
         return (<div className={className}>{leftContent}</div>);
     }
@@ -112,7 +121,7 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
         return children.map((child: any, index: number) => {
             if (!child) return child;
             const childrenOwnScheme = child.props?.scheme;
-            const childrenProps: NoseurObject<any> = { ...(this.props.childrenProps || {}),  ...(child.props || {}) };
+            const childrenProps: NoseurObject<any> = { ...(this.props.childrenProps || {}), ...(child.props || {}) };
             if (this.props.required) childrenProps.required = true;
             if (!childrenOwnScheme) childrenProps.scheme = this.props.scheme;
             childrenProps.className = Classname.build("noseur-fctrl-cc", childrenProps.className);
@@ -141,17 +150,20 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
             className: Classname.build("noseur-fctrl", this.props.className),
         };
         delete props.children;
-        const className = Classname.build("noseur-fctrl-c", {
-                'noseur-no-bd': this.props.borderless,
-            },
+        const contentStyle: NoseurObject<any> = {
+            ...this.props.contentStyle,
+            ...(this.props.invalid ? this.props.invalidStyle : this.props.validStyle),
+        };
+        const className = Classname.build("noseur-fctrl-c", { 'noseur-no-bd': this.props.borderless, },
             (scheme && this.props.highlight) ? `${scheme}-bd-cl` : null,
             this.props.invalid ? `${this.props.invalidScheme}-bd-cl` : null,
+            (this.props.invalid ? this.props.invalidClassname : this.props.validClassname),
             (scheme) ? `${scheme}-bd-3px-bx-sw-fc ${scheme}-bd-cl-fc ${scheme}-bd-cl-hv` : null);
         const children = this.renderChildren();
 
         return (<div ref={this.props.forwardRef as React.ForwardedRef<HTMLDivElement>} {...props}>
             {label}
-            <div className={className} tabIndex={this.props.tabIndex} style={this.props.contentStyle}>
+            <div className={className} tabIndex={this.props.tabIndex} style={contentStyle}>
                 {leftContent}
                 {children}
                 {centerOverlayContent}

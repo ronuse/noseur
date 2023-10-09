@@ -3,7 +3,7 @@ import {
     Button, Dialog, ChartData,
     TextInput, Dropdown, Scheme,
     MoneyInput, EmailInput, PasswordInput,
-    TextAreaInput, NumberInput, NoseurObject,
+    TextAreaInput, NumberInput, NoseurObject, ComposedPassword,
     Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator,
     Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType
 } from "@ronuse/noseur";
@@ -14,7 +14,7 @@ function App() {
     const onOpenRef = React.useRef<any>();
     const onCloseRef = React.useRef<any>();
     const [state, setState] = React.useState(false);
-    const [charty, setCharty] = React.useState<any>(ChartType.NONE);
+    const [charty, setCharty] = React.useState<any>(ChartType.BAR);
     const [showDialog, setShowDialog] = React.useState<boolean>(false);
     const [inputIsValid, setInputIsValid] = React.useState<boolean>(false);
     const [dropdownIsValid, setDropdownIsValid] = React.useState<boolean>(false);
@@ -269,8 +269,27 @@ function App() {
     return (
         <div className="Apps" style={{ background: "white" }}>
             <div style={{ margin: 30 }}>
+                <FormControl scheme={Scheme.PRIMARY} leftContent="fa fa-user">
+                    <TextInput/>
+                </FormControl>
+                <ComposedPassword scheme={Scheme.PRIMARY} formControlProps={{ leftContent: "fa fa-user", invalid: !inputIsValid }} 
+                    inputProps={{ onFirstInput: () => setInputIsValid(true), onInputEmpty: () => setInputIsValid(false) }}/>
+                <br />
+                <ComposedPassword scheme={Scheme.SUCCESS} toggleIcons={{
+                    show: (<span>Show</span>),
+                    hide: (<span>Hide</span>),
+                }} onShow={() => console.log("onShow")} onHide={() => console.log("onHide")} />
+                <br />
+                <ComposedPassword scheme={Scheme.INFO} strengthIndicator progressProps={{ value: 34 }} inputProps={{ readOnly: true }}
+                    formControlProps={{ invalid: true }} />
+                <br />
+                <ComposedPassword scheme={Scheme.PRIMARY} formControlProps={{ borderless: true }}/>
+                <br />
+                <ComposedPassword />
+            </div>
+            <div style={{ margin: 30 }}>
                 <Dropdown options={Object.keys(chartyMap).map((value) => ({ label: value, value }))}
-                    onSelectOption={(option) => setCharty(option.value)} selectedOptionIndex={0} />
+                    onSelectOption={(option: any) => setCharty(option.value)} selectedOptionIndex={0} />
                 <br />
                 <Chart style={{ width: 700 }} type={charty} data={chartyMap[charty].data} options={chartyMap[charty].options} />
             </div>
@@ -321,7 +340,7 @@ function App() {
             </div>
             <div style={{ margin: 30 }}>
                 <Dropdown options={Object.keys(Alignment).map((alignment, index) => ({ label: alignment, value: Object.values(Alignment)[index] }))}
-                    onSelectOption={(option) => setDialogAlignment(option.value || Alignment.CENTER)} />
+                    onSelectOption={(option: any) => setDialogAlignment(option.value || Alignment.CENTER)} />
                 <br />
                 <Button text="Show Basic" leftIcon="fa fa-clone fa-flip-vertical" scheme={Scheme.PRIMARY} onClick={() => setShowDialog(!showDialog)} />
                 <Button text="Show Basic" leftIcon="fa fa-clone fa-flip-vertical" scheme={Scheme.SUCCESS} onClick={() => setShowRivtnDialog(!showRivtnDialog)} />
@@ -389,7 +408,7 @@ function App() {
                         optionMap={{
                             label: "{label} - {code}"
                         }} editable
-                        onSearch={(v) => console.log(v)}
+                        onSearch={(v: any) => console.log(v)}
                         optionGroupTemplate={(option: any) => <span>{option?.label}</span>}
                         popoverHeaderTemplate={() => <div style={{ fontWeight: "bold", margin: 0, padding: 10, background: "#f8f9fa", borderBottom: "1px solid #dee2e6" }}>
                             <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
@@ -404,8 +423,8 @@ function App() {
                 </FormControl>
             </div>
             <div style={{ margin: 30 }}>
-                <Button text="Popover1" onClick={(e) => refs.current["popover1"].toggle(e/*, refs.current["portaldiv1"]*/)} />
-                <Popover selfRef={(e) => refs.current["popover1"] = e} matchTargetSize={false}
+                <Button text="Popover1" onClick={(e: any) => refs.current["popover1"].toggle(e/*, refs.current["portaldiv1"]*/)} />
+                <Popover selfRef={(e: any) => refs.current["popover1"] = e} matchTargetSize={false}
                     onOpenFocusRef={onOpenRef} onCloseFocusRef={onCloseRef} pointingArrowClassName={""}
                     style={{ backgroundColor: "white", padding: 10 }}
                     onShow={() => console.log("onShow")} onHide={() => console.log("onHide")}>
@@ -446,7 +465,7 @@ function App() {
                 <br />
                 {Object.keys(Scheme).map((scheme, index) => (
                     <Paginator key={index} expandOnHiddenPagesButtonClicked={true} scheme={schemes[index]} totalRecords={123}
-                        onPageChange={(e) => console.log("onPageChange:", scheme, e)} style={{
+                        onPageChange={(e: any) => console.log("onPageChange:", scheme, e)} style={{
                             color: index === 3 ? "white" : "inherit",
                             background: index === 3 ? "black" : "inherit"
                         }}

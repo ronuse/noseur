@@ -49,6 +49,7 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
 
     constructor(props: ButtonProps) {
         super(props);
+        
         this.onClick = this.onClick.bind(this);
     }
 

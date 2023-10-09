@@ -23,7 +23,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build:noseur": "cd ../ & npm run pack & cd showcase",
-    "clean:start": "rm -Rf node_modules/.cache & npm uninstall @ronuse/noseur & cls & npm install ../ronuse-noseur-1.0.0.tgz & npm start"
+    "clean:start": "rm -Rf node_modules/.cache & npm uninstall @ronuse/noseur & clear & npm install ../ronuse-noseur-1.0.0.tgz & npm start"
   },
   "watch": {
     "clean:start": {

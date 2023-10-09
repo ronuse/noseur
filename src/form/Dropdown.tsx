@@ -31,14 +31,15 @@ export interface DropdownProps extends ComponentBaseProps<NoseurDivElement> {
     borderless: boolean;
     matchTargetSize: boolean;
     optionMap: DropdownOption;
+    selectedOptionIndex: number;
     optionGroupChildrenKey: string;
     popoverProps: NoseurObject<any>;
     textInputProps: NoseurObject<any>;
     formControlProps: NoseurObject<any>;
     options: NoseurObject<any>[] | undefined;
+    selectedOptionIndexes: DropdownSelectedIndex;
     popoverRef: React.ForwardedRef<NoseurDivElement>;
     textInputRef: React.ForwardedRef<HTMLInputElement>;
-    selectedOptionIndex: DropdownSelectedIndex | number;
 
     onSearch?: DropdownOnSearchHandler;
     onDropdownShow: DropdownEventHandler;
@@ -69,6 +70,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
         textInputProps: {},
         formControlProps: {},
         matchTargetSize: true,
+        selectedOptionIndex: -1,
         scheme: Scheme.SECONDARY,
         toggleIcon: "fa fa-angle-down",
         optionGroupChildrenKey: "items",
@@ -76,7 +78,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
 
     state: DropdownState = {
         popoverVisible: false,
-        selectedOptionIndex: { primaryIndex: -1, secondaryIndex: -1 },
+        selectedOptionIndex: this.props.selectedOptionIndexes || { primaryIndex: this.props.selectedOptionIndex, secondaryIndex: this.props.selectedOptionIndex },
     };
 
     optionTemplate: any;

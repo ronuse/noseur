@@ -21,11 +21,12 @@ export const MicroBuilder = {
         }, "noseur-icon", props.className);
         const key = `icon-${MicroBuilder.ICON_COUNTER++}`;
         if (!isFontAwesomeIcon) {
-            ObjectHelper.addAll((icon as React.ReactElement).props, events);
-            (icon as React.ReactElement).props.key = (icon as React.ReactElement).props.key = key;
-            (icon as React.ReactElement).props.key = (icon as React.ReactElement).props.scheme = props.scheme;
-            (icon as React.ReactElement).props.className = Classname.build(className, (icon as React.ReactElement).props.className);
-            return icon;
+            const iconProps = { ...(icon as React.ReactElement).props };
+            ObjectHelper.addAll(iconProps, events);
+            iconProps.key = iconProps.key || key;
+            iconProps.key = props.scheme || iconProps.scheme;
+            iconProps.className = Classname.build(className, iconProps.className);
+            return React.cloneElement(icon as React.ReactElement, iconProps);
         }
         return <i key={key} className={className} {...events}></i>;
     },
@@ -43,9 +44,9 @@ export const MicroBuilder = {
         if (!isRawString) {
             const labelProps = { ...((label as any).props || {}) };
             ObjectHelper.addAll(labelProps, events);
-            labelProps.key = labelProps.key ||  key;
-            labelProps.scheme = labelProps.scheme;
             labelProps.className = className;
+            labelProps.key = labelProps.key || key;
+            labelProps.scheme = props.scheme || labelProps.scheme;
             return React.cloneElement(label as React.ReactElement, labelProps);
         }
         const rProps: NoseurObject<any> = {

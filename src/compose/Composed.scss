@@ -1,4 +1,4 @@
-
+/* Form Control */
 
 .noseur-fctrl {
     margin: 0px;
@@ -8,11 +8,12 @@
     flex-direction: column;
 }
 
-.noseur-fctrl > .noseur-fctrl-l {
+.noseur-fctrl>.noseur-fctrl-l {
     margin-bottom: 5px;
 }
 
-.noseur-fctrl > .noseur-fctrl-il, .noseur-fctrl > .noseur-fctrl-hl {
+.noseur-fctrl>.noseur-fctrl-il,
+.noseur-fctrl>.noseur-fctrl-hl {
     margin-top: 5px;
     font-size: 13px;
 }
@@ -23,16 +24,18 @@
     display: flex;
     outline: none;
     position: relative;
-	border-radius: 6px;
+    border-radius: 6px;
     align-items: center;
-	box-sizing: border-box;
+    box-sizing: border-box;
     justify-content: center;
-	border: 1px solid #dfdfdf;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
+    border: 1px solid #dfdfdf;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
 
-.noseur-fctrl-lc, .noseur-fctrl-rc, .noseur-fctrl-coc {
+.noseur-fctrl-lc,
+.noseur-fctrl-rc,
+.noseur-fctrl-coc {
     top: 0px;
     margin: 0px;
     height: 100%;
@@ -65,3 +68,19 @@
     padding: 0px;
 }
 
+/* ComposedPassword */
+
+.noseur-composed-password {
+    display: flex;
+    width: fit-content;
+    flex-direction: column;
+}
+
+.noseur-composed-password>.noseur-fctrl {
+    width: 100%;
+}
+
+.noseur-composed-password>.noseur-progress-bar {
+    height: 5px;
+    margin-top: 5px;
+}

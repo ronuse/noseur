@@ -4,7 +4,7 @@ import React from 'react';
 import { Scheme } from '../constants/Scheme';
 import { Classname } from '../utils/Classname';
 import { ObjectHelper } from "../utils/ObjectHelper";
-import { MicroComponentBaseProps } from '../core/ComponentBaseProps';
+import { ComponentBaseProps } from '../core/ComponentBaseProps';
 import { NoseurLabel, NoseurNummber, NumberRange } from "../constants/Types";
 
 export enum ProgressBarMode {
@@ -13,16 +13,16 @@ export enum ProgressBarMode {
 }
 
 
-export interface ProgressBarProps extends MicroComponentBaseProps {
+export interface ProgressBarProps extends ComponentBaseProps<HTMLDivElement> {
     stripped: boolean;
     noLabel: boolean;
     mode: ProgressBarMode;
     value: NumberRange<0, 100>;
-    forwardRef: React.ForwardedRef<HTMLDivElement>;
     labeltemplate: (value: NoseurNummber) => string;
 }
 
 interface ProgressBarState {
+    currentValue: NumberRange<0, 100>;
 };
 
 class ProgressBarComponent extends React.Component<ProgressBarProps, ProgressBarState> {
@@ -33,7 +33,15 @@ class ProgressBarComponent extends React.Component<ProgressBarProps, ProgressBar
     };
 
     state: ProgressBarState = {
+        currentValue: this.props.value
     };
+
+    componentDidMount(): void {
+        ObjectHelper.resolveSelfRef(this, {
+            getValue: () => this.state.currentValue,
+            setValue: (value: NumberRange<0, 100>) => this.setState({ currentValue: value }),
+        });
+    }
 
     buildDeterminant(value: NumberRange<0, 100>, label: NoseurLabel) {
         const style = { width: `${value}%` };
@@ -60,7 +68,7 @@ class ProgressBarComponent extends React.Component<ProgressBarProps, ProgressBar
         const className = Classname.build("noseur-progress-bar", {
             'noseur-disabled': !this.props.noStyle && this.props.disabled,
         });
-        let value = (this.props.value && this.props.value < 0 ? 0 : this.props.value);
+        let value = (this.state.currentValue && this.state.currentValue < 0 ? 0 : this.state.currentValue);
         value = (value && value > 100 ? 100 : value);
         const label = this.buildLabel(value);
         const bar = this.props.mode === ProgressBarMode.DETERMINATE ? this.buildDeterminant(value, label) : this.buildInDeterminant();

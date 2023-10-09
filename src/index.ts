@@ -13,6 +13,14 @@ export { InputFilter, InputSpecialKey, InputHelper } from "./utils/InputHelper";
 
 // compose
 export {
+    ComposedPassword,
+    ComposedPasswordProps,
+    ComposedPasswordToggleIcons,
+    ComposedPasswordEventHandler,
+    ComposedPasswordStrengthHandler,
+} from "./compose/form/ComposedPassword"
+// compose
+export {
     FormGroup,
     FormGroupProps,
 } from "./compose/form/FormGroup"
