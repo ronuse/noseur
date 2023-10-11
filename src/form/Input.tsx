@@ -120,10 +120,10 @@ class Input extends React.Component<InputProps, InputState> {
             {
                 'noseur-wd-100-pct': this.props.fill,
                 'noseur-no-bd': this.props.borderless,
+                'noseur-disabled': this.props.disabled,
                 'noseur-input-flushed': this.props.flushed,
                 'noseur-skeleton': this.props.scheme === Scheme.SKELETON,
                 'noseur-raised-bd': !this.props.noStyle && this.props.raised,
-                'noseur-disabled': !this.props.noStyle && this.props.disabled,
                 'noseur-rounded-bd': !this.props.noStyle && this.props.rounded,
                 'noseur-input-filled': !this.props.noStyle && this.props.filled,
             }, "noseur-input", this.props.className);

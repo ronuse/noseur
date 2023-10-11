@@ -1,7 +1,7 @@
 
 import "../Composed.css";
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from 'react-dom/client';
 import { Dialog } from "../../overlay/Dialog";
 import { Popover } from "../../overlay/Popover";
 import { Classname } from "../../utils/Classname";
@@ -26,13 +26,13 @@ export interface AlertProps extends ComponentBaseProps<HTMLDivElement> {
     visible: boolean;
     componentProps: any;
     alignment: Alignment,
-    cancel: AlertControl,
-    confirm: AlertControl,
     alignFooter: Alignment,
     message: NoseurElement;
     icon: NoseurIconElement;
     dismissableModal: boolean,
     container: NoseurRawElement,
+    cancel: AlertControl | null,
+    confirm: AlertControl | null,
     footerElements: NoseurElement;
     component: React.FunctionComponent<Partial<ComponentBaseProps<NoseurDivElement>> & React.RefAttributes<NoseurDivElement>>;
 
@@ -126,7 +126,8 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
     }
 
     renderControl() {
-        const controlButtons = [this.props.cancel, this.props.confirm].map((control: AlertControl, index: number) => {
+        if (!this.props.cancel && !this.props.confirm && !this.props.footerElements) return;
+        const controlButtons = [this.props.cancel, this.props.confirm].map((control: AlertControl | null, index: number) => {
             if (!control) return null;
 
             const cachedOnClick = control.props?.onClick;
@@ -137,8 +138,8 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
             const onClick = (e: any) => {
                 if (cachedOnClick) cachedOnClick(e);
                 if (control.action) control.action();
-                if (index === 1) this.onCancel(e);
-                if (index === 0) this.onConfirm(e);
+                if (index === 0) this.onCancel(e);
+                if (index === 1) this.onConfirm(e);
             };
 
             return (<Button {...(control.props || {})} key={control.props?.key || index} text={text} leftIcon={icon} scheme={scheme} ref={ref} onClick={onClick} />)
@@ -157,7 +158,8 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
         const cachedComponentPropsSelfRef = this.props.componentProps.selfRef;
         const container = this.props.componentProps.container || this.props.container;
         const alignment = this.props.componentProps.alignment || this.props.alignment;
-        const className = Classname.build("noseur-alert", this.props.componentProps.className);
+        const style = { ...(this.props.style || {}), ...(this.props.componentProps.style || {})};
+        const className = Classname.build("noseur-alert", this.props.className, this.props.componentProps.className);
         const icon = MicroBuilder.buildIcon(this.props.icon, { scheme: this.props.scheme, className: "noseur-dialog-content-icon" });
         const selfRef = (e: any) => {
             this.internalComponentSelfRef = e;
@@ -166,6 +168,7 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
 
         return React.createElement(this.props.component, {
             ...this.props.componentProps,
+            style,
             selfRef,
             className,
             alignment,
@@ -183,36 +186,84 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
 
 }
 
-function alert(props: Partial<AlertProps>) {
+export interface AlertInterface {
+    hide: () => void,
+    show: () => void,
+    destroy: () => void,
+    doneLoading: () => void,
+    update: (newProps: Partial<AlertProps>) => void,
+}
+
+export function alert(props: Partial<AlertProps>): AlertInterface {
     let container = props.container || document.body;
     let alertWrapper = document.createDocumentFragment();
 	DOMHelper.appendChild(alertWrapper, container);
 	props = {...props, ...{isVisible: props.visible === undefined ? true : props.visible}};
 	let alertDialog = React.createElement(AlertDialog, props);
-	ReactDOM.render(alertDialog, alertWrapper);
+    let root = ReactDOM.createRoot(alertWrapper); root.render(alertDialog);
+    let mounted = props.visible;
 
 	let updateAlert = (newProps: Partial<AlertProps>) => {
 		props = { ...props, ...newProps };
-		ReactDOM.render(React.cloneElement(alertDialog, props), alertWrapper);
+        mounted = props.visible;
+        root.render(React.cloneElement(alertDialog, props));
 	};
 
     return {
-		destroy: () => {
-			ReactDOM.unmountComponentAtNode(alertWrapper);
-		},
+		destroy: () => mounted && root.unmount(),
+        hide: () => updateAlert({ visible: false }),
+        update: (newProps: Partial<AlertProps>) => updateAlert(newProps),
         show: () => {
             updateAlert({ visible: true, onHide: () => {
 				updateAlert({ visible: false });
 			}});
         },
-        hide: () => {
-            // TODO: the exit animation is not present
-			//updateAlert({ isVisible: false });
-			ReactDOM.unmountComponentAtNode(alertWrapper);
-        },
-        update: (newProps: Partial<AlertProps>) => updateAlert(newProps),
+        doneLoading: () => { throw new Error("Alert is not of the loading type."); },
     };
 }
+
+export interface LoadingAlertDialog<T> extends AlertProps {
+    loadingElement: NoseurIconElement,
+    onLoading: (alert: AlertInterface, params?: T) => Promise<boolean>,
+};
+
+export function loadingAlert<T>(props: Partial<LoadingAlertDialog<T>>, params?: T) {
+	const icon = props.loadingElement || "fas fa-spinner fa-pulse";
+    const doneProps = {
+        icon: props.icon,
+        cancel: props.cancel,
+        confirm: props.confirm,
+        message: props.message,
+        className: props.className,
+        footerElements: props.footerElements,
+        dismissableModal: props.dismissableModal,
+    };
+    const loadingProps = {
+        ...props,
+		icon: icon,
+		cancel: null,
+		confirm: null,
+        message: null,
+        dismissableModal: false,
+        className: "noseur-alert-loading"
+	};
+	const alert = alertDialog(loadingProps);
+
+    alert.show = () => {
+        if (props.onLoading) {
+            props.onLoading(alert, params).then((result) => {
+                if (result) alert.update(doneProps);
+            });
+        }
+        alert.update({ ...loadingProps, visible: true, onHide: () => {
+            alert.update({ visible: false });
+        }});
+    };
+    alert.doneLoading = () => {
+        alert.update(doneProps);
+    };
+	return alert;
+};
 
 export const AlertDialog = React.forwardRef<HTMLDivElement, Partial<AlertProps>>((props, ref) => (
     <AlertComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
@@ -222,20 +273,11 @@ export const AlertPopover = React.forwardRef<HTMLDivElement, Partial<AlertProps>
     <AlertComponent {...props} component={Popover} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
 ));
 
+export const Alert = AlertDialog;
+
 export const alertDialog = (props: Partial<AlertProps>) => alert({ ...props });
 export const alertPopover = (props: Partial<AlertProps>) => alert({ ...props, component: Popover });
-
-
-export function loadingDialog(props: Partial<AlertProps>, params: any) {
-	const icon = props.icon || "fas fa-spinner fa-pulse";
-	const dialog = alertDialog({
-		icon: icon,
-		confirmLabel: null
-	});
-	if (ObjUtils.isFunction(props.onLoading)) {
-		props.onLoading(dialog, params);
-	}
-	return dialog;
-};
+export const loadingAlertDialog = <T,>(props: Partial<LoadingAlertDialog<T>>, params?: T) => loadingAlert({ ...props }, params);
+export const loadingAlertPopover = <T,>(props: Partial<LoadingAlertDialog<T>>, params?: T) => loadingAlert({ ...props, component: Popover }, params);
 
 

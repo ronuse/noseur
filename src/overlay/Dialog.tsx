@@ -8,7 +8,7 @@ import { Alignment } from "../constants/Alignment";
 import { CSSTransition } from 'react-transition-group';
 import { ComponentBaseProps } from "../core/ComponentBaseProps";
 import { NoseurElement, NoseurObject, NoseurRawElement } from "../constants/Types";
-import { DOMHelper, ZIndexHandler } from "../utils/DOMUtils";
+import { BaseZIndex, DOMHelper, ZIndexHandler } from "../utils/DOMUtils";
 
 export type DialogEvent = () => void;
 export type DialogMaximizeEvent = (event?: any) => boolean;
@@ -58,6 +58,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         dismissableModal: true,
         closeIcon: "fa fa-times",
         alignment: Alignment.CENTER,
+        baseZIndex: BaseZIndex.MODAL,
         maximizeIcons: {
 			minimize: "fa fa-window-minimize",
             maximize: "fa fa-window-maximize",
@@ -306,7 +307,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         };
         if (!modalProps.onClick) modalProps.onClick = this.onModalClick;
 
-        return (<div {...modalProps}>
+        return (<div {...modalProps} style={{ ...(modalProps.style), zIndex: this.props.baseZIndex || modalProps.style?.zIndex }}>
             <CSSTransition classNames="noseur-dialog" timeout={transitionTimeout} in={this.state.visible} options={this.props.transitionOptions}
                 unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExited={this.onExited}>
                 <div ref={elementRef} id={id} className={className} style={this.props.style}
@@ -320,7 +321,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
     }
 
     render() {
-		//if (!this.state.modalVisible) return null;
+		if (!this.state.modalVisible) return null;
         const children = this.renderChildren();
 		return <Portal children={children} container={this.props.container} visible={true}/>;
     }

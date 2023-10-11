@@ -38,6 +38,7 @@ class FormGroupComponent extends React.Component<FormGroupProps, FormGroupState>
     }
 
     resolveChildren(parent: any) {
+        parent = parent.map ? parent : [ parent ];
         return parent.map((child: any, index: number) => {
             if (!child) return;
             if (TypeChecker.isArray(child)) return this.resolveChildren(child);

@@ -2,11 +2,12 @@ import React from 'react';
 import {
     Button, Dialog, ChartData,
     TextInput, Dropdown, Scheme,
-    MoneyInput, EmailInput, PasswordInput,
+    MoneyInput, EmailInput, PasswordInput, alertDialog,
     TextAreaInput, NumberInput, NoseurObject, ComposedPassword,
     Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator,
     Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover
 } from "@ronuse/noseur";
+import { AlertInterface, alertPopover, loadingAlert } from '@ronuse/noseur/dist/esm/compose/overlay/Alert';
 
 function App() {
     let progress = React.useRef(0);
@@ -267,12 +268,28 @@ function App() {
             service_code: "mnemosyne",
         },
     ];
+    const loadingD = loadingAlert({
+        message: "Hello World",
+        onLoading: async (alert: AlertInterface) => {
+            setTimeout(() => {
+                alert.doneLoading();
+            }, 5000);
+            return false;
+        }
+    });
 
     return (
         <div className="Apps" style={{ background: "white" }}>
             <div style={{ margin: 30 }}>
+                <Button text={"Show Alert Dialog Func"} onClick={() => alertDialog({
+                    message: "Hello World"
+                }).show()} />
+                <Button text={"Show Alert Popover Func"} onClick={() => alertPopover({
+                    message: "Hello World"
+                }).show()} />
+                <Button text={"Show Alert Loading"} onClick={() => loadingD.show()} />
                 <Button text={"Show Alert Dialog"} onClick={() => setShowAlertDialog(!showAlertDialog)} />
-                <AlertDialog visible={showAlertDialog} onHide={() => setShowAlertDialog(!showAlertDialog)} message={
+                <AlertDialog icon="fa fa-circle" visible={showAlertDialog} onHide={() => setShowAlertDialog(!showAlertDialog)} message={
                     (<p>
                         Are you sure you want to delete the email <br />
                         <b>address@domain.com</b> from this account. <br />

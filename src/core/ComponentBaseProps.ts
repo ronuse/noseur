@@ -12,12 +12,12 @@ export interface ComponentBaseProps<T> extends MicroComponentBaseProps, React.DO
 export interface MicroComponentBaseProps {
     id: string;
     name: string;
-    style: Object;
     scheme: Scheme;
     noStyle: boolean;
     className: string;
     disabled: boolean;
     key: NoseurInputValue;
+    style: React.CSSProperties | undefined;
 }
 
 const MicroComponentBasePropskeys = ["id", "name", "style", "scheme", "noStyle", "className", "disabled", "key"];

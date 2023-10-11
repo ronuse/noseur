@@ -28,6 +28,8 @@ export {
     FormControlProps,
 } from "./compose/form/FormControl";
 export {
+    alert,
+    Alert,
     AlertEvent,
     AlertProps,
     AlertDialog,
@@ -35,6 +37,10 @@ export {
     AlertPopover,
     AlertControl,
     alertPopover,
+    AlertInterface,
+    LoadingAlertDialog,
+    loadingAlertDialog,
+    loadingAlertPopover,
 } from "./compose/overlay/Alert";
 
 // overlay
