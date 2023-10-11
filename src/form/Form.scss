@@ -31,10 +31,6 @@
 
 /* Input and TextArea */
 
-textarea {
-	height: 150px;
-}
-
 .noseur-input {
 	flex: 1;
 	outline: none;
@@ -58,6 +54,11 @@ textarea {
 	border-radius: 0px;
 	padding: 0.7rem 0px 0.7rem 0px;
 	border-bottom: 1px solid #dfdfdf;
+}
+
+textarea.noseur-input {
+	height: 150px;
+	flex: initial;
 }
 
 /* Checkbox */

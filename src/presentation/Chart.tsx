@@ -25,11 +25,11 @@ export type ChartData = ChartJsData<any, any[], unknown> | ChartDataCustomTypesP
 
 export interface ChartProps extends ComponentBaseProps<HTMLDivElement> {
     data: ChartData;
-    canvasStyle: Object;
     canvasClassName: string;
     options: NoseurObject<any>;
     canvasProps: NoseurObject<any>;
     type: ChartTypeRegistry | string;
+    canvasStyle: React.CSSProperties | undefined;
     canvasElement: React.ForwardedRef<HTMLCanvasElement>;
 }
 

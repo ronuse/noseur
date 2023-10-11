@@ -10,18 +10,16 @@ import { ComponentBaseProps } from "../../core/ComponentBaseProps";
 import { NoseurLabel, NoseurObject, NoseurElement } from "../../constants/Types";
 
 export interface FormControlProps extends ComponentBaseProps<HTMLDivElement> {
+    fill: boolean;
     invalid: boolean;
     labelFor: string;
     tabIndex: number;
     leftContent: any;
     rightContent: any;
     required: boolean;
-    validStyle: Object;
     highlight: boolean;
     label: NoseurLabel;
     borderless: boolean;
-    invalidStyle: Object;
-    contentStyle: Object;
     invalidScheme: Scheme;
     infoLabel: NoseurLabel;
     validClassname: string;
@@ -32,6 +30,9 @@ export interface FormControlProps extends ComponentBaseProps<HTMLDivElement> {
     childrenProps: NoseurObject<any>;
     childrenValidPropsMap: NoseurObject<any>;
     childrenInvalidPropsMap: NoseurObject<any>;
+    validStyle: React.CSSProperties | undefined;
+    invalidStyle: React.CSSProperties | undefined;
+    contentStyle: React.CSSProperties | undefined;
 }
 
 interface FormControlState {
@@ -147,7 +148,7 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
             key: this.props.key,
             style: this.props.style,
             required: this.props.required,
-            className: Classname.build("noseur-fctrl", this.props.className),
+            className: Classname.build("noseur-fctrl", (this.props.fill ? "noseur-wd-100-pct" : null), this.props.className),
         };
         delete props.children;
         const contentStyle: NoseurObject<any> = {

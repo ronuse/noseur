@@ -12,7 +12,7 @@ export interface FormGroupProps extends ComponentBaseProps<HTMLFormElement> {
     action: string;
     childrenClassname: string;
     childrenProps: NoseurObject<any>;
-    childrenStyle: NoseurObject<any>;
+    childrenStyle: React.CSSProperties | undefined;
 
     onSubmit: React.FormEventHandler<HTMLFormElement>;
 }
