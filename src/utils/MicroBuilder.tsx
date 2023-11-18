@@ -15,7 +15,7 @@ export const MicroBuilder = {
         if (!icon) { return null; }
         const isFontAwesomeIcon = TypeChecker.isTypeOfAny(icon, ["string"]);
         const className = Classname.build(isFontAwesomeIcon ? icon : (icon as React.ReactElement).props.className, {
-            "noseur-wd-100-pct": props.fillIcon,
+            "noseur-wd-auto": props.fillIcon,
             "noseur-mg-r-15": props.relativeAlignment == Alignment.LEFT,
             "noseur-mg-l-15": props.relativeAlignment == Alignment.RIGHT,
         }, "noseur-icon", props.className);

@@ -87,8 +87,6 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
         if (TypeChecker.isString(leftContent)) {
             if (scheme) className += ` ${scheme}-tx`;
             leftContent = <i className={leftContent} />;
-        } else if (scheme) {
-            className += ` ${scheme}`;
         }
         return (<div className={className}>{leftContent}</div>);
     }
@@ -117,7 +115,7 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
         return (<div className={className}>{centerOverlayContent}</div>);
     }
 
-    renderChildren() {
+    renderChildren(hasLeftContent: boolean, hasRightContent: boolean) {
         const children = [].concat(this.props.children as any);
         return children.map((child: any, index: number) => {
             if (!child) return child;
@@ -125,7 +123,10 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
             const childrenProps: NoseurObject<any> = { ...(this.props.childrenProps || {}), ...(child.props || {}) };
             if (this.props.required) childrenProps.required = true;
             if (!childrenOwnScheme) childrenProps.scheme = this.props.scheme;
-            childrenProps.className = Classname.build("noseur-fctrl-cc", childrenProps.className);
+            childrenProps.className = Classname.build("noseur-fctrl-cc", childrenProps.className, {
+                'noseur-pd-l-0': hasLeftContent,
+                'noseur-pd-r-0': hasRightContent,
+            });
             if (!childrenProps.key) childrenProps.key = index;
             this.mapComponentProperties(childrenProps, (!this.props.invalid ? this.props.childrenValidPropsMap : this.props.childrenInvalidPropsMap));
             return React.cloneElement(child, childrenProps);
@@ -160,7 +161,7 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
             this.props.invalid ? `${this.props.invalidScheme}-bd-cl` : null,
             (this.props.invalid ? this.props.invalidClassname : this.props.validClassname),
             (scheme) ? `${scheme}-bd-3px-bx-sw-fc ${scheme}-bd-cl-fc ${scheme}-bd-cl-hv` : null);
-        const children = this.renderChildren();
+        const children = this.renderChildren(!!leftContent, !!rightContent);
 
         return (<div ref={this.props.forwardRef as React.ForwardedRef<HTMLDivElement>} {...props}>
             {label}

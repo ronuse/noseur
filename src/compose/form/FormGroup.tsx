@@ -38,8 +38,10 @@ class FormGroupComponent extends React.Component<FormGroupProps, FormGroupState>
     }
 
     resolveChildren(parent: any) {
-        parent = parent.map ? parent : [ parent ];
-        return parent.map((child: any, index: number) => {
+        if (!parent) return;
+        const children: any = (parent as any).length != undefined ? parent : [parent];
+        if (!children.length) return;
+        return children.map((child: any, index: number) => {
             if (!child) return;
             if (TypeChecker.isArray(child)) return this.resolveChildren(child);
             if (!React.isValidElement(child)) return child;
@@ -78,4 +80,6 @@ class FormGroupComponent extends React.Component<FormGroupProps, FormGroupState>
 export const FormGroup = React.forwardRef<HTMLFormElement, Partial<FormGroupProps>>((props, ref) => (
     <FormGroupComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLFormElement>} />
 ));
+
+export const Form = FormGroup;
 

@@ -1,3 +1,5 @@
+
+import { Orientation } from "../constants/Orientation";
 import { NoseurObject } from "../constants/Types";
 
 let uniqueElementIdsCount = 0;;
@@ -10,7 +12,7 @@ export const DOMHelper = {
 	},
 
 	isElement(element: any) {
-		return element instanceof Element || element instanceof HTMLDocument;  
+		return element instanceof Element || element instanceof HTMLDocument;
 	},
 
 	getBrowser() {
@@ -74,6 +76,8 @@ export const DOMHelper = {
 		}
 	},
 
+	getTarget: (event: any) => event.target || event.currentTarget,
+
 	getElementOffset(element: Element, defaultValue?: NoseurObject<any>) {
 		if (!element) {
 			return defaultValue || {
@@ -122,7 +126,7 @@ export const DOMHelper = {
 			.replace(/rem/g, ""));
 	},
 
-	absolutePositionRelatively(element: any, target: any) {
+	absolutePositionRelatively(element: any, target: any, horizontal: "left" | "right" = "right") {
 		if (!element || !target) return;
 		let elementDimensions = element.offsetParent ? { width: element.offsetWidth, height: element.offsetHeight } : this.getHiddenElementDimensions(element);
 		let targetOuterWidth = target.offsetWidth;
@@ -154,7 +158,11 @@ export const DOMHelper = {
 		} else {
 			left = targetOffset.left + windowScrollLeft;
 		}
-		element.style.left = (left - elementMarginLeft) + 'px';
+		if (horizontal === "right") {
+			element.style.left = (left - elementMarginLeft) + 'px';
+		} else {
+			element.style.left = (elementMarginLeft) + 'px';
+		}
 		element.style.top = `calc(${(top - elementMarginTop) + 'px'} ${operator} var(--componentMarginTopOrBottom, 0px))`;
 	},
 
@@ -204,6 +212,67 @@ export const DOMHelper = {
 	remToPx: (value: number) => value * 16,
 	pxToRem: (value: number) => value / 16,
 
+	calculateContentHeight(el: any, scanAmount: any) {
+		let origHeight = el.style.height,
+			height = el.offsetHeight,
+			scrollHeight = el.scrollHeight,
+			overflow = el.style.overflow;
+		if (height >= scrollHeight) {
+			el.style.height = (height + scanAmount) + 'px';
+			el.style.overflow = 'hidden';
+			if (scrollHeight < el.scrollHeight) {
+				while (el.offsetHeight >= el.scrollHeight) {
+					el.style.height = (height -= scanAmount) + 'px';
+				}
+				while (el.offsetHeight < el.scrollHeight) {
+					el.style.height = (height++) + 'px';
+				}
+				el.style.height = origHeight;
+				el.style.overflow = overflow;
+				return height;
+			}
+		} else {
+			return scrollHeight;
+		}
+	},
+
+	calculateLines(el: any) {
+		let style = (window.getComputedStyle) ? window.getComputedStyle(el) : el.currentStyle;
+		let lineHeight = style.lineHeight; if (lineHeight === "normal") lineHeight = 1.2;
+		lineHeight = parseInt(lineHeight, 10);
+		let taHeight = DOMHelper.calculateContentHeight(el, lineHeight);
+		return Math.ceil(taHeight / lineHeight);
+	},
+
+	calculateHeight(el: any) {
+		let style = (window.getComputedStyle) ? window.getComputedStyle(el) : el.currentStyle;
+		let lineHeight = style.lineHeight; if (lineHeight === "normal") lineHeight = 1.2;
+		lineHeight = parseInt(lineHeight, 10);
+		const lineCount = DOMHelper.calculateLines(el);
+		if (Number.isNaN(lineCount)) return parseInt(style.height, 10) - lineHeight;
+		return Math.ceil(DOMHelper.calculateLines(el) * lineHeight);
+	},
+
+    inViewport(el: HTMLElement, con?: any, orientation: Orientation = Orientation.HORIZONTAL_VERTICAL) { 
+		if (!con) con = document.documentElement;
+		let elRect = el.getBoundingClientRect();
+		let conRect = con.getBoundingClientRect();
+		let elReactVerticalOffsetTop = elRect.y - elRect.height;
+		let elReactVerticalOffsetBottom = (elRect.y - conRect.y) + elRect.height;
+		let elReactHorizontalOffsetLeft = elRect.x - elRect.width;
+		let elReactHorizontalOffsetRight = (elRect.x - conRect.x) + elRect.width;
+		const inViewportVerticallyTop = elReactVerticalOffsetTop >= 0 && elReactVerticalOffsetTop <= conRect.height;
+		const inViewportVerticallyBottom = elReactVerticalOffsetBottom >= 0 && elReactVerticalOffsetBottom <= conRect.height;
+		const inViewportVerticallyLeft = elReactHorizontalOffsetLeft >= 0 && elReactHorizontalOffsetLeft <= conRect.width;
+		const inViewportVerticallyRight = elReactHorizontalOffsetRight >= 0 && elReactHorizontalOffsetRight <= conRect.width;
+		const inViewportVertically = inViewportVerticallyTop || inViewportVerticallyBottom;
+		const inViewportHorizontally = inViewportVerticallyLeft || inViewportVerticallyRight;
+		if (orientation === Orientation.VERTICAL) return inViewportVertically;
+		if (orientation === Orientation.HORIZONTAL) return inViewportHorizontally;
+		if (orientation === Orientation.HORIZONTAL_OR_VERTICAL) return inViewportVertically || inViewportHorizontally;
+		return inViewportVertically && inViewportHorizontally;
+	}
+
 };
 
 export const ScrollHandler = {
@@ -217,7 +286,7 @@ export const ScrollHandler = {
 		return (element.parentNode) ? this.getElementParents(element.parentNode, parents.concat([element.parentNode])) : parents;
 	},
 
-	getScrollableParents(element: Node): Node[] {
+	getScrollableParents(element: Node, nuclearParentOnly: boolean = false): Node[] {
 		let scrollableParents: any[] = [];
 		if (!element) return scrollableParents;
 
@@ -233,7 +302,7 @@ export const ScrollHandler = {
 			let scrollSelectors = elementParent.nodeType === 1 && (elementParent as any).dataset['scrollselectors'];
 			if (scrollSelectors) {
 				let selectors = scrollSelectors.split(',');
-				for (let selector of selectors) {
+				for (let selector of selectors) { 
 					let el = this.querySelector(elementParent as Element, selector);
 					if (el && checkIfScrolable(el)) scrollableParents.push(el);
 				}
@@ -243,6 +312,7 @@ export const ScrollHandler = {
 			} else if (elementParent.nodeType === 9) {
 				scrollableParents.push(window);
 			}
+			if (nuclearParentOnly && scrollableParents.length) break;
 		}
 		return scrollableParents;
 	},
@@ -261,8 +331,8 @@ export const ScrollHandler = {
 		}
 	},
 
-	handle(element: Node, listener: any) {
-		const scrollableParents = !element ? [] : this.getScrollableParents(element);
+	handle(element: Node | Node[], listener: any, nuclearParentOnly: boolean = false) {
+		const scrollableParents: Node[] = !element ? [] : (Array.isArray(element) ? element : this.getScrollableParents(element, nuclearParentOnly));
 		return {
 			attach: () => this.attachScrollListener(scrollableParents, listener),
 			detach: () => this.detachScrollListener(scrollableParents, listener),

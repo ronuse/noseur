@@ -23,7 +23,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build:noseur": "cd ../ & npm run pack & cd showcase",
-    "clean:start": "rm -Rf node_modules/.cache & npm uninstall @ronuse/noseur & clear & npm install ../ronuse-noseur-1.0.0.tgz & npm start"
+    "clean:start": "sh -c 'rm -Rf node_modules/.cache; cp -r ../dist/* ./node_modules/@ronuse/noseur/dist/; npm start'"
   },
   "watch": {
     "clean:start": {
@@ -53,6 +53,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "npm-watch": "^0.11.0"
   }
 }

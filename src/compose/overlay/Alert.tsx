@@ -34,7 +34,7 @@ export interface AlertProps extends ComponentBaseProps<HTMLDivElement> {
     cancel: AlertControl | null,
     confirm: AlertControl | null,
     footerElements: NoseurElement;
-    component: React.FunctionComponent<Partial<ComponentBaseProps<NoseurDivElement>> & React.RefAttributes<NoseurDivElement>>;
+    component: React.FunctionComponent<Partial<ComponentBaseProps<NoseurDivElement, any>> & React.RefAttributes<NoseurDivElement>>;
 
     onHide: Function,
     onCancel: AlertEvent;
@@ -96,7 +96,6 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
     }
 
     componentWillUnmount() {
-        console.log("UNBMOUNTER");
         if (!this.documentClickListener) return;
         document.removeEventListener('click', this.documentClickListener);
         this.documentClickListener = undefined;

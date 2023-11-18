@@ -76,17 +76,18 @@ class CheckboxComponent extends React.Component<CheckboxProps, CheckboxState> {
 
     onCheckBoxClicked(event: React.FormEvent<NoseurFormElement | HTMLLabelElement>) {
         if (this.props.readOnly) return;
-        let checkedIndex = this.getCheckStatesIndex();
+        let newCheckedIndex = this.getCheckStatesIndex()+1;
+        if (newCheckedIndex >= this.props.checkStates.length) newCheckedIndex = 0;
         if (this.props.onChange) {
-            const checkState = this.props.checkStates[checkedIndex+1];
+            const checkState = this.props.checkStates[newCheckedIndex];
             this.props.onChange({
                 ...event,
                 checkState,
                 value: checkState?.value,
-                checked: !!checkState?.checked
+                checked: checkState?.checked
             } as any);
         }
-        this.setState({ checkedIndex: checkedIndex + 1 });
+        this.setState({ checkedIndex: newCheckedIndex });
     }
 
     getCheckStatesIndex() {

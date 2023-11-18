@@ -9,7 +9,7 @@ import { InputProps, TextInput } from "../../form/Input";
 import { FormControl, FormControlProps } from "./FormControl";
 import { ComponentBaseProps } from "../../core/ComponentBaseProps";
 import { NoseurElement, NumberRange } from "../../constants/Types";
-import { ProgressBar, ProgressBarProps } from "../../misc/ProgressBar";
+import { ProgressBar, ProgressBarManageRef, ProgressBarProps } from "../../misc/ProgressBar";
 
 export type ComposedPasswordEventHandler = () => void;
 export type ComposedPasswordStrengthHandler = (value: string) => NumberRange<0, 100>;
@@ -99,10 +99,10 @@ class ComposedPasswordComponent extends React.Component<ComposedPasswordProps, C
 
     renderStrengthIndictor() {
         if (!TypeChecker.isBoolean(this.props.strengthIndicator) || !this.props.strengthIndicator) return this.props.strengthIndicator;
-        const cachedSelfRef = this.props.progressProps.selfRef as any;
-        const progressProps = {
+        const cachedSelfRef = this.props.progressProps.manageRef as any;
+        const progressProps: Partial<ProgressBarProps> = {
             ...this.props.progressProps,
-            selfRef: (r: any) => {
+            manageRef: (r: ProgressBarManageRef | null) => {
                 this.progressBarComponent = r;
                 ObjectHelper.resolveRef(cachedSelfRef, r);
             }

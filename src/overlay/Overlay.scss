@@ -4,20 +4,19 @@
 	border: 0 none;
 	min-width: 50px;
 	position: absolute;
-	border: 1ps solid #f5f2f2;
 	--popoverArrowLeftOffset: 0px;
-	--componentMarginTopOrBottom: 0px;
+	--componentMarginTopOrBottom: 10px;
 	box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
 }
 
 .noseur-popover-arrow:before {
-	top: -5px;
 	content: " ";
 	display: block;
 	position: absolute;
 	pointer-events: none;
 	border-left: 5px solid transparent;
 	border-right: 5px solid transparent;
+	top: calc(0px - var(--componentMarginTopOrBottom, 5px));
 	left: calc(var(--popoverArrowLeftOffset, 0px) + 1.25rem);
 	border-bottom: var(--componentMarginTopOrBottom, 5px) solid #f2f2f2;
 }
@@ -25,7 +24,7 @@
 .noseur-popover-arrow-flipped:before {
 	top: 100%;
 	border-bottom: 0px;
-	border-top: 5px solid white;
+	border-top: 5px solid #f2f2f2;
 }
 
 .noseur-popover-enter {
@@ -61,13 +60,14 @@
 }
 
 .noseur-dialog {
-	display: flex;
 	width: 50%;
-	flex-direction: column;
+	display: flex;
+	max-width: 95%;
 	max-height: 90%;
-	-webkit-transform: scale(1);
-	transform: scale(1);
 	position: relative;
+	transform: scale(1);
+	flex-direction: column;
+	-webkit-transform: scale(1);
 }
 
 .noseur-dialog-modal {

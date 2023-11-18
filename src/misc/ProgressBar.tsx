@@ -7,13 +7,17 @@ import { ObjectHelper } from "../utils/ObjectHelper";
 import { ComponentBaseProps } from '../core/ComponentBaseProps';
 import { NoseurLabel, NoseurNummber, NumberRange } from "../constants/Types";
 
+export interface ProgressBarManageRef {
+    getValue: () => NumberRange<0, 100>;
+    setValue: (value: NumberRange<0, 100>) => void;
+}
+
 export enum ProgressBarMode {
     DETERMINATE,
     INDETERMINATE
 }
 
-
-export interface ProgressBarProps extends ComponentBaseProps<HTMLDivElement> {
+export interface ProgressBarProps extends ComponentBaseProps<HTMLDivElement, ProgressBarManageRef> {
     stripped: boolean;
     noLabel: boolean;
     mode: ProgressBarMode;
@@ -37,7 +41,7 @@ class ProgressBarComponent extends React.Component<ProgressBarProps, ProgressBar
     };
 
     componentDidMount(): void {
-        ObjectHelper.resolveSelfRef(this, {
+        ObjectHelper.resolveManageRef(this, {
             getValue: () => this.state.currentValue,
             setValue: (value: NumberRange<0, 100>) => this.setState({ currentValue: value }),
         });

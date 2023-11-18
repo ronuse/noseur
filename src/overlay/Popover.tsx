@@ -12,20 +12,29 @@ import { BaseZIndex, DOMHelper, ScrollHandler, ZIndexHandler } from "../utils/DO
 
 export type PopoverEvent = () => void;
 
-export interface PopoverProps extends ComponentBaseProps<NoseurDivElement> {
-    baseZIndex: number,
-    trapFocus: boolean,
-    dismissable: boolean,
-    matchTargetSize: boolean,
-    container: NoseurRawElement,
-    transitionOptions: NoseurObject<any>,
-    transitionTimeout: NoseurObject<any>,
-    pointingArrowClassName: string | null,
-    onOpenFocusRef: React.MutableRefObject<any>,
-    onCloseFocusRef: React.MutableRefObject<any>,
+export interface PopoverManageRef {
+    rePosition: () => void;
+    toggle: (event: Event, target?: HTMLElement) => void;
+}
 
-    onShow: PopoverEvent,
-    onHide: PopoverEvent,
+export interface PopoverProps<T1 = NoseurDivElement, T2 = PopoverManageRef, T3 = {}> extends ComponentBaseProps<T1, T2, T3> {
+    sticky: boolean;
+    baseZIndex: number;
+    trapFocus: boolean;
+    notDismissable: boolean;
+    dismissOnClick: boolean;
+    matchTargetSize: boolean;
+    container: NoseurRawElement;
+    positional: "left" | "right";
+    transitionOptions: NoseurObject<any>;
+    transitionTimeout: NoseurObject<any>;
+    pointingArrowClassName: string | null;
+    onOpenFocusRef: React.MutableRefObject<any>;
+    onCloseFocusRef: React.MutableRefObject<any>;
+    outsideClickLogic: "elemental" | "positional";
+
+    onShow: PopoverEvent;
+    onHide: PopoverEvent;
 }
 
 interface PopoverState {
@@ -35,7 +44,7 @@ interface PopoverState {
 class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
 
     public static defaultProps: Partial<PopoverProps> = {
-        dismissable: true,
+        outsideClickLogic: "elemental",
         transitionTimeout: { enter: 130, exit: 110 },
         pointingArrowClassName: "noseur-popover-arrow",
     };
@@ -45,7 +54,8 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
     };
 
     internalElement: any;
-    target: HTMLElement | undefined;
+    target: HTMLElement | any;
+    hostRectBeforeRerendering: DOMRect = {} as any;
     documentScrollHandler: NoseurObject<any> | undefined;
     windowResizeListener: ((event: Event) => void) | undefined;
     documentClickListener: ((event: Event) => void) | undefined;
@@ -65,13 +75,13 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
     }
 
 	componentDidMount() {
-        ObjectHelper.resolveSelfRef(this, {
+        ObjectHelper.resolveManageRef(this, {
             toggle: this.toggle,
             rePosition: this.rePosition,
         });
 	}
 
-    toggle(event: Event, target: HTMLElement) {
+    toggle(event: Event, target?: HTMLElement) {
         (!this.state.visible) ? this.showPopover(event, target) : this.hidePopover();
     }
 
@@ -106,7 +116,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
 		if (this.props.onHide) this.props.onHide();
     }
 
-	showPopover(event: Event, target: HTMLElement) {
+	showPopover(event: Event, target?: HTMLElement) {
 		this.target = target || event.target || event.currentTarget;
 		if (this.state.visible) {
 			this.resolvePopoverStyle();
@@ -125,19 +135,33 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
 		return target && target != eventTarget && target.isSameNode && !(target.isSameNode(eventTarget) || target.contains(eventTarget)) ;
 	}
 
-	isOutsideClicked(target: any) {
-		return this.internalElement && !(this.internalElement.isSameNode(target) || this.internalElement.contains(target));
+	isOutsideClicked(event: Event) {
+        if (this.props.outsideClickLogic === "elemental") {
+            const target = event.target;
+            return this.props.dismissOnClick || (this.internalElement && !(this.internalElement.isSameNode(target) || this.internalElement.contains(target)));
+        }
+        const { x, y } = event as any;
+        const hostRect = this.internalElement.getBoundingClientRect();
+        const hostX = Math.min(hostRect.x, this.hostRectBeforeRerendering.x ?? 0);
+        const hostY = Math.min(hostRect.y, this.hostRectBeforeRerendering.y ?? 0);
+        const hostWidth = Math.max(hostRect.width, this.hostRectBeforeRerendering.width ?? 0);
+        const hostHeight = Math.max(hostRect.height, this.hostRectBeforeRerendering.height ?? 0);
+        const hostAbsoluteWidth = hostX + hostWidth; const hostAbsoluteHeight = hostY + hostHeight;
+        const isOutSide = !((x >= hostX && x <= hostAbsoluteWidth) && (y >= hostY && y <= hostAbsoluteHeight));
+        this.hostRectBeforeRerendering = this.internalElement.getBoundingClientRect();
+        return isOutSide;
 	}
 
 	bindDocumentClickListener() {
-		if (this.documentClickListener || !this.props.dismissable) return;
+		if (this.documentClickListener || this.props.notDismissable) return;
         const elementToReceiveOpenFocus = this.props.onOpenFocusRef?.current as any;
         this.documentClickListener = (event: Event) => {
-            if (this.isNotToggleElement(event) && this.isOutsideClicked(event.target)) {
+            if (this.isNotToggleElement(event) && this.isOutsideClicked(event)) {
                 if (this.props.trapFocus && TypeChecker.isFunction(elementToReceiveOpenFocus?.focus)) {
                     elementToReceiveOpenFocus.focus();
                     return;
                 }
+                if (this.props.sticky) return;
                 this.hidePopover();
             }
         };
@@ -178,7 +202,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
 
     rePosition() {
 		if (!this.state.visible || !this.target) return;
-		DOMHelper.absolutePositionRelatively(this.internalElement, this.target);
+		DOMHelper.absolutePositionRelatively(this.internalElement, this.target, this.props.positional);
         const targetOffset = DOMHelper.getElementOffset(this.target);
 		const popoverOffset = DOMHelper.getElementOffset(this.internalElement);
         if (targetOffset.top > popoverOffset.top) {
@@ -200,7 +224,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
 		if (this.props.matchTargetSize) {
 			DOMHelper.matchStyles(this.target, [ this.internalElement ], [ "width" ], this.matchTargetSizeCb);
 		}
-		DOMHelper.absolutePositionRelatively(this.internalElement, this.target);
+		DOMHelper.absolutePositionRelatively(this.internalElement, this.target, this.props.positional);
 		if (!this.props.pointingArrowClassName?.startsWith("noseur-popover-arrow")) return;
 		const targetOffset = DOMHelper.getElementOffset(this.target);
 		const popoverOffset = DOMHelper.getElementOffset(this.internalElement);
@@ -224,10 +248,10 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
         };
         const forwardRef = this.props.forwardRef as React.ForwardedRef<NoseurDivElement>;
         const ref = (el: NoseurDivElement) => {
+            if (!el) return;
             this.internalElement = el;
-            if (!forwardRef) return;
-            if (forwardRef instanceof Function) forwardRef(el);
-            else forwardRef.current = el;
+            ObjectHelper.resolveRef(forwardRef, el);
+            if (!this.hostRectBeforeRerendering.width) this.hostRectBeforeRerendering = this.internalElement.getBoundingClientRect();
         };
 
 		return (

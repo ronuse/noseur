@@ -34,7 +34,7 @@ export const BoolHelper = {
 		return true;
 	},
 
-	allEquals(comparator: (o: any) => boolean, ...values: any[]) {
+	allEquals<T>(comparator: (o: T) => boolean, ...values: T[]) {
 		for (const value of values) {
 			if (!comparator(value)) return false;
 		}

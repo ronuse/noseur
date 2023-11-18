@@ -7,9 +7,13 @@ import { Alignment } from '../constants/Alignment';
 import { ObjectHelper } from '../utils/ObjectHelper';
 import { MicroBuilder } from "../utils/MicroBuilder";
 import { ComponentBaseProps } from '../core/ComponentBaseProps';
-import { NoseurButtonElement, NoseurIconElement, NoseurLabel, NoseurObject } from '../constants/Types';
+import { NoseurButtonElement, NoseurElement, NoseurIconElement, NoseurObject } from '../constants/Types';
 
-export interface ButtonProps extends ComponentBaseProps<NoseurButtonElement> {
+export interface ButtonManageRef {
+    setLoadingState: (isLoading: boolean) => void;
+}
+
+export interface ButtonProps extends ComponentBaseProps<NoseurButtonElement, ButtonManageRef> {
     link: string;
     fill: boolean;
     raised: boolean;
@@ -17,20 +21,21 @@ export interface ButtonProps extends ComponentBaseProps<NoseurButtonElement> {
     iconOnly: boolean;
     textOnly: boolean;
     outlined: boolean;
-    text: NoseurLabel;
     linkTarget: string;
+    text: NoseurElement;
     borderless: boolean;
     fillOnHover: boolean;
     fillLeftIcon: boolean;
     rippleEffect: boolean;
     leftIcon: NoseurIconElement;
     rightIcon: NoseurIconElement;
+    loadingProps: Partial<ButtonProps>
     leftIconRelativeAlignment: Alignment;
     rightIconRelativeAlignment: Alignment;
 };
 
 interface ButtonState {
-    children: React.ReactNode;
+    isLoading: boolean,
     rippleState: { isRippling: boolean, x: number, y: number, diameter?: number };
 };
 
@@ -43,14 +48,20 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
     };
 
     state: ButtonState = {
+        isLoading: false,
         rippleState: { isRippling: false, x: -1, y: -1 },
-        children: this.props.children || this.props.text,
     };
 
     constructor(props: ButtonProps) {
         super(props);
         
         this.onClick = this.onClick.bind(this);
+    }
+
+    componentDidMount() {
+        ObjectHelper.resolveManageRef(this, {
+            setLoadingState: (isLoading: boolean) => this.setState({ isLoading }),
+        });
     }
 
     componentDidUpdate(_: Readonly<ButtonProps>, prevState: Readonly<ButtonState>) {
@@ -82,34 +93,39 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
     }
 
     render() {
-        const eventProps = ObjectHelper.extractEventProps(this.props);
+        const activeProps = {
+            ...this.props,
+            ...(this.state.isLoading ? (this.props.loadingProps || {}) : {})
+        };
+        const eventProps = ObjectHelper.extractEventProps(activeProps);
         const className = Classname.build(
-            (!this.props.noStyle && this.props.raised) ? `${this.props.scheme}-bd-rd` : null,
-            (!this.props.noStyle && this.props.scheme) ? `${this.props.scheme}-bd-3px-bx-sw-ac` : null,
-            (!this.props.noStyle && this.props.scheme) ? `${this.props.scheme}-bd-3px-bx-sw-fc` : null,
-            (!this.props.noStyle && !this.props.textOnly && !this.props.outlined) ? this.props.scheme : null,
-            (!this.props.noStyle && this.props.scheme && this.props.outlined) ? `${this.props.scheme}-bd-cl` : null,
-            (!this.props.noStyle && this.props.scheme && (this.props.outlined || this.props.textOnly)) ? `${this.props.scheme}-tx` : null,
-            (!this.props.noStyle && this.props.rippleEffect && (this.props.outlined || this.props.textOnly)) ? `${this.props.scheme}-rp` : null,
-            (!this.props.noStyle && this.props.scheme && (this.props.outlined || this.props.textOnly) && this.props.fillOnHover) ? `${this.props.scheme}-bg-hv` : null,
+            (!activeProps.noStyle && activeProps.raised) ? `${activeProps.scheme}-bd-rd` : null,
+            (!activeProps.noStyle && activeProps.scheme) ? `${activeProps.scheme}-bd-3px-bx-sw-ac` : null,
+            (!activeProps.noStyle && activeProps.scheme) ? `${activeProps.scheme}-bd-3px-bx-sw-fc` : null,
+            (!activeProps.noStyle && !activeProps.textOnly && !activeProps.outlined) ? activeProps.scheme : null,
+            (!activeProps.noStyle && activeProps.scheme && activeProps.outlined) ? `${activeProps.scheme}-bd-cl` : null,
+            (!activeProps.noStyle && activeProps.scheme && (activeProps.outlined || activeProps.textOnly)) ? `${activeProps.scheme}-tx` : null,
+            (!activeProps.noStyle && activeProps.rippleEffect && (activeProps.outlined || activeProps.textOnly)) ? `${activeProps.scheme}-rp` : null,
+            (!activeProps.noStyle && activeProps.scheme && (activeProps.outlined || activeProps.textOnly) && activeProps.fillOnHover) ? `${activeProps.scheme}-bg-hv` : null,
             {
-                'noseur-wd-100-pct': this.props.fill,
-                'noseur-pd-10': !this.state.children && !this.props.iconOnly,
-                'noseur-disabled': !this.props.noStyle && this.props.disabled,
-                'noseur-rounded-bd': !this.props.noStyle && this.props.rounded,
-                'noseur-no-bg': !this.props.noStyle && (this.props.outlined || this.props.textOnly),
-                'noseur-no-bd': !this.props.noStyle && (this.props.borderless || (this.props.textOnly && !this.props.outlined)),
-            }, "noseur-button", this.props.className);
+                'noseur-wd-auto': activeProps.fill,
+                'noseur-disabled': !activeProps.noStyle && activeProps.disabled,
+                'noseur-rounded-bd': !activeProps.noStyle && activeProps.rounded,
+                'noseur-pd-10': !activeProps.children && !activeProps.text && !activeProps.iconOnly,
+                'noseur-no-bg': !activeProps.noStyle && (activeProps.outlined || activeProps.textOnly),
+                'noseur-no-bd': !activeProps.noStyle && (activeProps.borderless || (activeProps.textOnly && !activeProps.outlined)),
+            }, "noseur-button", activeProps.className);
         const children: React.ReactNode[] = [];
-        if (this.state.children) children.push(this.state.children);
-        const rightIcon = MicroBuilder.buildIcon(this.props.rightIcon, {
-            scheme: this.props.scheme,
-            relativeAlignment: children.length ? this.props.rightIconRelativeAlignment : Alignment.NONE
+        if (activeProps.text) children.push(activeProps.text);
+        if (activeProps.children) children.push(activeProps.children);
+        const rightIcon = MicroBuilder.buildIcon(activeProps.rightIcon, {
+            scheme: activeProps.scheme,
+            relativeAlignment: children.length ? activeProps.rightIconRelativeAlignment : Alignment.NONE
         });
-        const leftIcon = MicroBuilder.buildIcon(this.props.leftIcon, {
-            scheme: this.props.scheme,
-            relativeAlignment: children.length ? this.props.leftIconRelativeAlignment : Alignment.NONE,
-            fillIcon: this.props.fillLeftIcon
+        const leftIcon = MicroBuilder.buildIcon(activeProps.leftIcon, {
+            scheme: activeProps.scheme,
+            relativeAlignment: children.length ? activeProps.leftIconRelativeAlignment : Alignment.NONE,
+            fillIcon: activeProps.fillLeftIcon
         });
         if (rightIcon) children.push(rightIcon);
         if (leftIcon) children.unshift(leftIcon);
@@ -125,14 +141,14 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
             children,
             className,
             ...eventProps,
-            key: this.props.key,
-            style: this.props.style,
+            key: activeProps.key,
+            style: activeProps.style,
         };
-        if (this.props.rippleEffect) props.onClick = this.onClick;
+        if (activeProps.rippleEffect) props.onClick = this.onClick;
 
-        return (!this.props.link
+        return (!activeProps.link
             ? <button ref={this.props.forwardRef as React.ForwardedRef<HTMLButtonElement>} {...props} />
-            : <a ref={this.props.forwardRef as React.ForwardedRef<HTMLAnchorElement>} {...props} href={this.props.link} target={this.props.linkTarget} />);
+            : <a ref={this.props.forwardRef as React.ForwardedRef<HTMLAnchorElement>} {...props} href={activeProps.link} target={activeProps.linkTarget} />);
     }
 
 }
@@ -140,3 +156,13 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
 export const Button = React.forwardRef<HTMLButtonElement, Partial<ButtonProps>>((props, ref) => (
     <ButtonComponent {...props} forwardRef={ref as React.ForwardedRef<NoseurButtonElement>} />
 ));
+
+export function buildButtonControl(control: Partial<ButtonProps> | NoseurElement, customNonOverridingProps: Partial<ButtonProps>, cb?: (e: any) => void, className?: string) {
+    if (!control || React.isValidElement(control)) return control as any;
+    const buttonProps: Partial<ButtonProps> = {
+        ...customNonOverridingProps,
+        ...(control as any),
+        className: Classname.build(className, (control as any).className)
+    };
+    return <Button {...buttonProps} onClick={cb} />
+}

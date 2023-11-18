@@ -2,19 +2,31 @@
 import "./Form.css";
 import React from 'react';
 import { Scheme } from '../constants/Scheme';
+import { DOMHelper } from "../utils/DOMUtils";
 import { Classname } from "../utils/Classname";
 import { ObjectHelper } from "../utils/ObjectHelper";
 import { ComponentBaseProps } from '../core/ComponentBaseProps';
 import { InputFilter, InputHelper } from "../utils/InputHelper";
 import { NoseurFormElement, NoseurInputValue } from "../constants/Types";
 
-export interface InputProps extends ComponentBaseProps<NoseurFormElement> {
+export type InputOnInputCompleteHandler = (value: string) => void;
+
+export interface BareInputManageRef<T> {
+    clear: () => void;
+    value: () => T | null | undefined;
+}
+
+export interface InputManageRef extends BareInputManageRef<string> {
+}
+
+export interface InputProps extends ComponentBaseProps<NoseurFormElement, InputManageRef> {
+    rows: number;
     type: string;
     mask: string;
     fill: boolean;
     raised: boolean;
-    rounded: boolean;
     filled: boolean;
+    rounded: boolean;
     flushed: boolean;
     maskSlot: string;
     readOnly: boolean;
@@ -23,8 +35,10 @@ export interface InputProps extends ComponentBaseProps<NoseurFormElement> {
     borderless: boolean;
     inputFilter: RegExp;
     placeholder: string;
+    autoGrowHeight: boolean;
     defaultValue: NoseurInputValue;
 
+    onInputComplete: InputOnInputCompleteHandler | undefined;
     onInputEmpty: React.FormEventHandler<NoseurFormElement> | undefined;
     onFirstInput: React.FormEventHandler<NoseurFormElement> | undefined;
 };
@@ -45,13 +59,33 @@ class Input extends React.Component<InputProps, InputState> {
         hasValue: !!this.props.defaultValue
     };
 
+    internalInputElement: NoseurFormElement | undefined;
+
     constructor(props: InputProps) {
         super(props);
 
+        this.onBlur = this.onBlur.bind(this);
+        this.onKeyUp = this.onKeyUp.bind(this);
         this.onInput = this.onInput.bind(this);
         this.onKeyDown = this.onKeyDown.bind(this);
         this.resolveMask = this.resolveMask.bind(this);
         this.onPasteCapture = this.onPasteCapture.bind(this);
+    }
+
+    componentDidMount() {
+        ObjectHelper.resolveManageRef(this, {
+            clear: () => {
+                if (!this.internalInputElement) return;
+                this.internalInputElement.value = "";
+                if (this.props.autoGrowHeight) {
+                    this.internalInputElement.style.height = DOMHelper.calculateHeight(this.internalInputElement) + "px";
+                }
+            },
+            value: () => {
+                if (!this.internalInputElement) return null;
+                return this.internalInputElement.value;
+            },
+        });
     }
 
     resolveMask(element: HTMLFormElement) {
@@ -109,10 +143,24 @@ class Input extends React.Component<InputProps, InputState> {
         if (this.props.onInputEmpty && this.state.hasValue && !valueLength) this.props.onInputEmpty(event);
         if (!this.state.hasValue && valueLength) this.setState({ hasValue: true });
         if (!valueLength) this.setState({ hasValue: false });
+        if (this.props.autoGrowHeight) {
+            (event.target as HTMLFormElement).style.height = DOMHelper.calculateHeight(event.target as HTMLFormElement) + "px";
+        }
+    }
+
+    onBlur(event: React.FocusEvent<NoseurFormElement>) {
+        this.props.onBlur && this.props.onBlur(event);
+        this.props.onInputComplete && this.props.onInputComplete(event.target.value);
+    }
+
+    onKeyUp(event: React.KeyboardEvent<NoseurFormElement>) {
+        this.props.onKeyUp && this.props.onKeyUp(event);
+        const key = InputHelper.getKey(event);
+        if (key == 13) this.props.onInputComplete && this.props.onInputComplete((event.target as any).value);
     }
 
     render() {
-        const eventProps = ObjectHelper.extractEventProps(this.props, [ "onInputEmpty", "onFirstInput" ]);
+        const eventProps = ObjectHelper.extractEventProps(this.props, [ "onInputEmpty", "onFirstInput", "onInputComplete" ]);
         const className = Classname.build(
             (!this.props.noStyle && this.props.highlight) ? `${this.props.scheme}-bd-cl` : null,
             (!this.props.noStyle && this.props.scheme && !this.props.flushed) ? `${this.props.scheme}-bd-3px-bx-sw-fc` : null,
@@ -124,7 +172,7 @@ class Input extends React.Component<InputProps, InputState> {
                 'noseur-input-flushed': this.props.flushed,
                 'noseur-skeleton': this.props.scheme === Scheme.SKELETON,
                 'noseur-raised-bd': !this.props.noStyle && this.props.raised,
-                'noseur-rounded-bd': !this.props.noStyle && this.props.rounded,
+                'noseur-bd-radius-20': !this.props.noStyle && this.props.rounded,
                 'noseur-input-filled': !this.props.noStyle && this.props.filled,
             }, "noseur-input", this.props.className);
         const props = {
@@ -132,6 +180,7 @@ class Input extends React.Component<InputProps, InputState> {
             ...eventProps,
             id: this.props.id,
             key: this.props.key,
+            rows: this.props.rows,
             type: this.props.type,
             name: this.props.name,
             style: this.props.style,
@@ -140,13 +189,20 @@ class Input extends React.Component<InputProps, InputState> {
             placeholder: this.props.placeholder,
             defaultValue: this.props.defaultValue,
 
+            onBlur: this.onBlur,
+            onKeyUp: this.onKeyUp,
             onInput: this.onInput,
             onKeyDown: this.onKeyDown,
             onPasteCapture: this.onPasteCapture,
+            ref: (el: any) => {
+                if (!el) return;
+                this.internalInputElement = el;
+                ObjectHelper.resolveRef(this.props.forwardRef, el);
+            }
         };
         return (this.props.type === "textarea"
-            ? <textarea ref={this.props.forwardRef as React.ForwardedRef<HTMLTextAreaElement>} {...props} />
-            : <input ref={this.props.forwardRef as React.ForwardedRef<HTMLInputElement>} {...props} />);
+            ? <textarea {...props} />
+            : <input {...props} />);
     }
 
 }

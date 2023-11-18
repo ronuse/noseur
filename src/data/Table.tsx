@@ -3,23 +3,18 @@ import "./Data.css";
 import React from 'react';
 import { Classname } from "../utils/Classname";
 import { BoolHelper } from "../utils/BoolHelper";
+import { ObjectHelper } from "../utils/ObjectHelper";
 import { ColumnProps, ColumnComponent } from "./Column";
-import { ComponentBaseProps } from '../core/ComponentBaseProps';
+import { DataComponent, DataProps, DataState } from "./Data";
 import { NoseurElement, NoseurObject, SortDirection, SortIcons, SortMode } from '../constants/Types';
-import { Paginator, PaginatorPageChangeOption, PaginatorProps, PaginatorTemplateOptions } from "../presentation/Paginator";
 
-export enum SelectionMode {
+export enum TableSelectionMode {
     NONE,
     SINGLE,
     MULTIPLE
 }
 
-export type TableTemplateHandler = () => NoseurElement;
-export type TableRowSelectionHandler = (value: any) => boolean;
 export type TableSelectionEventHandler = (value: any) => NoseurElement;
-export type TableColumnTemplateHandler = (value: any) => NoseurElement;
-export type TableSelectionElementtemplateHandler = (index: number) => NoseurElement;
-export type TableDataComparatorHandler = (sortDirection: SortDirection, dataKey: string, p: NoseurObject<any>, c: NoseurObject<any>) => number;
 
 export interface RowProps {
     id?: string;
@@ -29,49 +24,25 @@ export interface RowProps {
     otherProps?: NoseurObject<any>;
 }
 
-export interface TableProps extends ComponentBaseProps<HTMLTableElement> {
-    sortField: string;
-    paginate: boolean;
-    noDivider: boolean;
+export interface TableProps extends DataProps<HTMLTableElement> {
     sortMode: SortMode;
     rowProps: RowProps;
-    scrollable: boolean;
-    rowsPerPage: number;
     sortIcons: SortIcons;
-    totalRecords: number;
-    stripedRows: boolean;
     hideHeaders: boolean;
-    rowSelection: boolean;
     cellSelection: boolean;
-    showGridlines: boolean;
     canDisableSort: boolean;
-    dataSelectionKey: string;
-    data: NoseurObject<any>[];
-    emptyState: NoseurElement;
-    selectionMode: SelectionMode;
     sortOrder: null | 0 | 1 | -1;
-    paginatorProps: PaginatorProps;
-    allowNoDataPagination: boolean;
-    paginatorTemplate: PaginatorTemplateOptions;
-    children: React.ReactElement<ColumnProps>[];
+    selectionMode: TableSelectionMode;
+    children: React.ReactElement<ColumnProps> | React.ReactElement<ColumnProps>[];
 
-    header: TableTemplateHandler;
-    footer: TableTemplateHandler;
-    compareData: TableDataComparatorHandler;
-    onSelection: TableSelectionEventHandler;
-    isRowSelectable: TableRowSelectionHandler;
-    onPageChange?: (event: PaginatorPageChangeOption) => void;
-    selectionElementTemplate: TableSelectionElementtemplateHandler;
+    onColumnSelection: TableSelectionEventHandler;
 };
 
-interface TableState {
-    dataOffset: number;
-    currentPage: number;
+interface TableState extends DataState {
     lastSortColumn?: string;
-    activeData: NoseurObject<any>[];
 };
 
-class TableComponent extends React.Component<TableProps, TableState> {
+class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableState> {
 
     public static defaultProps: Partial<TableProps> = {
         data: [],
@@ -102,7 +73,7 @@ class TableComponent extends React.Component<TableProps, TableState> {
     }
 
     componentDidUpdate(prevProps: Readonly<TableProps>, _: Readonly<TableState>) {
-        if (!BoolHelper.deepEqual(prevProps.data, this.props.data, this.usedDataKeys)) {
+        if (!BoolHelper.deepEqual(prevProps.data, this.props.data, [...this.usedDataKeys, "totalRecords"])) {
             this.setState({ activeData: this.props.data });
             Object.keys(this.columnSelfRefs).forEach((dk: string) => {
                 this.columnSelfRefs[dk]!.unSort();
@@ -121,13 +92,13 @@ class TableComponent extends React.Component<TableProps, TableState> {
         }
         if (sortDirection == SortDirection.NONE) {
             this.setState({ activeData: this.props.data.map((v: NoseurObject<any>, index: number) => {
-                v[dataKey] = this.props.data[index][dataKey];
+                v[dataKey] = ObjectHelper.objectGetWithStringTemplate(this.props.data[index], dataKey);
                 return v;
             }), lastSortColumn: dataKey });
             return;
         }
         data.sort((p: NoseurObject<any>, c: NoseurObject<any>) => {
-            const prev = p[dataKey], current = c[dataKey];
+            const prev = ObjectHelper.objectGetWithStringTemplate(p, dataKey), current = ObjectHelper.objectGetWithStringTemplate(c, dataKey);
             if (this.props.compareData) return this.props.compareData(sortDirection, dataKey, prev, current);
             const comp = BoolHelper.compare(prev, current);
             if (comp == 1 && sortDirection == SortDirection.BACKWARD) return -1;
@@ -136,24 +107,18 @@ class TableComponent extends React.Component<TableProps, TableState> {
         this.setState({ activeData: data, lastSortColumn: dataKey });
     }
 
-    onPageChange(event: PaginatorPageChangeOption) {
-        this.setState({
-            currentPage: event.currentPage,
-            dataOffset: (event.currentPage - 1) * this.props.rowsPerPage
-        });
-    }
-
     renderTableBody() {
         let data = this.state.activeData.slice(this.state.dataOffset, (this.props.rowsPerPage + this.state.dataOffset));
         if (!data.length && !this.props.allowNoDataPagination) data = this.state.activeData;
+        const children: any = (this.props.children as any).length ? this.props.children : [this.props.children];
 
         const rows = data.map((data: NoseurObject<any>, index: number) => {
-            const columns = this.props.children.map((child: React.ReactElement<ColumnProps>, sindex: number) => {
+            const columns = children?.map((child: React.ReactElement<ColumnProps>, sindex: number) => {
                 return React.createElement(ColumnComponent, {
                     ...(child.props),
                     sortable: false,
                     key: (child.props.key || sindex),
-                    value: (child.props.dataKey ? data[child.props.dataKey] : data),
+                    value: (child.props.dataKey ? ObjectHelper.objectGetWithStringTemplate(data, child.props.dataKey) : data),
                 });
             });
             return (<tr key={index} role="row" data-n-group="body-row">{columns}</tr>);
@@ -165,7 +130,8 @@ class TableComponent extends React.Component<TableProps, TableState> {
     }
 
     renderTableHeader() {
-        const columns = this.props.children.map((child: React.ReactElement<ColumnProps>, index: number) => {
+        const children: any = (this.props.children as any).length ? this.props.children : [this.props.children];
+        const columns = children?.map((child: React.ReactElement<ColumnProps>, index: number) => {
             const cachedOnSort = child.props.onSort;
             const onSort = (sortDirection: SortDirection) => {
                 if (cachedOnSort) cachedOnSort(sortDirection);
@@ -174,16 +140,16 @@ class TableComponent extends React.Component<TableProps, TableState> {
             if (child.props.dataKey && !this.usedDataKeys.includes(child.props.dataKey)) this.usedDataKeys.push(child.props.dataKey);
             let columnSelfRef: React.ForwardedRef<any>;
             if (child.props.sortable && this.props.sortMode !+ SortMode.MULTIPLE) {
-                const cachedSelfRef = child.props.selfRef;
+                const cachedManageRef = child.props.manageRef;
                 columnSelfRef = (r: any) => {
-                    if (cachedSelfRef) {
-                        if (typeof cachedSelfRef == "function") cachedSelfRef(r);
-                        else cachedSelfRef.current = r;
+                    if (cachedManageRef) {
+                        if (typeof cachedManageRef == "function") cachedManageRef(r);
+                        else cachedManageRef.current = r;
                     }
                     this.columnSelfRefs[child.props.dataKey] = r;
                 }
             } else {
-                columnSelfRef = child.props.selfRef;
+                columnSelfRef = child.props.manageRef;
             }
             return React.createElement(ColumnComponent, {
                 ...(child.props),
@@ -191,7 +157,7 @@ class TableComponent extends React.Component<TableProps, TableState> {
                 onSort: onSort,
                 template: undefined,
                 group: "column-header",
-                selfRef: columnSelfRef!,
+                manageRef: columnSelfRef!,
                 key: (child.props.key || index),
                 valueClassName: "noseur-column-header",
                 sortIcons: (this.props.sortIcons || child.props.sortIcons),
@@ -208,7 +174,8 @@ class TableComponent extends React.Component<TableProps, TableState> {
 
     renderTableFooter() {
         let hasNoFooter = true;
-        const columns = this.props.children.map((child: React.ReactElement<ColumnProps>, index: number) => {
+        const children: any = (this.props.children as any).length ? this.props.children : [this.props.children];
+        const columns = children?.map((child: React.ReactElement<ColumnProps>, index: number) => {
             if (child.props.footer) hasNoFooter = false;
             return React.createElement(ColumnComponent, {
                 ...(child.props),
@@ -235,51 +202,18 @@ class TableComponent extends React.Component<TableProps, TableState> {
         const tableBody = this.renderTableBody();
         const tableFooter = this.renderTableFooter();
         const tableHeader = this.props.hideHeaders ? null : this.renderTableHeader();
-        const className = Classname.build('noseur-table', {
+        const className = Classname.build('noseur-data-container noseur-table', {
             "noseur-disabled": this.props.disabled,
-            "noseur-table-striped": this.props.stripedRows,
-            "noseur-table-grid-h": !hasHeader && this.props.showGridlines,
-            "noseur-table-grid-f": !hasFooter && this.props.showGridlines && this.props.data?.length,
+            "noseur-data-striped": this.props.stripedRows,
+            "noseur-data-grid-h": !hasHeader && this.props.showGridlines,
+            "noseur-data-grid-f": !hasFooter && this.props.showGridlines && this.props.data?.length,
         });
 
-        return (<table {...props} role="table" data-n-group="table" className={className}>
+        return (<table {...props} role="table" data-n-group="table" className={className} ref={this.props.forwardRef}>
             {tableHeader}
             {tableBody}
             {tableFooter}
         </table>);
-    }
-
-    renderTableFixtures(fixture: TableTemplateHandler, className: string) {
-        if (!fixture) return null;
-        return <div className={className}>{fixture()}</div>
-    }
-
-    renderEmptyState() {
-        if (this.props.data?.length) return null;
-        return <div className="noseur-table-empty-state">{this.props.emptyState}</div>
-    }
-
-    renderPaginator(hasFooter: boolean) {
-        if (!this.props.paginate) return null;
-        const props: PaginatorProps = {
-            ...(this.props.paginatorProps || {}),
-            rowsPerPage: this.props.rowsPerPage,
-            template: this.props.paginatorTemplate,
-            scheme: this.props.paginatorProps?.scheme || this.props.scheme,
-            totalRecords: this.props.totalRecords || this.props.data?.length,
-        };
-        const cachedOnPageChange = props.onPageChange;
-        props.onPageChange = (event: PaginatorPageChangeOption) => {
-            this.onPageChange(event);
-            if (cachedOnPageChange) cachedOnPageChange(event);
-            if (this.props.onPageChange) this.props.onPageChange(event);
-        };
-        const className = Classname.build(props.className, {
-            "noseur-table-grid-f": !hasFooter && this.props.showGridlines,
-            "noseur-no-bd-t": !hasFooter && this.props.data?.length && this.props.showGridlines,
-        });
-
-        return (<Paginator {...props} className={className} />);
     }
 
     render() {
@@ -288,11 +222,11 @@ class TableComponent extends React.Component<TableProps, TableState> {
             style: this.props.style,
         };
         const emptyState = this.renderEmptyState();
-        const header = this.renderTableFixtures(this.props.header, "noseur-table-header");
-        const footer = this.renderTableFixtures(this.props.footer, "noseur-table-footer");
-        const className = Classname.build('noseur-table-compound', {
-            "noseur-table-grid": this.props.showGridlines,
-            "noseur-table-no-divider": this.props.noDivider && !this.props.showGridlines,
+        const header = this.renderFixtures(this.props.header, "noseur-data-header");
+        const footer = this.renderFixtures(this.props.footer, "noseur-data-footer");
+        const className = Classname.build('noseur-data-compound', {
+            "noseur-data-grid": this.props.showGridlines,
+            "noseur-data-no-divider": this.props.noDivider && !this.props.showGridlines,
         }, this.props.className, (this.props.scheme ? `${this.props.scheme}-vars` : null));
         const paginator = this.renderPaginator(!!footer);
         const table = this.renderTable(!!header, !!footer);

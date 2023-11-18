@@ -13,7 +13,11 @@ export type ColumnTemplateHandler = () => NoseurElement;
 export type ValuedColumnTemplateHandler = (value: any) => NoseurElement;
 export type ColumnOnSortHandler = (sortDirection: SortDirection) => void;
 
-export interface ColumnProps extends ComponentBaseProps<HTMLTableColElement> {
+export interface ColumnManageRef {
+    unSort: () => void;
+}
+
+export interface ColumnProps extends ComponentBaseProps<HTMLTableColElement, ColumnManageRef> {
     value: any;
     group: string;
     element: string;
@@ -55,7 +59,7 @@ export class ColumnComponent extends React.Component<ColumnProps, ColumnState> {
     }
 
 	componentDidMount() {
-        ObjectHelper.resolveSelfRef(this, {
+        ObjectHelper.resolveManageRef(this, {
             unSort: this.unSort,
         });
 	}

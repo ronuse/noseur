@@ -61,10 +61,10 @@ function Schemer() {
     background-color: ${mainColor};
 }
 .${name}-vars {
-    --tableFixtureColor: ${accentColor};
-	--tableFixtureBackgroundColor: ${mainColor};
-	--tableBorderColor: ${secondaryAccentColor};
-	--tableStripColor: ${hexToRgbA(mainColor, 0.07)};
+    --fixtureColor: ${accentColor};
+	--fixtureBackgroundColor: ${mainColor};
+	--dataBorderColor: ${secondaryAccentColor};
+	--stripColor: ${hexToRgbA(mainColor, 0.07)};
 }
 .${name}-tx,
 .${name}-tx-hv:hover {

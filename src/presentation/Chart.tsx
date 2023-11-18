@@ -23,7 +23,12 @@ export const ChartType = {
 
 export type ChartData = ChartJsData<any, any[], unknown> | ChartDataCustomTypesPerDataset<any, any[], unknown>;
 
-export interface ChartProps extends ComponentBaseProps<HTMLDivElement> {
+export interface ChartManageRef {
+    getChart: () => any;
+    update: (type: ChartTypeRegistry | string, data: ChartData, options: NoseurObject<any>) => void;
+}
+
+export interface ChartProps extends ComponentBaseProps<HTMLDivElement, ChartManageRef> {
     data: ChartData;
     canvasClassName: string;
     options: NoseurObject<any>;
@@ -58,7 +63,7 @@ export class ChartComponent extends React.Component<ChartProps, ChartState> {
 
     componentDidMount(): void {
         this.renderChart(this.props.type, this.props.data, this.props.options);
-        ObjectHelper.resolveSelfRef(this, {
+        ObjectHelper.resolveManageRef(this, {
             update: this.renderChart,
             getChart: () => this.chart,
         });

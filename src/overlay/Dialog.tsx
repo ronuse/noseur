@@ -7,13 +7,20 @@ import { TypeChecker } from "../utils/TypeChecker";
 import { Alignment } from "../constants/Alignment";
 import { CSSTransition } from 'react-transition-group';
 import { ComponentBaseProps } from "../core/ComponentBaseProps";
-import { NoseurElement, NoseurObject, NoseurRawElement } from "../constants/Types";
 import { BaseZIndex, DOMHelper, ZIndexHandler } from "../utils/DOMUtils";
+import { NoseurElement, NoseurObject, NoseurRawElement } from "../constants/Types";
+import { ObjectHelper } from "../utils/ObjectHelper";
 
 export type DialogEvent = () => void;
 export type DialogMaximizeEvent = (event?: any) => boolean;
 
-export interface DialogProps extends ComponentBaseProps<HTMLDivElement> {
+export interface DialogManageRef {
+    show: () => void;
+    hide: () => void;
+    toggle: () => void;
+}
+
+export interface DialogProps extends ComponentBaseProps<HTMLDivElement, DialogManageRef> {
     visible: boolean,
     baseZIndex: number,
     maximized: boolean,
@@ -87,6 +94,11 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
     }
 
 	componentDidMount() {
+        ObjectHelper.resolveManageRef(this, {
+            show: () => this.setState({ visible: true }),
+            hide: () => this.setState({ visible: false }),
+            toggle: () => this.setState({ visible: !this.props.visible }),
+        });
 		if (this.props.visible) {
 			this.setState({ visible: true }, () => {
 				ZIndexHandler.setElementZIndex(this.internalModalElement, this.props.baseZIndex);

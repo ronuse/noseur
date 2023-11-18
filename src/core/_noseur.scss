@@ -28,6 +28,10 @@
 	pointer-events: none;
 }
 
+.noseur-all-pointer-event {
+	pointer-events: all;
+}
+
 .noseur-readonly {
 	@extend .noseur-no-pointer-event;
 	cursor: default;
@@ -47,6 +51,10 @@
 }
 
 /* Sizes */
+
+.noseur-wd-auto {
+	width: auto;
+}
 
 .noseur-wd-100-pct {
 	width: 100%;
@@ -82,6 +90,14 @@
 	padding: 10px;
 }
 
+.noseur-pd-l-0 {
+	padding-left: 0px;
+}
+
+.noseur-pd-r-0 {
+	padding-right: 0px;
+}
+
 /* Styling */
 
 .noseur-no-bg {
@@ -92,15 +108,32 @@
 
 /* Layout */
 
+@mixin __noseur-fl-d-r() {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+}
+
+.noseur-fl-d-r {
+	@include __noseur-fl-d-r();
+}
+
 .noseur-fl-d-r-r {
+	@include __noseur-fl-d-r();
 	flex-direction: row-reverse;
 }
 
-.noseur-fl-d-c {
+@mixin __noseur-fl-d-c() {
+	display: flex;
 	flex-direction: column;
 }
 
+.noseur-fl-d-c {
+	@include __noseur-fl-d-c();
+}
+
 .noseur-fl-d-c-r {
+	@include __noseur-fl-d-c();
 	flex-direction: column-reverse;
 }
 
@@ -111,6 +144,10 @@
 /* Border Properties */
 
 .noseur-rounded-bd {
+	border-radius: 50%;
+}
+
+.noseur-bd-radius-20 {
 	border-radius: 20px;
 }
 
@@ -284,10 +321,15 @@ $schemes: (
 }
 
 @mixin noseur-scheme-vars($main: #f5f8fa, $accent: #293742, $secondary-accent: #e5dee6) {
-	--tableFixtureColor: #{$accent};
-	--tableFixtureBackgroundColor: #{$main};
-	--tableBorderColor: #{$secondary-accent};
-	--tableStripColor: #{toRgba($main, 0.07)};
+	--mainColor: #{$main};
+	--textColor: #{$main};
+	--accentColor: #{$accent};
+	--fixtureColor: #{$accent};
+	--fixtureBackgroundColor: #{$main};
+	--stripColor: #{toRgba($main, 0.07)};
+	--dataBorderColor: #{$secondary-accent};
+	--mainColor01Percent: #{toRgba($main, 0.1)};
+	--secondaryAccentColor: #{$secondary-accent};
 }
 
 .noseur-stateless {
@@ -308,6 +350,9 @@ $palette in $schemes {
 
 	.noseur-#{$name}-vars {
 		@include noseur-scheme-vars($main, $accent, $secondary-accent);
+		@if $name =="secondary" {
+			--textColor: #{$accent};
+		}
 	}
 
 	.noseur-#{$name}-tx,
