@@ -25,8 +25,8 @@ export type AlertControl = {
 export interface AlertProps extends ComponentBaseProps<HTMLDivElement> {
     visible: boolean;
     componentProps: any;
-    alignment: Alignment,
-    alignFooter: Alignment,
+    alignment: Alignment;
+    alignFooter: Alignment;
     message: NoseurElement;
     icon: NoseurIconElement;
     dismissableModal: boolean,
@@ -36,7 +36,8 @@ export interface AlertProps extends ComponentBaseProps<HTMLDivElement> {
     footerElements: NoseurElement;
     component: React.FunctionComponent<Partial<ComponentBaseProps<NoseurDivElement, any>> & React.RefAttributes<NoseurDivElement>>;
 
-    onHide: Function,
+    onHide: Function;
+    onUnMount: Function;
     onCancel: AlertEvent;
     onConfirm: AlertEvent;
 }
@@ -68,6 +69,7 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
     };
 
     lastClickedElement: any;
+    internalComponentRef: any;
     internalComponentSelfRef: any;
     documentClickListener: ((event: Event) => void) | undefined;
 
@@ -99,11 +101,11 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
         if (!this.documentClickListener) return;
         document.removeEventListener('click', this.documentClickListener);
         this.documentClickListener = undefined;
+        this.props.onUnMount && this.props.onUnMount();
     }
 
     getUsableTarget(e?: any) {
         let target = (e || event)?.target || (e || event)?.currentTarget;
-        console.log("CLICKAA", this.props.visible, target, DOMHelper.isElement(target), this.lastClickedElement);
         if (!DOMHelper.isElement(target)) target = this.lastClickedElement;
         return target;
     }
@@ -154,12 +156,24 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
     render() {
         const controls = this.renderControl();
         const closeIcon = this.props.componentProps.closeIcon || null;
+        const cachedComponentPropsRef = this.props.componentProps.ref;
         const cachedComponentPropsSelfRef = this.props.componentProps.selfRef;
+        const cachedComponentPropsForwardRef = this.props.componentProps.forwardRef;
         const container = this.props.componentProps.container || this.props.container;
         const alignment = this.props.componentProps.alignment || this.props.alignment;
         const style = { ...(this.props.style || {}), ...(this.props.componentProps.style || {})};
         const className = Classname.build("noseur-alert", this.props.className, this.props.componentProps.className);
         const icon = MicroBuilder.buildIcon(this.props.icon, { scheme: this.props.scheme, className: "noseur-dialog-content-icon" });
+        const ref = (e: any) => {
+            if (!!this.internalComponentRef && !e) this.componentWillUnmount();
+            this.internalComponentRef = e;
+            ObjectHelper.resolveRef(cachedComponentPropsRef, e);
+        }
+        const forwardRef = (e: any) => {
+            if (!!this.internalComponentRef && !e) this.componentWillUnmount();
+            this.internalComponentRef = e;
+            ObjectHelper.resolveRef(cachedComponentPropsForwardRef, e);
+        }
         const selfRef = (e: any) => {
             this.internalComponentSelfRef = e;
             ObjectHelper.resolveRef(cachedComponentPropsSelfRef, e);
@@ -167,17 +181,19 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
 
         return React.createElement(this.props.component, {
             ...this.props.componentProps,
+            ref,
             style,
             selfRef,
             className,
             alignment,
             container,
+            forwardRef,
             onHide: this.onHide,
             closeIcon: closeIcon,
             visible: this.state.visible,
             dismissable: this.props.dismissableModal,
             dismissableModal: this.props.dismissableModal,
-        }, (<div className="noseur-alert-content">
+        }, (<div className="noseur-alert-content" ref={this.props.forwardRef}>
             {icon}
             {this.props.message}
         </div>), controls);
@@ -186,11 +202,12 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
 }
 
 export interface AlertInterface {
-    hide: () => void,
-    show: () => void,
-    destroy: () => void,
-    doneLoading: () => void,
-    update: (newProps: Partial<AlertProps>) => void,
+    show: (onMount?: Function) => void,
+    hide: (onUnMount?: Function) => void,
+    destroy: (onUnMount?: Function) => void,
+    startLoading: (onMount?: Function) => void,
+    doneLoading: (onMount?: Function) => void,
+    update: (newProps: Partial<AlertProps>, onMount?: Function, onUnMount?: Function) => void,
 }
 
 export function alert(props: Partial<AlertProps>): AlertInterface {
@@ -200,30 +217,44 @@ export function alert(props: Partial<AlertProps>): AlertInterface {
 	props = {...props, ...{isVisible: props.visible === undefined ? true : props.visible}};
 	let alertDialog = React.createElement(AlertDialog, props);
     let root = ReactDOM.createRoot(alertWrapper); root.render(alertDialog);
+    let destroyed = false;
     let mounted = props.visible;
 
-	let updateAlert = (newProps: Partial<AlertProps>) => {
-		props = { ...props, ...newProps };
+	let updateAlert = (newProps: Partial<AlertProps>, onMount?: Function, onUnMount?: Function) => {
+		if (destroyed) return;
+        props = { ...props, ...newProps, onUnMount };
         mounted = props.visible;
+        const cachedRef = (props as any).ref;
+        (props as any).ref = !onMount ? cachedRef : (r: any) => {
+            if (!r) return; onMount();
+            if (cachedRef) ObjectHelper.resolveRef(cachedRef, r);
+        };
         root.render(React.cloneElement(alertDialog, props));
 	};
 
     return {
-		destroy: () => mounted && root.unmount(),
-        hide: () => updateAlert({ visible: false }),
-        update: (newProps: Partial<AlertProps>) => updateAlert(newProps),
-        show: () => {
-            updateAlert({ visible: true, onHide: () => {
-				updateAlert({ visible: false });
-			}});
+        hide: (onUnMount?: Function) => updateAlert({ visible: false }, undefined, onUnMount),
+        update: (newProps: Partial<AlertProps>, onMount?: Function, nUnMount?: Function) => updateAlert(newProps, onMount, nUnMount),
+		destroy: (onUnMount?: Function) => {
+            if (!mounted) return;
+            root.unmount();
+            destroyed = true;
+            onUnMount && onUnMount();
         },
-        doneLoading: () => { throw new Error("Alert is not of the loading type."); },
+        show: (onMount?: Function, onUnMount?: Function) => {
+            updateAlert({ visible: true, onHide: () => {
+				updateAlert({ visible: false }, undefined, onUnMount);
+			}}, onMount);
+        },
+        doneLoading: (_?: Function) => { throw new Error("Alert is not of the loading type."); },
+        startLoading: (_?: Function) => { throw new Error("Alert is not of the loading type."); },
     };
 }
 
 export interface LoadingAlertDialog<T> extends AlertProps {
-    loadingElement: NoseurIconElement,
-    onLoading: (alert: AlertInterface, params?: T) => Promise<boolean>,
+    loadingProps: Partial<AlertProps>;
+    loadingElement: NoseurIconElement;
+    onLoading: (alert: AlertInterface, params?: T) => Promise<boolean>;
 };
 
 export function loadingAlert<T>(props: Partial<LoadingAlertDialog<T>>, params?: T) {
@@ -244,22 +275,26 @@ export function loadingAlert<T>(props: Partial<LoadingAlertDialog<T>>, params?: 
 		confirm: null,
         message: null,
         dismissableModal: false,
-        className: "noseur-alert-loading"
+        className: "noseur-alert-loading",
+        ...(props.loadingProps || {})
 	};
 	const alert = alertDialog(loadingProps);
 
-    alert.show = () => {
+    alert.show = (onMount?: Function, onUnMount?: Function) => {
         if (props.onLoading) {
             props.onLoading(alert, params).then((result) => {
-                if (result) alert.update(doneProps);
+                if (result) alert.update(doneProps, onMount);
             });
         }
         alert.update({ ...loadingProps, visible: true, onHide: () => {
-            alert.update({ visible: false });
-        }});
+            alert.update({ visible: false }, onMount, onUnMount);
+        }}, onMount, onUnMount);
     };
-    alert.doneLoading = () => {
-        alert.update(doneProps);
+    alert.startLoading = (onMount?: Function) => {
+        alert.update(loadingProps, onMount);
+    };
+    alert.doneLoading = (onMount?: Function) => {
+        alert.update(doneProps, onMount);
     };
 	return alert;
 };

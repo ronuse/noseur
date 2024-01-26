@@ -4,8 +4,10 @@ import { Scheme } from "../constants/Scheme";
 import { ObjectHelper } from "../utils/ObjectHelper";
 import { NoseurInputValue, NoseurObject } from "../constants/Types";
 import { Classname } from "../utils/Classname";
+import { Transition } from "../constants/Transition";
 
 export interface ComponentElementBasicAttributes {
+    id?: string;
     scheme?: Scheme;
     className?: string;
     style?: React.CSSProperties | undefined;
@@ -26,6 +28,16 @@ export interface MicroComponentBaseProps<T1 = {}> {
     disabled: boolean;
     key: NoseurInputValue;
     style: React.CSSProperties | undefined;
+}
+
+export interface LoadingProps<T> {
+    loadingProps: Partial<T>;
+}
+
+export interface TransitionProps {
+    transition: Transition;
+    transitionOptions: NoseurObject<any>;
+    transitionTimeout: NoseurObject<any> | number;
 }
 
 const MicroComponentBasePropskeys = ["id", "name", "style", "scheme", "noStyle", "className", "disabled", "key"];

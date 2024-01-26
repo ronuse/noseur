@@ -14,5 +14,21 @@ export enum Scheme {
 	STATELESS = 'noseur-stateless',
 	SECONDARY = "noseur-secondary",
 	RETRO_REVERSE = "noseur-retro-reverse",
-
 }
+
+export enum MessageSchemesIcons {
+    NIL = "",
+	DARK = "fa fa-moon",
+	DANGER = "fa fa-skull",
+	SUCCESS = "fa fa-check",
+	SKELETON = "fa fa-x-ray",
+	PRIMARY = "fa fa-circle",
+	WARNING = "fa fa-warning",
+	LIGHT = "fa fa-lightbulb",
+	SECONDARY = "fa fa-square",
+	RETRO = "fa fa-camera-retro",
+	DRACULA = "fa fa-plus-square",
+	STATELESS = 'noseur-stateless',
+	INFO = "fa fa-exclamation-circle",
+	RETRO_REVERSE = "fa fa-camera-retro",
+};

@@ -5,7 +5,7 @@ import { Scheme } from '../constants/Scheme';
 import { Classname } from '../utils/Classname';
 import { ObjectHelper } from "../utils/ObjectHelper";
 import { ComponentBaseProps } from '../core/ComponentBaseProps';
-import { NoseurLabel, NoseurNummber, NumberRange } from "../constants/Types";
+import { NoseurLabel, NoseurNummber, NoseurNumberedObject, NumberRange, NoseurObject } from "../constants/Types";
 
 export interface ProgressBarManageRef {
     getValue: () => NumberRange<0, 100>;
@@ -18,17 +18,20 @@ export enum ProgressBarMode {
 }
 
 export interface ProgressBarProps extends ComponentBaseProps<HTMLDivElement, ProgressBarManageRef> {
+    style: {},
     stripped: boolean;
     noLabel: boolean;
     mode: ProgressBarMode;
     value: NumberRange<0, 100>;
     labeltemplate: (value: NoseurNummber) => string;
+    percentageColors: NoseurNumberedObject<NoseurObject<string>>;
 }
 
 interface ProgressBarState {
     currentValue: NumberRange<0, 100>;
 };
 
+// TODO color per percentage
 class ProgressBarComponent extends React.Component<ProgressBarProps, ProgressBarState> {
 
     public static defaultProps: Partial<ProgressBarProps> = {
@@ -47,8 +50,23 @@ class ProgressBarComponent extends React.Component<ProgressBarProps, ProgressBar
         });
     }
 
-    buildDeterminant(value: NumberRange<0, 100>, label: NoseurLabel) {
-        const style = { width: `${value}%` };
+    componentWillUnmount() {
+        ObjectHelper.resolveManageRef(this, null);
+    }
+
+    getPercentageColor(value: NumberRange<0, 100>) {
+        if (!this.props.percentageColors) return;
+        const percentages = Object.keys(this.props.percentageColors).reverse() as any as number[];
+        for (const percentage of percentages) {
+            if (value! >= percentage) {
+                return this.props.percentageColors[percentage];
+            }
+        }
+        return;
+    }
+
+    buildDeterminant(value: NumberRange<0, 100>, label: NoseurLabel, percentageColor?: NoseurObject<string>) {
+        const style = { width: `${value}%`, background: percentageColor ? percentageColor["fg"] : undefined };
         const className = Classname.build("noseur-progress-bar-determinant", this.props.scheme);
         const props = {
             style,
@@ -71,18 +89,20 @@ class ProgressBarComponent extends React.Component<ProgressBarProps, ProgressBar
     render() {
         const className = Classname.build("noseur-progress-bar", {
             'noseur-disabled': !this.props.noStyle && this.props.disabled,
-        });
+        }, this.props.className);
         let value = (this.state.currentValue && this.state.currentValue < 0 ? 0 : this.state.currentValue);
         value = (value && value > 100 ? 100 : value);
         const label = this.buildLabel(value);
-        const bar = this.props.mode === ProgressBarMode.DETERMINATE ? this.buildDeterminant(value, label) : this.buildInDeterminant();
+        const percentageColor = this.getPercentageColor(value);
+        const style = percentageColor ? { ...this.props.style, background: percentageColor["bg"] } : this.props.style;
+        const bar = this.props.mode === ProgressBarMode.DETERMINATE ? this.buildDeterminant(value, label, percentageColor) : this.buildInDeterminant();
         const eventProps = ObjectHelper.extractEventProps(this.props);
         const props = {
+            style,
             className,
             ...eventProps,
             id: this.props.id,
             key: this.props.key,
-            style: this.props.style,
         };
         return (<div ref={this.props.forwardRef as React.ForwardedRef<HTMLDivElement>} {...props}>{bar}</div>)
     }

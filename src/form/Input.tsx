@@ -37,6 +37,8 @@ export interface InputProps extends ComponentBaseProps<NoseurFormElement, InputM
     placeholder: string;
     autoGrowHeight: boolean;
     defaultValue: NoseurInputValue;
+    completeInputOnBlurOnly: boolean;
+    completeInputOnEnterPressOnly: boolean;
 
     onInputComplete: InputOnInputCompleteHandler | undefined;
     onInputEmpty: React.FormEventHandler<NoseurFormElement> | undefined;
@@ -86,6 +88,10 @@ class Input extends React.Component<InputProps, InputState> {
                 return this.internalInputElement.value;
             },
         });
+    }
+
+    componentWillUnmount() {
+        ObjectHelper.resolveManageRef(this, null);
     }
 
     resolveMask(element: HTMLFormElement) {
@@ -150,11 +156,13 @@ class Input extends React.Component<InputProps, InputState> {
 
     onBlur(event: React.FocusEvent<NoseurFormElement>) {
         this.props.onBlur && this.props.onBlur(event);
+        if (this.props.completeInputOnEnterPressOnly) return;
         this.props.onInputComplete && this.props.onInputComplete(event.target.value);
     }
 
     onKeyUp(event: React.KeyboardEvent<NoseurFormElement>) {
         this.props.onKeyUp && this.props.onKeyUp(event);
+        if (this.props.completeInputOnBlurOnly) return;
         const key = InputHelper.getKey(event);
         if (key == 13) this.props.onInputComplete && this.props.onInputComplete((event.target as any).value);
     }

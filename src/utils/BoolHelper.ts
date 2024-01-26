@@ -7,7 +7,7 @@ export const BoolHelper = {
 		return (var1 === var2);
 	},
 
-	equalsAny(obj: any, compares: string[]) {
+	equalsAny<T>(obj: any, compares: T[]) {
 		for (var compare of compares) {
 			if (BoolHelper.bothEquals(obj, compare)) {
 				return true;
@@ -16,7 +16,7 @@ export const BoolHelper = {
 		return false;
 	},
 
-	equalsAll(obj: any, compares: string[]) {
+	equalsAll<T>(obj: any, compares: T[]) {
 		for (var compare of compares) {
 			if (!BoolHelper.bothEquals(obj, compare)) {
 				return false;

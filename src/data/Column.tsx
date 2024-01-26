@@ -26,6 +26,7 @@ export interface ColumnProps extends ComponentBaseProps<HTMLTableColElement, Col
     canUnsort: boolean;
     sortIcons: SortIcons;
     valueClassName: string;
+    valuedProps: NoseurObject<Partial<ComponentBaseProps<any>> | ((value: any) => Partial<ComponentBaseProps<any>>)>;
 
     onSort: ColumnOnSortHandler | undefined;
     header: NoseurElement | ColumnTemplateHandler;
@@ -42,6 +43,7 @@ export class ColumnComponent extends React.Component<ColumnProps, ColumnState> {
 
     public static defaultProps: Partial<ColumnProps> = {
         element: "td",
+        valuedProps: {},
         group: "column-body",
         scheme: Scheme.STATELESS,
         valueClassName: "noseur-column-body",
@@ -63,6 +65,10 @@ export class ColumnComponent extends React.Component<ColumnProps, ColumnState> {
             unSort: this.unSort,
         });
 	}
+
+    componentWillUnmount() {
+        ObjectHelper.resolveManageRef(this, null);
+    }
 
     unSort() {
         this.setState({ sortDirection: SortDirection.NONE });
@@ -97,6 +103,7 @@ export class ColumnComponent extends React.Component<ColumnProps, ColumnState> {
         else if (TypeChecker.isDict(value) && this.props.element != "th") value = "";
 
         const sortIcon = this.renderSortIcon();
+        let valuedRowProps = this.props.valuedProps[`${value}`] ?? {};
         const props = extractMicroComponentBaseProps(this.props) as NoseurObject<any>;
         const cachedOnClick = props.onClick;
         props.className = Classname.build(props.className, {
@@ -109,9 +116,11 @@ export class ColumnComponent extends React.Component<ColumnProps, ColumnState> {
                 if (cachedOnClick) cachedOnClick(e);
             };
         }
+        if (valuedRowProps instanceof Function) valuedRowProps = valuedRowProps(value);
 
         return React.createElement(this.props.element, {
             ...props,
+            ...valuedRowProps,
             role: "row",
             "data-n-group": this.props.group,
         }, (<div className={Classname.build("noseur-column", this.props.valueClassName)}>

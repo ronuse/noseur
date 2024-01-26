@@ -6,9 +6,10 @@ import { Classname } from "../utils/Classname";
 import { TypeChecker } from "../utils/TypeChecker";
 import { ObjectHelper } from "../utils/ObjectHelper";
 import { CSSTransition } from 'react-transition-group';
-import { ComponentBaseProps } from "../core/ComponentBaseProps";
+import { ComponentBaseProps, TransitionProps } from "../core/ComponentBaseProps";
 import { NoseurDivElement, NoseurRawElement, NoseurObject } from '../constants/Types';
 import { BaseZIndex, DOMHelper, ScrollHandler, ZIndexHandler } from "../utils/DOMUtils";
+import { Transition } from "../constants/Transition";
 
 export type PopoverEvent = () => void;
 
@@ -17,7 +18,7 @@ export interface PopoverManageRef {
     toggle: (event: Event, target?: HTMLElement) => void;
 }
 
-export interface PopoverProps<T1 = NoseurDivElement, T2 = PopoverManageRef, T3 = {}> extends ComponentBaseProps<T1, T2, T3> {
+export interface PopoverProps<T1 = NoseurDivElement, T2 = PopoverManageRef, T3 = {}> extends ComponentBaseProps<T1, T2, T3>, TransitionProps {
     sticky: boolean;
     baseZIndex: number;
     trapFocus: boolean;
@@ -26,8 +27,6 @@ export interface PopoverProps<T1 = NoseurDivElement, T2 = PopoverManageRef, T3 =
     matchTargetSize: boolean;
     container: NoseurRawElement;
     positional: "left" | "right";
-    transitionOptions: NoseurObject<any>;
-    transitionTimeout: NoseurObject<any>;
     pointingArrowClassName: string | null;
     onOpenFocusRef: React.MutableRefObject<any>;
     onCloseFocusRef: React.MutableRefObject<any>;
@@ -44,6 +43,7 @@ interface PopoverState {
 class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
 
     public static defaultProps: Partial<PopoverProps> = {
+        transition: Transition.FLIP_X,
         outsideClickLogic: "elemental",
         transitionTimeout: { enter: 130, exit: 110 },
         pointingArrowClassName: "noseur-popover-arrow",
@@ -80,6 +80,10 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
             rePosition: this.rePosition,
         });
 	}
+
+    componentWillUnmount() {
+        ObjectHelper.resolveManageRef(this, null);
+    }
 
     toggle(event: Event, target?: HTMLElement) {
         (!this.state.visible) ? this.showPopover(event, target) : this.hidePopover();
@@ -239,6 +243,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
 	}
 
     renderChildren() {
+        const transition = this.props.transition;
 		let className = Classname.build('noseur-popover', this.props.pointingArrowClassName, this.props.className);
         const props: NoseurObject<any> = {
             className,
@@ -255,7 +260,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
         };
 
 		return (
-			<CSSTransition classNames="noseur-popover" timeout={this.props.transitionTimeout} in={this.state.visible} options={this.props.transitionOptions}
+			<CSSTransition classNames={transition} timeout={this.props.transitionTimeout} in={this.state.visible} options={this.props.transitionOptions}
 				unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExit={this.onExit} onExited={this.onExited}>
 				<div ref={ref} {...props}>
 					{this.props.children}

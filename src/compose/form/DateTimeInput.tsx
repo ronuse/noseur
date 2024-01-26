@@ -12,7 +12,8 @@ import { BoolHelper } from "../../utils/BoolHelper";
 export interface DateTimeInputManageRef extends BareInputManageRef<string> {
 }
 
-export interface DateTimeInputProps extends DateTimePickerProps<DateTimeInputManageRef> {
+export interface DateTimeInputProps extends DateTimePickerProps<HTMLInputElement, DateTimeInputManageRef> {
+    fill: boolean;
     leftContent: any;
     rightContent: any;
     editable: boolean;
@@ -62,6 +63,10 @@ class DateTimeInputComponent extends React.Component<DateTimeInputProps, DateTim
         });
     }
 
+    componentWillUnmount() {
+        ObjectHelper.resolveManageRef(this, null);
+    }
+
     toggleDateTimePicker(e: any) {
         e.stopPropagation();
         this.dateTimePickerManageRef?.toggle(e);
@@ -98,7 +103,9 @@ class DateTimeInputComponent extends React.Component<DateTimeInputProps, DateTim
             noStyle: true,
             borderless: true,
             id: this.props.id,
+            fill: this.props.fill,
             scheme: this.props.scheme,
+            onInput: this.props.onInput,
             ...this.props.textInputProps,
             disabled: this.props.disabled,
             readOnly: !this.props.editable,
@@ -156,7 +163,7 @@ class DateTimeInputComponent extends React.Component<DateTimeInputProps, DateTim
         const className = Classname.build('noseur-date-time-input', this.props.formControlProps?.className, { "noseur-disabled": this.props.disabled });
 
         return (<React.Fragment>
-            <FormControl {...formControlProps} className={className}
+            <FormControl {...formControlProps} className={className} fill={this.props.fill}
                 contentStyle={{ width: "initial", ...(formControlProps.style || {}) }} borderless={this.props.borderless} leftContent={this.props.leftContent || this.props.formControlProps.leftContent}
                 scheme={this.props.scheme || formControlProps.scheme} ref={(r: any) => this.compoundElement = r} rightContent={this.props.rightContent || this.props.formControlProps.rightContent} onClick={this.toggleDateTimePicker}>
                 {input}
@@ -167,27 +174,27 @@ class DateTimeInputComponent extends React.Component<DateTimeInputProps, DateTim
 
 }
 
-export const DateTimeInput = React.forwardRef<HTMLDivElement, Partial<DateTimeInputProps>>((props, ref) => (
+export const DateTimeInput = React.forwardRef<HTMLInputElement, Partial<DateTimeInputProps>>((props, ref) => (
     <DateTimeInputComponent {...props} dateFormat={{ day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: !props.hourFormat || props.hourFormat === "12" }}
-        showTime={true} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
+        showTime={true} forwardRef={ref as React.ForwardedRef<HTMLInputElement>} />
 ));
 
-export const YearInput = React.forwardRef<HTMLDivElement, Partial<DateTimeInputProps>>((props, ref) => (
-    <DateTimeInputComponent dateFormat={{ year: 'numeric' }} {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} showTime={false} mode={DateTimePickerMode.YEAR} />
+export const YearInput = React.forwardRef<HTMLInputElement, Partial<DateTimeInputProps>>((props, ref) => (
+    <DateTimeInputComponent dateFormat={{ year: 'numeric' }} {...props} forwardRef={ref as React.ForwardedRef<HTMLInputElement>} showTime={false} mode={DateTimePickerMode.YEAR} />
 ));
 
-export const MonthInput = React.forwardRef<HTMLDivElement, Partial<DateTimeInputProps>>((props, ref) => (
-    <DateTimeInputComponent dateFormat={{ month: 'long' }} {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} showTime={false} mode={DateTimePickerMode.MONTH} />
+export const MonthInput = React.forwardRef<HTMLInputElement, Partial<DateTimeInputProps>>((props, ref) => (
+    <DateTimeInputComponent dateFormat={{ month: 'long' }} {...props} forwardRef={ref as React.ForwardedRef<HTMLInputElement>} showTime={false} mode={DateTimePickerMode.MONTH} />
 ));
 
-export const DateInput = React.forwardRef<HTMLDivElement, Partial<DateTimeInputProps>>((props, ref) => (
-    <DateTimeInputComponent dateFormat={{ day: '2-digit', month: '2-digit', year: 'numeric' }} {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} showTime={false} />
+export const DateInput = React.forwardRef<HTMLInputElement, Partial<DateTimeInputProps>>((props, ref) => (
+    <DateTimeInputComponent dateFormat={{ day: '2-digit', month: '2-digit', year: 'numeric' }} {...props} forwardRef={ref as React.ForwardedRef<HTMLInputElement>} showTime={false} />
 ));
 
-export const TimeInput = React.forwardRef<HTMLDivElement, Partial<DateTimeInputProps>>((props, ref) => {
+export const TimeInput = React.forwardRef<HTMLInputElement, Partial<DateTimeInputProps>>((props, ref) => {
     const hourFormat12 = !props.hourFormat || props.hourFormat === "12";
     const dateFormat: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: hourFormat12 };
     const timeLayout = props.timeLayout || hourFormat12 ? props.timeLayout : DateTimePickerLayout.TIME_LAYOUT_WITHOUT_MERIDIAN;
-    return (<DateTimeInputComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} showTime={true} timeOnly={true} timeLayout={timeLayout}
+    return (<DateTimeInputComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLInputElement>} showTime={true} timeOnly={true} timeLayout={timeLayout}
         dateFormat={dateFormat} layout={DateTimePickerLayoutElement.TimeElement} popoverProps={{ ...(props.popoverProps ?? {}), pointingArrowClassName: "" }} />);
 });

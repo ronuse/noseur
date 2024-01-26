@@ -20,8 +20,8 @@ export const ObjectHelper = {
         }, {});
     },
 
-    clone(obj: any[] | NoseurObject<any>): any {
-        return (TypeChecker.isDict(obj) ? ObjectHelper.cloneObject(obj) : ObjectHelper.cloneArray(obj as any[]));
+    clone<T>(obj: any[] | NoseurObject<any> | T): T {
+        return (TypeChecker.isDict(obj as any) ? ObjectHelper.cloneObject(obj as any) : ObjectHelper.cloneArray(obj as any[])) as T;
     },
 
     cloneArray(obj: any[]) {
@@ -71,7 +71,7 @@ export const ObjectHelper = {
 
     resolveStringTemplate(unprocessed: string, valueMap: NoseurObject<any>): string {
         let value = "";
-        let teamplateValue = "";
+        let templateValue = "";
         let openedTemplate = false;
         for (let index = 0; index < unprocessed.length; index++) {
             const ch = unprocessed[index];
@@ -80,13 +80,13 @@ export const ObjectHelper = {
                 continue;
             }
             if (ch == '}') {
-                value += valueMap[teamplateValue] || "";
+                value += valueMap[templateValue] || "";
                 openedTemplate = false;
-                teamplateValue = "";
+                templateValue = "";
                 continue;
             };
             if (openedTemplate) {
-                teamplateValue += ch;
+                templateValue += ch;
             } else {
                 value += ch;
             }
@@ -109,8 +109,8 @@ export const ObjectHelper = {
         }
     },
 
-    resolveRef<T>(ref: React.ForwardedRef<T>, value: T) {
-        if (!value || !ref) return;
+    resolveRef<T>(ref: React.ForwardedRef<T>, value: T, always: boolean = false) {
+        if ((!value && !always) || !ref) return;
 
         if (ref instanceof Function) {
             ref(value);
@@ -119,42 +119,70 @@ export const ObjectHelper = {
         }
     },
 
-    expandStringTemplate(unprocessed: string, valueMap: NoseurObject<any>) {
+    expandStringTemplate(unprocessed: string, valueMap: NoseurObject<any>, options: {
+        chop?: string;
+        prefix?: string;
+        suffix?: string;
+        seperator?: string;
+        relativeExpansion?: boolean;
+    } = {
+
+        }) {
         let value = "";
-        let teamplateValue = "";
+        let templateValue = "";
         let openedTemplate = false;
         let subValueMap = valueMap;
+        const chop = options.chop || '';
+        const prefix = options.prefix || '{';
+        const suffix = options.suffix || '}';
+        const seperator = options.seperator || '.';
         for (let index = 0; index < unprocessed.length; index++) {
             const ch = unprocessed[index];
-            if (ch == '{') {
+            if (ch === (options.chop) && unprocessed[index + 1] === prefix) {
+                continue;
+            }
+            if (ch === prefix) {
                 openedTemplate = true;
                 continue;
             }
-            if (openedTemplate && ch == ".") {
-                subValueMap = subValueMap[teamplateValue];
-                teamplateValue = "";
+            if (openedTemplate && ch === seperator) {
+                if (!(templateValue in subValueMap)) {
+                    value += `${chop}${prefix}${templateValue}${seperator}`;
+                    openedTemplate = false;
+                    continue;
+                }
+                subValueMap = subValueMap[templateValue];
+                templateValue = "";
                 continue;
             }
-            if (ch == '}') {
-                value += subValueMap[teamplateValue] || "";
+            if (openedTemplate && ch === suffix) {
+                value += subValueMap[templateValue]
+                    || (options.relativeExpansion ? `${chop}${prefix}${templateValue}${suffix}` : "");
                 subValueMap = valueMap;
                 openedTemplate = false;
-                teamplateValue = "";
+                templateValue = "";
                 continue;
             };
             if (openedTemplate) {
-                teamplateValue += ch;
+                templateValue += ch;
             } else {
                 value += ch;
             }
+        }
+        if (openedTemplate) {
+            value += `${chop}${prefix}${templateValue}`;
+        } else {
+            value += templateValue;
         }
         return value;
     },
 
     objectGetWithStringTemplate(valueMap: NoseurObject<any>, template: string) {
-        let teamplateValue = "";
+        let expandedString = "";
+        let templateValue = "";
         let openedTemplate = false;
         let subValueMap = valueMap;
+        if (template.indexOf("{") < 0) return subValueMap[template] || "";
         for (let index = 0; index < template.length; index++) {
             const ch = template[index];
             if (ch == '{') {
@@ -162,18 +190,24 @@ export const ObjectHelper = {
                 continue;
             }
             if (openedTemplate && ch == ".") {
-                subValueMap = subValueMap[teamplateValue];
-                teamplateValue = "";
+                subValueMap = subValueMap[templateValue];
+                templateValue = "";
                 continue;
             }
             if (ch == '}') {
-                return subValueMap[teamplateValue];
+                openedTemplate = false;
+                expandedString += subValueMap[templateValue];
+                subValueMap = valueMap;
+                templateValue = "";
+                continue;
             };
             if (openedTemplate) {
-                teamplateValue += ch;
+                templateValue += ch;
+            } else {
+                expandedString += ch;
             }
         }
-        return valueMap[template] || template
+        return expandedString;
     },
 
     joinValues(...values: any[]) {

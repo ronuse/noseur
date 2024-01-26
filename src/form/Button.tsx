@@ -6,14 +6,15 @@ import { Classname } from '../utils/Classname';
 import { Alignment } from '../constants/Alignment';
 import { ObjectHelper } from '../utils/ObjectHelper';
 import { MicroBuilder } from "../utils/MicroBuilder";
-import { ComponentBaseProps } from '../core/ComponentBaseProps';
+import { ComponentBaseProps, LoadingProps } from '../core/ComponentBaseProps';
 import { NoseurButtonElement, NoseurElement, NoseurIconElement, NoseurObject } from '../constants/Types';
 
 export interface ButtonManageRef {
     setLoadingState: (isLoading: boolean) => void;
 }
 
-export interface ButtonProps extends ComponentBaseProps<NoseurButtonElement, ButtonManageRef> {
+export interface ButtonProps extends ComponentBaseProps<NoseurButtonElement, ButtonManageRef>, LoadingProps<ButtonProps> {
+    type: string;
     link: string;
     fill: boolean;
     raised: boolean;
@@ -29,7 +30,6 @@ export interface ButtonProps extends ComponentBaseProps<NoseurButtonElement, But
     rippleEffect: boolean;
     leftIcon: NoseurIconElement;
     rightIcon: NoseurIconElement;
-    loadingProps: Partial<ButtonProps>
     leftIconRelativeAlignment: Alignment;
     rightIconRelativeAlignment: Alignment;
 };
@@ -76,6 +76,10 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
                 this.setState({ rippleState: { ...this.state.rippleState, isRippling: false } });
             }
         }
+    }
+
+    componentWillUnmount() {
+        ObjectHelper.resolveManageRef(this, null);
     }
 
     onClick(event: React.MouseEvent<NoseurButtonElement>) {
@@ -142,6 +146,7 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
             className,
             ...eventProps,
             key: activeProps.key,
+            type: this.props.type,
             style: activeProps.style,
         };
         if (activeProps.rippleEffect) props.onClick = this.onClick;

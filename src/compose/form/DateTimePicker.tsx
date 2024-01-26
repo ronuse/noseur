@@ -133,7 +133,7 @@ export enum DateTimePickerLayout {
     DEFAULT_YEAR_MODE_HEADER_LAYOUT = `${DateTimePickerLayoutElement.PreviousElement} <> ${DateTimePickerLayoutElement.YearFromElement} [s] [d] [s] ${DateTimePickerLayoutElement.YearToElement} <> ${DateTimePickerLayoutElement.NextElement}`,
     DEFAULT_LAYOUT = `${DateTimePickerLayoutElement.TopPanelElement} [-] ${DateTimePickerLayoutElement.LeftPanelElement} [|] ${DateTimePickerLayoutElement.HeaderElement} ${DateTimePickerLayoutElement.WeekdaysElements} ${DateTimePickerLayoutElement.DaysElements} ${DateTimePickerLayoutElement.TimeElement} ${DateTimePickerLayoutElement.FooterElement} [|] ${DateTimePickerLayoutElement.RightPanelElement} [-] ${DateTimePickerLayoutElement.BottomPanelElement}`,
     DEFAULT_TIME_LAYOUT = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MeridianElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
-    
+
     FINE_LEFT_LAYOUT = `${DateTimePickerLayoutElement.TodayElement} ${DateTimePickerLayoutElement.YesterdayElement} ${DateTimePickerLayoutElement.LastSevenDaysElement} ${DateTimePickerLayoutElement.LastThirtyDaysElement} ${DateTimePickerLayoutElement.ThisMonthElement} ${DateTimePickerLayoutElement.LastMonthElement} ${DateTimePickerLayoutElement.ThisYearElement} ${DateTimePickerLayoutElement.LastYearElement}`,
     TIME_LAYOUT_WITHOUT_MERIDIAN = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
     TIME_LAYOUT_WITH_SECONDS_WITHOUT_MERIDIAN = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.SecondsElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
@@ -240,7 +240,7 @@ export interface DateTimePickerManageRef {
     prev: (leftNeigbhor?: string, rightNeigbhor?: string) => void;
 }
 
-export interface DateTimePickerProps<T1 = DateTimePickerManageRef, T2 = DateTimePickerAttributtesRelays> extends ComponentBaseProps<NoseurDivElement, T1, T2> {
+export interface DateTimePickerProps<T1 = NoseurDivElement, T2 = DateTimePickerManageRef, T3 = DateTimePickerAttributtesRelays> extends ComponentBaseProps<T1, T2, T3> {
     date: Date;
     minDate: Date;
     maxDate: Date;
@@ -455,6 +455,10 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
         });
     }
 
+    componentWillUnmount() {
+        ObjectHelper.resolveManageRef(this, null);
+    }
+
     toggle(event: Event, target?: HTMLElement) {
         switch (this.props.type) {
             case DateTimePickerType.MODAL:
@@ -585,8 +589,9 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
     }
 
     reportOnSelectDate(newSelectedDates?: Date[]) {
-        const selectedDates: Date[] = newSelectedDates || this.state.selectedDates;
         if (!this.props.onSelectDate) return;
+        
+        const selectedDates: Date[] = newSelectedDates || this.state.selectedDates;
         const options = {
             selectedDates: selectedDates,
             fromDate: selectedDates.length ? selectedDates[0] : undefined,
@@ -611,12 +616,14 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
     }
 
     selectDatesInRange(date: Date, toDate?: Date) {
+        const activeDate = this.state.activeDate;
         const selectedDates = [new Date(date.getFullYear(), date.getMonth(), date.getDate())];
         if (toDate) selectedDates.push(new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 23, 58, 59));
         this.setState({
             selectedDates,
-            activeDate: DateHelper.withTime(date),
+            activeDate: DateHelper.withTime(date, activeDate),
         });
+        if (this.props.selectionMode === DateTimePickerSelectionMode.RANGE && selectedDates.length < 2) return;
         if (!this.props.reportOnSelectClickOnly && selectedDates.length) this.reportOnSelectDate(selectedDates);
     }
 
@@ -681,7 +688,7 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
             this.props.onMaxMultipleDateSelected && this.props.onMaxMultipleDateSelected();
             return;
         }
-        date = DateHelper.withTime(date);
+        date = DateHelper.withTime(date, activeDate);
         if (reset) newSelectedDates = [date];
         if (!reset) switch (this.props.selectionMode) {
             case DateTimePickerSelectionMode.MULTIPLE:
@@ -714,10 +721,11 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
                 }
         }
         if (this.props.makeOverlapSelectable && newSelectedDates.length) {
-            activeDate = DateHelper.withTime(newSelectedDates[this.props.selectionMode === DateTimePickerSelectionMode.RANGE ? 0 : newSelectedDates.length - 1]);
+            activeDate = DateHelper.withTime(newSelectedDates[this.props.selectionMode === DateTimePickerSelectionMode.RANGE ? 0 : newSelectedDates.length - 1], activeDate);
         }
         this.setState({ activeDate, selectedDates: newSelectedDates });
-        if (!this.props.reportOnSelectClickOnly && newSelectedDates.length) this.reportOnSelectDate(newSelectedDates);
+        if (this.props.selectionMode === DateTimePickerSelectionMode.RANGE && newSelectedDates.length < 2) return;
+        if (!this.props.reportOnSelectClickOnly && newSelectedDates.length ) this.reportOnSelectDate(newSelectedDates);
     }
 
     onSelectYear(event: Event, year: number) {
@@ -872,7 +880,12 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
         }, this.props.locale, this.props.hourFormat, this.state.activeDate);
         const dateShouldBeDisabled = this.dateShouldBeDisabled(date);
         formattedDate.disabled = formattedDate.isNotInMonth || dateShouldBeDisabled;
-        const dateControlActionMap = { ...controlActionMap, DayElement: () => this.onSelectDate(date) };
+        const dateControlActionMap = {
+            ...controlActionMap, DayElement: (e: any) => {
+                if (!this.props.sticky) this.toggle(e);
+                this.onSelectDate(date)
+            }
+        };
         const text = this.props.dateTemplate ? this.props.dateTemplate(formattedDate) : (isNotDate ? _date : "" + date.getDate());
         const selected = DateHelper.isInArrayOfDates(this.state.selectedDates, date);
         const isWithinRange = this.props.selectionMode === DateTimePickerSelectionMode.RANGE && !selected && this.state.selectedDates.length && (this.state.selectedDates.length > 1 || this.state.mouseOverDate)
@@ -1443,3 +1456,13 @@ export function dateTimePickerBuildLayoutElement(options: TimePickerLayoutElemen
     }
     return (<div className={Classname.build("noseur-date-time-picker-custom", basicAttrs?.className)}>{text ?? layoutElement}</div>);
 }
+
+/*numberOfMonth
+monthsSeperatorLayout
+
+https://reactjsexample.com/a-group-calendar-application-using-the-mern-stack-intended-to-bring-discord-communities-closer/
+https://reactjsexample.com/an-open-source-fullcalendar-scheduler-using-react/
+https://reactjsexample.com/application-in-nextjs-using-fullcalendar-library/
+https://reactjsexample.com/lightweight-availability-bookings-calendar-built-with-react-and-typescript/
+https://tele.smarthealth.eclathealthcare.com/doctor/schedules
+https://tele.smarthealth.eclathealthcare.com/doctor/appointments*/

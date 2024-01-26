@@ -1,16 +1,36 @@
 
 import React from "react";
 import { Classname } from "../utils/Classname";
+import { ObjectHelper } from "../utils/ObjectHelper";
 import { ComponentBaseProps } from "../core/ComponentBaseProps";
 import { NoseurElement, NoseurObject, SortDirection } from "../constants/Types";
 import { Paginator, PaginatorPageChangeOption, PaginatorProps, PaginatorTemplateOptions } from "../presentation/Paginator";
 
+export interface RowProps {
+    id?: string;
+    key?: string;
+    className?: string;
+    style: React.CSSProperties;
+}
+
 export type DataFixtureTemplateHandler = () => NoseurElement;
 export type DataRowSelectionHandler = (value: any) => boolean;
+export type DataRowValuedPropsHandler = (data?: any) => Partial<RowProps>;
 export type DateSelectionElementTemplateHandler = (index: number) => NoseurElement;
-export type DataComparatorHandler = (sortDirection: SortDirection, dataKey: string, p: NoseurObject<any>, c: NoseurObject<any>) => number;
+export type DataComparatorHandler = (sortDirection: SortDirection, dataKey: string, p: any, c: any) => number;
 
-export interface DataProps<T> extends ComponentBaseProps<T> {
+export interface DataManageRef {
+    setData: (data?: NoseurObject<any>[]) => void;
+}
+
+export interface DataInternalElementProps {
+    id?: string;
+    key?: string;
+    className?: string;
+    style?: React.CSSProperties;
+}
+
+export interface DataProps<T> extends ComponentBaseProps<T, DataManageRef> {
     paginate: boolean;
     noDivider: boolean;
     scrollable: boolean;
@@ -20,16 +40,19 @@ export interface DataProps<T> extends ComponentBaseProps<T> {
     rowSelection: boolean;
     showGridlines: boolean;
     dataSelectionKey: string;
-    data: NoseurObject<any>[];
     emptyState: NoseurElement;
+    data?: NoseurObject<any>[];
+    loadingState: NoseurElement;
     paginatorProps: PaginatorProps;
     allowNoDataPagination: boolean;
     paginatorTemplate: PaginatorTemplateOptions;
+    internalElementProps: Partial<DataInternalElementProps>;
 
     header: DataFixtureTemplateHandler;
     footer: DataFixtureTemplateHandler;
     compareData: DataComparatorHandler;
     onRowSelection: DataRowSelectionHandler;
+    valuedRowProps: DataRowValuedPropsHandler;
     onPageChange?: (event: PaginatorPageChangeOption) => void;
     selectionElementTemplate: DateSelectionElementTemplateHandler;
 }
@@ -37,14 +60,29 @@ export interface DataProps<T> extends ComponentBaseProps<T> {
 export interface DataState {
     dataOffset: number;
     currentPage: number;
-    activeData: NoseurObject<any>[];
+    activeData?: NoseurObject<any>[];
 };
 
 export class DataComponent<T, P extends DataProps<T>, S extends DataState> extends React.Component<P, S> {
 
+    componentDidMount() {
+        ObjectHelper.resolveManageRef(this, {
+            setData: (data?: NoseurObject<any>[]) => this.setState({ activeData: data }),
+        });
+    }
+
+    componentWillUnmount() {
+        ObjectHelper.resolveManageRef(this, null);
+    }
+
     renderEmptyState() {
-        if (this.props.data?.length) return null;
+        if (this.state.activeData?.length !== 0) return null;
         return <div className="noseur-data-empty-state">{this.props.emptyState}</div>
+    }
+
+    renderLoadingState() {
+        if (!!this.state.activeData) return null;
+        return <div className="noseur-data-loading-state">{this.props.loadingState}</div>
     }
 
     renderFixtures(fixture: DataFixtureTemplateHandler, className: string) {

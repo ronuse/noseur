@@ -10,6 +10,8 @@ export enum Alignment {
 	TOP_RIGHT = 'top-right',
 	TOP_CENTER = 'top-center',
 	BOTTOM_LEFT = 'bottom-left',
+    CENTER_LEFT = 'center-left',
+    CENTER_RIGHT = 'center-right',
 	BOTTOM_RIGHT = 'bottom-right',
 	BOTTOM_CENTER = 'bottom-center'
 }

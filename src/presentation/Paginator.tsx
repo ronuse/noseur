@@ -24,10 +24,10 @@ function buildTemplate(_: PaginatorState, props: PaginatorProps): PaginatorTempl
     }
     const pageElement = customTemplate?.pageElement || paginationElementBuilder(PaginatorDirection.PAGE);
     const nextPageElement = customTemplate?.nextPageElement || paginationElementBuilder(PaginatorDirection.NEXT);
-    const lastPageElement = customTemplate?.nextPageElement || paginationElementBuilder(PaginatorDirection.LAST_PAGE);
-    const firstPageElement = customTemplate?.nextPageElement || paginationElementBuilder(PaginatorDirection.FIRST_PAGE);
-    const previousPageElement = customTemplate?.nextPageElement || paginationElementBuilder(PaginatorDirection.PREVIOUS);
-    const hiddenPagesElement = customTemplate?.nextPageElement || paginationElementBuilder(PaginatorDirection._HIDDEN_PAGES);
+    const lastPageElement = customTemplate?.lastPageElement || paginationElementBuilder(PaginatorDirection.LAST_PAGE);
+    const firstPageElement = customTemplate?.firstPageElement || paginationElementBuilder(PaginatorDirection.FIRST_PAGE);
+    const previousPageElement = customTemplate?.previousPageElement || paginationElementBuilder(PaginatorDirection.PREVIOUS);
+    const hiddenPagesElement = customTemplate?.hiddenPagesElement || paginationElementBuilder(PaginatorDirection._HIDDEN_PAGES);
     const activePageLabel = customTemplate?.activePageLabel || ((option: PaginatorPageChangeOption) => {
         const label = ObjectHelper.resolveStringTemplate("({currentPage} of {pageCount})", option);
         return (<span key={label} className={`noseur-paginator-label ${option.scheme || ""}`}>{label}</span>);

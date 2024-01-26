@@ -7,17 +7,17 @@
     --fixtureBackgroundColor: #f6f6f6;
 }
 
-.noseur-data-empty-state {
+.noseur-data-empty-state,.noseur-data-loading-state {
     padding: 15px;
 }
 
-.noseur-data-compound>.noseur-data-empty-state {
+.noseur-data-compound>.noseur-data-empty-state,.noseur-data-compound>.noseur-data-loading-state {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.noseur-data-compound.noseur-data-grid>.noseur-data-empty-state {
+.noseur-data-compound.noseur-data-grid>.noseur-data-empty-state,.noseur-data-compound.noseur-data-grid>.noseur-data-loading-state {
     border: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
     border-top: none;
 }
@@ -33,7 +33,7 @@
     padding: 15px;
 }
 
-.noseur-data-compound>.noseur-paginator {
+.noseur-data-compound.noseur-data-grid>.noseur-paginator {
     border-bottom: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
 }
 
@@ -163,9 +163,7 @@
 }
 
 .noseur-list>li {
-    border-style: solid;
-    border-width: 0px 0px 1px;
-    border-color: var(--dataBorderColor, rgb(222, 226, 230));
+    padding: 15px 0px;
 }
 
 .noseur-list.noseur-data-grid-h {
@@ -177,12 +175,13 @@
 }
 
 .noseur-data-compound.noseur-data-grid>.noseur-list>li {
-    border-bottom-width: 0px;
-}
-
-.noseur-data-compound.noseur-data-grid>.noseur-list>li {
-    border-right-width: 1px;
+    padding: 15px;
+    border-style: solid;
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
     border-bottom-width: 1px;
+    border-color: var(--dataBorderColor, rgb(222, 226, 230));
 }
 
 .noseur-data-compound.noseur-data-grid>.noseur-list>li:last-child {

@@ -10,6 +10,7 @@ import { NoseurElement, NoseurObject, SortDirection } from '../constants/Types';
 export type ListTemplateHandler = (value: any) => NoseurElement;
 
 export interface ListProps extends DataProps<HTMLUListElement> {
+    dataKey: string;
     sortField: string;
     children: undefined;
     selectionMode: SelectionMode;
@@ -21,9 +22,9 @@ export interface ListProps extends DataProps<HTMLUListElement> {
 class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState> {
 
     public static defaultProps: Partial<ListProps> = {
-        data: [],
         paginate: false,
         rowsPerPage: 10,
+        internalElementProps: {},
     };
 
     state: DataState = {
@@ -37,14 +38,17 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
     }
 
     componentDidUpdate(prevProps: Readonly<ListProps>, _: Readonly<DataState>) {
-        if (!BoolHelper.deepEqual(prevProps.data, this.props.data, ["totalRecords"])) {
-            this.setState({ activeData: this.props.data });
+        if (!BoolHelper.deepEqual(prevProps.data, this.props.data, ["totalRecords"])
+            || ((!this.state.activeData || !this.state.activeData.length) && this.props.data?.length)) {
+            this.setState({ activeData: this.props.data ?? [] });
         }
     }
 
     sortData() {
         const data = this.state.activeData;
         const sortField = this.props.sortField;
+
+        if (!data) return;
         data.sort((p: NoseurObject<any>, c: NoseurObject<any>) => {
             const prev = ObjectHelper.objectGetWithStringTemplate(p, sortField), current = ObjectHelper.objectGetWithStringTemplate(c, sortField);
             if (this.props.compareData) return this.props.compareData(SortDirection.FORWARD, sortField, prev, current);
@@ -55,15 +59,21 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
     }
 
     renderListBody() {
+        if (!this.state.activeData) return;
         let data = this.state.activeData.slice(this.state.dataOffset, (this.props.rowsPerPage + this.state.dataOffset));
         if (!data.length && !this.props.allowNoDataPagination) data = this.state.activeData;
 
-        return data.map((data: NoseurObject<any>, index: number) => (<li key={index} role="row" data-n-group="row">{this.props.template ? this.props.template(data) : `${data}`}</li>));
+        return data.map((rowData: NoseurObject<any>, index: number) => {
+            let valuedRowProps = this.props.valuedRowProps ? this.props.valuedRowProps(rowData) : null;
+            const value = this.props.dataKey ? ObjectHelper.objectGetWithStringTemplate(rowData, this.props.dataKey) : rowData;
+            return (<li key={index} role="row" data-n-group="row" {...valuedRowProps}>{this.props.template ? this.props.template(value) : `${value}`}</li>);
+        });
     }
 
     renderList(hasHeader: boolean, hasFooter: boolean) {
         const props: NoseurObject<any> = {
             id: this.props.id,
+            ...this.props.internalElementProps,
         };
         const listBody = this.renderListBody();
         const className = Classname.build('noseur-data-container noseur-list', {
@@ -71,7 +81,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
             "noseur-data-striped": this.props.stripedRows,
             "noseur-data-grid-h": !hasHeader && this.props.showGridlines,
             "noseur-data-grid-f": !hasFooter && this.props.showGridlines && this.props.data?.length,
-        });
+        }, this.props.internalElementProps.className);
 
         return (<ul {...props} role="list" data-n-group="list" className={className} ref={this.props.forwardRef}>
             {listBody}
@@ -84,6 +94,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
             style: this.props.style,
         };
         const emptyState = this.renderEmptyState();
+        const loadingState = this.renderLoadingState();
         const header = this.renderFixtures(this.props.header, "noseur-data-header");
         const footer = this.renderFixtures(this.props.footer, "noseur-data-footer");
         const className = Classname.build('noseur-data-compound', {
@@ -97,6 +108,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
             {header}
             {list}
             {emptyState}
+            {loadingState}
             {paginator}
             {footer}
         </div>);

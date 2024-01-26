@@ -43,7 +43,7 @@
 
 .noseur-disabled {
 	@extend .noseur-no-pointer-event;
-	opacity: 0.6;
+	opacity: 0.5;
 }
 
 .noseur-overflow-hidden {
@@ -58,6 +58,10 @@
 
 .noseur-wd-100-pct {
 	width: 100%;
+}
+
+.noseur-flex-1 {
+	flex: 1;
 }
 
 /* Margins, Padding */
@@ -305,15 +309,19 @@ $schemes: (
 }
 
 @mixin noseur-scheme-bd-3px-sw-ac($main: #f5f8fa) {
-	box-shadow: 0 0 0 3px rgba($main, .3);
-	-moz-box-shadow: 0 0 0 3px rgba($main, .3);
-	-webkit-box-shadow: 0 0 0 3px rgba($main, .3);
+	box-shadow: 0 0 0 3px var(--focusBoxShadowColor, $main);
+	-moz-box-shadow: 0 0 0 3px var(--focusBoxShadowColor, $main);
+	-webkit-box-shadow: 0 0 0 3px var(--focusBoxShadowColor, $main);
 }
 
 @mixin noseur-scheme-bd-rd($main: #f5f8fa) {
-	box-shadow: 1px 2.5px 5px rgba($main, 0.25);
-	-moz-box-shadow: 1px 2.5px 5px rgba($main, 0.25);
-	-webkit-box-shadow: 1px 2.5px 5px rgba($main, 0.25);
+	box-shadow: 1px 2.5px 5px var(--boxShadowColor, $main);
+	-moz-box-shadow: 1px 2.5px 5px var(--boxShadowColor, $main);
+	-webkit-box-shadow: 1px 2.5px 5px var(--boxShadowColor, $main);
+}
+
+@mixin noseur-scheme-bg-accent($accent: #f5f8fa) {
+	background-color: $accent;
 }
 
 @mixin noseur-scheme-rp($accent: #f5f8fa) {
@@ -326,10 +334,18 @@ $schemes: (
 	--accentColor: #{$accent};
 	--fixtureColor: #{$accent};
 	--fixtureBackgroundColor: #{$main};
+	--borderColor: #{$secondary-accent};
 	--stripColor: #{toRgba($main, 0.07)};
 	--dataBorderColor: #{$secondary-accent};
+	--boxShadowColor: #{toRgba($main, 0.25)};
 	--mainColor01Percent: #{toRgba($main, 0.1)};
 	--secondaryAccentColor: #{$secondary-accent};
+	--focusBoxShadowColor: #{toRgba($main, 0.3)};
+}
+
+@mixin noseur-scheme-vars-outlined($main: #f5f8fa) {
+	--borderColor: #{$main};
+	--dataBorderColor: #{$main};
 }
 
 .noseur-stateless {
@@ -355,6 +371,10 @@ $palette in $schemes {
 		}
 	}
 
+	.noseur-#{$name}-vars-outlined {
+		@include noseur-scheme-vars-outlined($main);
+	}
+
 	.noseur-#{$name}-tx,
 	.noseur-#{$name}-tx-hv:hover {
 		@if $name =="secondary" {
@@ -363,6 +383,16 @@ $palette in $schemes {
 
 		@else {
 			@include noseur-scheme-tx($main);
+		}
+	}
+
+	.noseur-#{$name}-bg-accent {
+		@if $name =="secondary" {
+			@include noseur-scheme-bg-accent($main);
+		}
+
+		@else {
+			@include noseur-scheme-bg-accent($accent);
 		}
 	}
 

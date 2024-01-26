@@ -1,14 +1,15 @@
 
-import { Orientation } from "../constants/Orientation";
 import { NoseurObject } from "../constants/Types";
+import { Alignment } from "../constants/Alignment";
+import { Orientation } from "../constants/Orientation";
 
 let uniqueElementIdsCount = 0;;
 let __noseurGlobal__Browser: NoseurObject<any>;
 
 export const DOMHelper = {
 
-	uniqueElementId() {
-		return 'noseur-auto-id-' + (uniqueElementIdsCount++)
+	uniqueElementId(prefix: string = 'noseur-auto-id-') {
+		return prefix + (uniqueElementIdsCount++)
 	},
 
 	isElement(element: any) {
@@ -93,6 +94,19 @@ export const DOMHelper = {
 
 	},
 
+	getElementRectWithOffset(element: Element) {
+		const rect = element.getBoundingClientRect();
+		return {
+			x: rect.x,
+			y: rect.y,
+			width: rect.width,
+			height: rect.height,
+			top: rect.top + (window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0),
+			left: rect.left + (window.scrollX || document.documentElement.scrollLeft || document.body.scrollLeft || 0),
+		};
+
+	},
+
 	getDocumentScrollTop() {
 		let doc = document.documentElement;
 		return (window.scrollY || doc.scrollTop) - (doc.clientTop || 0);
@@ -124,6 +138,26 @@ export const DOMHelper = {
 			.replace(/px/g, "")
 			.replace(/sp/g, "")
 			.replace(/rem/g, ""));
+	},
+
+	getElementStyle(element: any) {
+		return element.currentStyle || window.getComputedStyle(element);
+	},
+
+	getElementWidth(element: any, excludeMargin = false) {
+		const elementRect = element.getBoundingClientRect();
+		const style = element.currentStyle || window.getComputedStyle(element);
+		return elementRect.width + (excludeMargin ? 0 : (parseInt(style.marginLeft) + parseInt(style.marginRight))) + parseInt(style.paddingLeft) + parseInt(style.paddingRight);
+	},
+
+	getElementSuperflousWidth(element: any) {
+		const style = element.currentStyle || window.getComputedStyle(element);
+		return parseInt(style.marginLeft) + parseInt(style.marginRight);
+	},
+
+	getElementSuperflousHeight(element: any) {
+		const style = element.currentStyle || window.getComputedStyle(element);
+		return parseInt(style.marginTop) + parseInt(style.marginBottom);
 	},
 
 	absolutePositionRelatively(element: any, target: any, horizontal: "left" | "right" = "right") {
@@ -253,7 +287,7 @@ export const DOMHelper = {
 		return Math.ceil(DOMHelper.calculateLines(el) * lineHeight);
 	},
 
-    inViewport(el: HTMLElement, con?: any, orientation: Orientation = Orientation.HORIZONTAL_VERTICAL) { 
+	inViewport(el: HTMLElement, con?: any, orientation: Orientation = Orientation.HORIZONTAL_VERTICAL) {
 		if (!con) con = document.documentElement;
 		let elRect = el.getBoundingClientRect();
 		let conRect = con.getBoundingClientRect();
@@ -271,7 +305,49 @@ export const DOMHelper = {
 		if (orientation === Orientation.HORIZONTAL) return inViewportHorizontally;
 		if (orientation === Orientation.HORIZONTAL_OR_VERTICAL) return inViewportVertically || inViewportHorizontally;
 		return inViewportVertically && inViewportHorizontally;
-	}
+	},
+
+	alignChildToParent(parent: any, child: any, alignment: Alignment) {
+		let left, top;
+        const labelRect = child.getBoundingClientRect();
+        const compoundRect = DOMHelper.getElementRectWithOffset(parent);
+        const labelSuperflousWidth = DOMHelper.getElementSuperflousWidth(child);
+        const labelSuperflousHeight = DOMHelper.getElementSuperflousHeight(child);
+        switch (alignment) {
+            case Alignment.TOP:
+            case Alignment.TOP_CENTER:
+                left = ((compoundRect.width / 2) - labelSuperflousWidth);
+                break;
+            case Alignment.TOP_RIGHT:
+                left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperflousWidth);
+                break;
+            case Alignment.BOTTOM:
+            case Alignment.BOTTOM_CENTER:
+                left = ((compoundRect.width / 2) - labelSuperflousWidth);
+                top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperflousHeight);
+                break;
+            case Alignment.BOTTOM_LEFT:
+                top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperflousHeight);
+                break;
+            case Alignment.BOTTOM_RIGHT:
+                left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperflousWidth);
+                top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperflousHeight);
+                break;
+            case Alignment.CENTER:
+                left = ((compoundRect.width / 2) - labelSuperflousWidth);
+                top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height + labelSuperflousHeight);
+                break;
+            case Alignment.CENTER_LEFT:
+                top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height - labelSuperflousHeight);
+                break;
+            case Alignment.CENTER_RIGHT:
+                left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperflousWidth);
+                top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height - labelSuperflousHeight);
+                break;
+        }
+        child.style.top = top ? `${top}px` : "inherit";
+        child.style.left = left ? `${left}px` : "inherit";
+	},
 
 };
 
@@ -302,7 +378,7 @@ export const ScrollHandler = {
 			let scrollSelectors = elementParent.nodeType === 1 && (elementParent as any).dataset['scrollselectors'];
 			if (scrollSelectors) {
 				let selectors = scrollSelectors.split(',');
-				for (let selector of selectors) { 
+				for (let selector of selectors) {
 					let el = this.querySelector(elementParent as Element, selector);
 					if (el && checkIfScrolable(el)) scrollableParents.push(el);
 				}
@@ -344,9 +420,9 @@ export const ScrollHandler = {
 export enum BaseZIndex {
 	MENU = 1000,
 	MODAL = 1001,
-	TOAST = 10002,
-	OVERLAY = 1000,
-	TOOLTIP = 10001,
+	TOAST = 1002,
+	OVERLAY = 1003,
+	TOOLTIP = 1004,
 };
 
 export const ZIndexHandler = {

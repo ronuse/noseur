@@ -19,6 +19,7 @@ export type NoseurDivElement = HTMLDivElement;
 export type NoseurInputValue = string | number;
 export type NoseurObject<T> = { [key: string]: T };
 export type NoseurCheckState = NoseurCheckStateInterface;
+export type NoseurNumberedObject<T> = { [key: number]: T };
 export type NoseurRawElement = Element | DocumentFragment;
 export type NoseurDomElement = React.ReactNode | React.ReactElement | HTMLElement | null;
 export type _NoseurElement = React.ReactNode | React.ReactElement | React.ReactNode | JSX.Element | string | number | null;

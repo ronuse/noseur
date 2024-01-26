@@ -3,12 +3,14 @@ import "./Form.css";
 import React from 'react';
 import { BareInputManageRef } from "./Input";
 import { Scheme } from "../constants/Scheme";
+import { DOMHelper } from "../utils/DOMUtils";
 import { Classname } from "../utils/Classname";
+import { Alignment } from "../constants/Alignment";
 import { ObjectHelper } from "../utils/ObjectHelper";
 import { Orientation } from "../constants/Orientation";
+import { NoseurElement, NoseurLabel, NoseurObject } from "../constants/Types";
 import { Button, ButtonManageRef, ButtonProps, buildButtonControl } from "./Button";
-import { ComponentBaseProps } from "../core/ComponentBaseProps";
-import { NoseurElement, NoseurObject } from "../constants/Types";
+import { ComponentBaseProps, ComponentElementBasicAttributes } from "../core/ComponentBaseProps";
 
 export enum FileInputMode {
     BUTTON,
@@ -21,6 +23,7 @@ export enum FileInputPreviewType {
     PDF,
     AUTO,
     NONE,
+    HTML,
     TEXT,
     IMAGE,
     VIDEO,
@@ -45,6 +48,7 @@ export interface FileInputItemOptions {
     props: FileInputProps;
     formattedSize: string;
     previewElement: NoseurElement;
+
     onRemove: FileInputFileEventHandler;
 }
 
@@ -69,32 +73,46 @@ export interface DragAndDropRefOptions {
     interval: number;
 }
 
-export type FileInputFileEventHandler = (file: File) => void;
 export type FileInputDialogEventHandler = (event: any) => void;
 export type FileInputValidationHandler = (file: File) => string;
 export type FileInputSelectFileHandler = (files: File[]) => void;
 export type FileInputDragEventHandler = (event: DragEvent) => boolean;
+export type FileInputFileEventHandler = (file: File, event?: Event) => void;
 export type FileInputValidationEventHandler = (file: File, error: string) => boolean;
 export type FileInputItemTemplateHandler = (options: FileInputItemOptions) => NoseurElement;
 export type FileInputFixtureTemplateHandler = (options: FileInputFixtureOptions) => NoseurElement;
 export type FileInputMountHandler = (onSelect?: (e?: any) => void, onDrop?: React.DragEventHandler<any>, onDragOver?: React.DragEventHandler<any>) => void;
 export type FileInputEmptyTemplateHandler = (onSelect?: (e?: any) => void, onDrop?: React.DragEventHandler<any>, onDragOver?: React.DragEventHandler<any>) => NoseurElement;
 
-export interface FileInputManageRef extends BareInputManageRef<File> {
-    select: () => void;
-    files: () => File[];
-    resolve: () => void;
+export type FileInputAttributtesRelays = {
+    label?: {
+        alignment?: Alignment;
+    } & ComponentElementBasicAttributes;
+    preview?: {
+        className?: string;
+        style?: React.CSSProperties;
+    };
 }
 
-export interface FileInputProps extends ComponentBaseProps<HTMLInputElement, FileInputManageRef> {
-    label: string;
+export interface FileInputManageRef extends BareInputManageRef<File> {
+    files: () => File[];
+    resolve: () => void;
+    select: (e?: Event) => void;
+}
+
+export interface FileInputProps extends ComponentBaseProps<HTMLInputElement, FileInputManageRef, FileInputAttributtesRelays> {
     accepts: string;
+    rounded: boolean;
     multiple: boolean;
+    label: NoseurLabel;
     selectOnly: boolean;
     maxFileSize: number;
     mode: FileInputMode;
     defaultFiles: File[];
     noDragAndDrop: boolean;
+    clickToChange: boolean;
+    stickyPreview: boolean;
+    concatNewFile: boolean;
     orientation: Orientation;
     previewType: FileInputPreviewType;
     buttonProps: Partial<ButtonProps>;
@@ -112,9 +130,11 @@ export interface FileInputProps extends ComponentBaseProps<HTMLInputElement, Fil
     onDragOver: React.DragEventHandler<any>;
     onRemoveFile: FileInputFileEventHandler;
     onBeforeDrop: FileInputDragEventHandler;
+    onDragBegin: React.DragEventHandler<any>;
     validateFile: FileInputValidationHandler;
     onSelectFiles: FileInputSelectFileHandler;
     itemTemplate: FileInputItemTemplateHandler;
+    onDragComplete: React.DragEventHandler<any>;
     onCancelDialog: FileInputDialogEventHandler;
     emptyTemplate: FileInputEmptyTemplateHandler;
     onConfirmDialog: FileInputDialogEventHandler;
@@ -132,6 +152,7 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
 
     public static defaultProps: Partial<FileInputProps> = {
         accepts: "*/*",
+        attrsRelay: {},
         elementProps: {},
         defaultFiles: [],
         noDragAndDrop: false,
@@ -161,6 +182,7 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
         maxFileSizeHumanReadable: ObjectHelper.humanFileSize(this.props.maxFileSize, true)
     };
 
+    internalLabelElement?: HTMLDivElement | null;
     buttonManagerRef: ButtonManageRef | undefined;
     internalInputElement: HTMLInputElement | undefined;
     internalCompoundElement: HTMLDivElement | undefined;
@@ -173,16 +195,19 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
         this.onCancel = this.onCancel.bind(this);
         this.onChange = this.onChange.bind(this);
         this.onDragOver = this.onDragOver.bind(this);
+        this.onDragBegin = this.onDragBegin.bind(this);
+        this.onDragComplete = this.onDragComplete.bind(this);
         this.onControlClick = this.onControlClick.bind(this);
         this.destroyElementsListeners = this.destroyElementsListeners.bind(this);
         this.initializeElementsListeners = this.initializeElementsListeners.bind(this);
     }
 
     componentDidMount() {
+        this.rePositionLabel();
         ObjectHelper.resolveManageRef(this, {
             resolve: () => this.initializeElementsListeners,
-            select: () => {
-                this.onControlClick(ControlType.SELECT);
+            select: (e?: Event) => {
+                this.onControlClick(ControlType.SELECT, e);
             },
             clear: () => {
                 if (!this.internalInputElement) return;
@@ -199,12 +224,23 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
                 return files.length ? files[0] : null;
             },
         });
-        this.props.onMount && this.props.onMount(() => this.onControlClick(ControlType.SELECT), this.onDrop, this.onDragOver);
+        this.props.onMount && this.props.onMount((e) => this.onControlClick(ControlType.SELECT, e), this.onDrop, this.onDragOver);
         this.initializeElementsListeners();
     }
 
+    componentDidUpdate(): void {
+        this.rePositionLabel();
+    }
+
+    rePositionLabel() {
+        if (!this.internalLabelElement || !this.internalCompoundElement || !this.props.attrsRelay.label
+            || !this.props.attrsRelay.label.alignment) return;
+        DOMHelper.alignChildToParent(this.internalCompoundElement, this.internalLabelElement, this.props.attrsRelay.label.alignment);
+    }
+
     componentWillUnmount(): void {
-        this.props.onUnMount && this.props.onUnMount(() => this.onControlClick(ControlType.SELECT), this.onDrop, this.onDragOver);
+        this.props.onUnMount && this.props.onUnMount((e) => this.onControlClick(ControlType.SELECT, e), this.onDrop, this.onDragOver);
+        ObjectHelper.resolveManageRef(this, null);
         this.destroyElementsListeners();
     }
 
@@ -216,7 +252,9 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
                     element: dragAndDropRef,
                     events: {
                         drop: this.onDrop,
-                        dragover: this.onDragOver
+                        dragover: this.onDragOver,
+                        dragenter: this.onDragBegin,
+                        dragexit: this.onDragComplete,
                     }
                 });
             });
@@ -274,10 +312,19 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
 
     onDrop(event: React.DragEvent<HTMLElement>) {
         this.props.onDrop && this.props.onDrop(event);
+        this.props.onDragComplete && this.props.onDragComplete(event);
         if (event.currentTarget === this.internalCompoundElement && this.props.noDragAndDrop) return;
         event.preventDefault();
         if (!event.dataTransfer || !event.dataTransfer.files || !event.dataTransfer.files.length) return;
         this.onSelectFiles(event.dataTransfer.files);
+    }
+
+    onDragBegin(event: React.DragEvent<HTMLElement>) {
+        this.props.onDragBegin && this.props.onDragBegin(event);
+    }
+
+    onDragComplete(event: React.DragEvent<HTMLElement>) {
+        this.props.onDragComplete && this.props.onDragComplete(event);
     }
 
     onChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -289,7 +336,7 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
     }
 
     onSelectFiles(fileList: FileList) {
-        const files: File[] = [];
+        const files: File[] = this.props.concatNewFile ? this.state.files : [];
         Array.from(fileList).forEach(file => {
             let errorMessage;
             if (this.props.maxFileSize && file.size > this.props.maxFileSize) {
@@ -307,7 +354,8 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
         this.setState({ files });
     }
 
-    onControlClick(type: ControlType) {
+    onControlClick(type: ControlType, event?: Event) {
+        event?.stopPropagation();
         switch (type) {
             case ControlType.CLEAR:
                 if (this.internalInputElement) this.internalInputElement.files = null;
@@ -318,7 +366,6 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
                 break;
             case ControlType.SELECT:
             default:
-                console.log("WE ARE HERE ----- ", this.internalInputElement, this.internalInputElement?.click)
                 if (!this.internalInputElement) return;
                 this.buttonManagerRef?.setLoadingState(true);
                 this.internalInputElement.click();
@@ -327,7 +374,10 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
 
     buildInput() {
         const style = this.props.mode === FileInputMode.ELEMENT ? null : { display: "none" };
-        const eventProps = ObjectHelper.extractEventProps(this.props, ["onAction", "onRemoveFile", "onBeforeDrop", "onSelectFiles", "onCancelDialog", "onConfirmDialog", "onValidationFail"]);
+        const eventProps = ObjectHelper.extractEventProps(this.props, [
+            "onAction", "onRemoveFile", "onBeforeDrop", "onSelectFiles",
+            "onCancelDialog", "onConfirmDialog", "onValidationFail", "onDragBegin", "onDragComplete"
+        ]);
         const props: any = {
             style,
             ...eventProps,
@@ -357,22 +407,24 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
             ...this.props.buttonProps,
             scheme: this.props.scheme,
         };
-        return (<Button {...props} onClick={() => this.onControlClick(ControlType.SELECT)} manageRef={(r) => {
+        return (<Button {...props} onClick={(e: any) => this.onControlClick(ControlType.SELECT, e)} manageRef={(r) => {
             if (!r) return;
             this.buttonManagerRef = r;
         }} />);
     }
-    
+
     buildFileItem(index: number, file: File, onRemove: FileInputFileEventHandler) {
         (file as any).key = index;
         const url = URL.createObjectURL(file);
-        const className = "noseur-file-input-preview";
         const isTemplated = !!this.props.itemTemplate;
         const formattedSize = ObjectHelper.humanFileSize(file.size, true);
-        const removeButton = isTemplated ? null : buildButtonControl(this.props.clearControl, {
+        const className = Classname.build("noseur-file-input-preview", this.props.attrsRelay.preview?.className, {
+            "noseur-cursor-pointer": this.props.clickToChange
+        });
+        const removeButton = this.props.stickyPreview || isTemplated ? null : buildButtonControl(this.props.clearControl, {
             rounded: true,
-        }, () => onRemove(file), "noseur-close")
-        const previewElement = buildFileInputPreview({
+        }, (e) => onRemove(file, e), "noseur-close")
+        const previewElement = fileInputBuildFileInputPreview({
             url,
             file,
             onRemove,
@@ -391,22 +443,23 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
             props: this.props,
         };
         if (isTemplated) return this.props.itemTemplate(options);
-        return <div key={index} className={className}>{previewElement}</div>;
+        return <div key={index} className={className} onClick={this.props.clickToChange ? (e: any) => this.onControlClick(ControlType.SELECT, e) : undefined} >{previewElement}</div>;
     }
 
     buildInputPreviews() {
         if (!(this.props.mode === FileInputMode.PREVIEW || this.props.mode === FileInputMode.CONTROLLED)) return null;
         if (!this.state.files.length || this.props.selectOnly) {
             if (this.props.emptyTemplate) {
-                return this.props.emptyTemplate(() => this.onControlClick(ControlType.SELECT), this.onDrop, this.onDragOver);
+                return this.props.emptyTemplate((e?: any) => this.onControlClick(ControlType.SELECT, e), this.onDrop, this.onDragOver);
             }
             const className = Classname.build("noseur-file-input-preview noseur-file-input-preview-empty",
                 (this.props.scheme ? `${this.props.scheme}-bd-cl-hv` : null));
-            return (<div className={className} onClick={() => this.onControlClick(ControlType.SELECT)}>
+            return (<div className={className} onClick={(e?: any) => this.onControlClick(ControlType.SELECT, e)}>
                 <i className="fa-solid fa-image"></i>
             </div>);
         }
-        return this.state.files.map((file: File, index: number) => this.buildFileItem(index, file, (file: File) => {
+        return this.state.files.map((file: File, index: number) => this.buildFileItem(index, file, (file: File, event?: Event) => {
+            event?.stopPropagation();
             let files = this.state.files;
             const fileIndex = files.findIndex(f => f.name === file.name && f.size === file.size);
             if (fileIndex < -1) return;
@@ -415,7 +468,7 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
                 if (this.internalInputElement) this.internalInputElement!.files = null;
             }
             this.setState({ files });
-            this.props.onRemoveFile && this.props.onRemoveFile(file);
+            this.props.onRemoveFile && this.props.onRemoveFile(file, event);
         }));
     }
 
@@ -424,14 +477,14 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
         const selectControl = buildButtonControl(this.props.selectControl, {
             text: "Choose",
             scheme: this.props.scheme,
-        }, () => this.onControlClick(ControlType.SELECT), "noseur-close");
+        }, (e) => this.onControlClick(ControlType.SELECT, e), "noseur-close");
         const clearControl = buildButtonControl(this.props.clearControl, {
             text: "Clear",
-        }, () => this.onControlClick(ControlType.CLEAR), "noseur-close");
+        }, (e) => this.onControlClick(ControlType.CLEAR, e), "noseur-close");
         const actionControl = buildButtonControl(this.props.actionControl, {
             text: "Upload",
             scheme: this.props.scheme,
-        }, () => this.onControlClick(ControlType.ACTION), "noseur-close");
+        }, (e) => this.onControlClick(ControlType.ACTION, e), "noseur-close");
         const options: FileInputFixtureOptions = {
             clearControl,
             actionControl,
@@ -453,23 +506,36 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
         </div>);
     }
 
+    buildLabel() {
+        if (!this.props.label) return;
+        const onClick = (e: any) => this.onControlClick(ControlType.SELECT, e);
+        const className = Classname.build("noseur-file-input-label", this.props.attrsRelay.label?.className);
+        return (<div ref={(r) => this.internalLabelElement = r} onClick={onClick} className={className} style={this.props.attrsRelay.label?.style} id={this.props.attrsRelay.label?.id}>{this.props.label}</div>);
+    }
+
     render() {
         const input = this.buildInput();
+        const label = this.buildLabel();
         const header = this.renderFixture();
         const button = this.buildInputButton();
         const footer = this.renderFixture(false);
         const previews = this.buildInputPreviews();
         const className = Classname.build("noseur-file-input", {
+            "noseur-rounded-bd": this.props.rounded,
             "noseur-file-input-controlled": this.props.mode === FileInputMode.CONTROLLED
         }, this.props.className, (this.props.scheme ? `${this.props.scheme}-vars` : null));
         const previewsClassName = Classname.build("noseur-file-input-previews", this.props.orientation === Orientation.HORIZONTAL ? "noseur-fl-d-r" : "noseur-fl-d-c");
 
         if (this.props.mode === FileInputMode.ELEMENT) return input;
-        return (<div ref={(e) => this.internalCompoundElement = e || undefined} tabIndex={0} className={className} style={this.props.style} onDragOver={this.onDragOver} onDrop={this.onDrop}>
+        return (<div ref={(e: any) => {
+            if (!!this.internalCompoundElement && !e) this.componentWillUnmount();
+            this.internalCompoundElement = e;
+        }} tabIndex={0} className={className} style={this.props.style} onDragOver={this.onDragOver} onDragEnter={this.onDragBegin} onDragExit={this.onDragComplete} onDrop={this.onDrop}>
             {input}
             {button}
             {header}
             <div className={previewsClassName}>{previews}</div>
+            {label}
             {footer}
         </div>);
     }
@@ -484,56 +550,70 @@ export interface FileInputPreviewOption {
     file?: File;
     url?: string;
     formattedSize?: string;
+    style?: React.CSSProperties;
+    ref?: React.ForwardedRef<any>;
     previewType?: FileInputPreviewType;
     onRemove?: FileInputFileEventHandler;
     removeButton?: React.ReactElement<ButtonProps, string | React.JSXElementConstructor<ButtonProps>>;
 }
 
-export function buildFileInputPreview(options: FileInputPreviewOption) {
-    const file = options.file || new File([], (options.url || "Unknown"));
+export function fileInputBuildFileInputPreview(options: FileInputPreviewOption) {
+    const file = options.file || new File([], (options.url || "Unknown "));
     let fileType = file.type;
     let previewType: FileInputPreviewType = options.previewType || FileInputPreviewType.AUTO;
     if (previewType === FileInputPreviewType.AUTO) {
         if (fileType.includes("pdf")) previewType = FileInputPreviewType.PDF;
         if (fileType.includes("text")) previewType = FileInputPreviewType.TEXT;
+        if (fileType.includes("html")) previewType = FileInputPreviewType.HTML;
         if (fileType.includes("video")) previewType = FileInputPreviewType.VIDEO;
         if (fileType.includes("image")) previewType = FileInputPreviewType.IMAGE;
         if (fileType.includes("audio")) previewType = FileInputPreviewType.AUDIO;
     }
     const onRemove = options.onRemove;
     const closeButton = options.removeButton;
-    const url = options.url || URL.createObjectURL(file);
+    const url = (file as any).__noseur__url__ ?? options.url ?? URL.createObjectURL(file);
     const formattedSize = options.formattedSize || ObjectHelper.humanFileSize(file.size, true);
     if (previewType === FileInputPreviewType.IMAGE) {
         return (<React.Fragment>
-            <img className="noseur-file-input-preview-image" alt={file.name} src={url} />
+            <img ref={options.ref} className="noseur-file-input-preview-image" style={options.style} alt={file.name} src={url} />
+            {closeButton}
+        </React.Fragment>);
+    } else if (previewType === FileInputPreviewType.HTML) {
+        return (<React.Fragment>
+            <iframe ref={options.ref} className="noseur-file-input-preview-html" style={options.style} frameBorder="0" srcDoc={url} />
             {closeButton}
         </React.Fragment>);
     } else if (previewType === FileInputPreviewType.PDF || previewType === FileInputPreviewType.TEXT) {
         return (<React.Fragment>
-            <iframe className="noseur-file-input-preview-image" frameBorder="0" src={url} />
+            <iframe ref={options.ref} className="noseur-file-input-preview-pdf-text" style={options.style} frameBorder="0" src={url} />
             {closeButton}
         </React.Fragment>);
     } else if (previewType === FileInputPreviewType.VIDEO) {
         return (<React.Fragment>
-            <video className="noseur-file-input-preview-video" src={url} controls>
+            <video ref={options.ref} className="noseur-file-input-preview-video" style={options.style} src={url} controls>
                 <source src={url} /> Your browser does not support the video tag.
             </video>
             {closeButton}
         </React.Fragment>);
     } else if (previewType === FileInputPreviewType.AUDIO) {
         return (<React.Fragment>
-            <audio className="noseur-file-input-preview-audio" src={url} controls>
+            <audio ref={options.ref} className="noseur-file-input-preview-audio" style={options.style} src={url} controls>
                 <source src={url} /> Your browser does not support the audio tag.
             </audio>
             {closeButton}
         </React.Fragment>);
     }
-    return (<div className="noseur-file-input-preview-binary">
+    return (<div ref={options.ref} className="noseur-file-input-preview-binary" style={options.style} >
         <i className="fa fa-file" />
         {file.name}
         ({formattedSize})
-        {!onRemove ? null : <i className="fa fa-close noseur-close noseur-danger-tx" onClick={() => onRemove(file)} />}
+        {!onRemove ? null : <i className="fa fa-close noseur-close noseur-danger-tx" onClick={(e: any) => onRemove(file, e)} />}
     </div>);
+}
+
+export function fileInputFileFromUrl(url: string, name: string = "not-specified", type: string = "*/*") {
+    const file = new File([], name, { type });
+    (file as any).__noseur__url__ = url;
+    return file;
 }
 

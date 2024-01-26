@@ -3,10 +3,10 @@ import {
     Button, Dialog, ChartData,
     TextInput, Dropdown, Scheme, Month, YearInput, MonthInput,
     AlertInterface, alertPopover, loadingAlert, DateInput, TimeInput,
-    MoneyInput, EmailInput, PasswordInput, alertDialog, DateTimeInput,
-    TextAreaInput, NumberInput, NoseurObject, ComposedPassword, YearPicker, MonthPicker,
-    Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator, FileInputManageRef,
-    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, buildFileInputPreview, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType,
+    MoneyInput, EmailInput, PasswordInput, alertDialog, DateTimeInput, Message,
+    TextAreaInput, NumberInput, NoseurObject, ComposedPassword, YearPicker, MonthPicker, MessageSchemesIcons,
+    Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator, FileInputManageRef, Messages, MessagesManageRef, ToastManageRef, Toast, Transition, Panel, PanelManageRef, Accordion, AccordionTab, AccordionManageRef, TabPane, TabPanel, TabPaneManageRef,
+    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType,
 } from "@ronuse/noseur";
 
 function App() {
@@ -17,54 +17,34 @@ function App() {
     const chatSenderRef = React.useRef<any>();
     const [state, setState] = React.useState(false);
     const inputManageRef = React.useRef<any>(null);
-    const fileInpuManagetRef = React.useRef<FileInputManageRef>(null);
+    const toastManageRef = React.useRef<ToastManageRef>(null);
+    const panelManageRef = React.useRef<PanelManageRef>(null);
+    const tabPaneManageRef = React.useRef<TabPaneManageRef>(null);
     const [charty, setCharty] = React.useState<any>(ChartType.BAR);
+    const messagesManageRef = React.useRef<MessagesManageRef>(null);
+    const accordionManageRef = React.useRef<AccordionManageRef>(null);
+    const fileInpuManagetRef = React.useRef<FileInputManageRef>(null);
     const [showDialog, setShowDialog] = React.useState<boolean>(false);
     const [inputIsValid, setInputIsValid] = React.useState<boolean>(false);
     const [dropdownIsValid, setDropdownIsValid] = React.useState<boolean>(false);
     const [showRivtnDialog, setShowRivtnDialog] = React.useState<boolean>(false);
     const [showAlertDialog, setShowAlertDialog] = React.useState<boolean>(false);
     const [showAlertPopover, setShowAlertPopover] = React.useState<boolean>(false);
+    const [transition, setTransition] = React.useState<Transition>(Transition.SLIDE);
     const refs = React.useRef<NoseurObject<any>>({ "input1": { current: undefined } });
     const [dialogAlignment, setDialogAlignment] = React.useState<Alignment>(Alignment.CENTER);
     const [dynamicDataTable, setDynamicDataTable] = React.useState<number[]>(Array(5).fill(0));
+    const [tabpaneAlignment, setTabpaneAlignment] = React.useState<Alignment>(Alignment.TOP_LEFT);
 
     const percent = (index: number): number => (index * 100) / schemes.length + 2;
 
-    React.useEffect(() => {
-        /*if (progress.current < 100) setTimeout(() => {
+    /*React.useEffect(() => {
+        if (progress.current < 100) setTimeout(() => {
             setState(!state);
             progress.current += 7;
-        }, 1000);*/
-    }, [state]);
+        }, 1000);
+    }, [state]);*/
 
-    const tableData = [
-        {
-            logo: "fa fa-user",
-            name: "Rivtn User",
-            service_code: "janus-lunarius",
-        },
-        {
-            logo: "fa fa-flag",
-            name: "Admin",
-            service_code: "janus-geminus",
-        },
-        {
-            logo: "fa fa-shield-alt",
-            name: "Security System",
-            service_code: "soteria",
-        },
-        {
-            logo: "fa fa-gamepad",
-            name: "Rideon",
-            service_code: "rideon",
-        },
-        {
-            logo: "fa fa-search",
-            name: "Logging System",
-            service_code: "mnemosyne",
-        },
-    ];
     const loadingD = loadingAlert({
         message: "Hello World",
         onLoading: async (alert: AlertInterface) => {
@@ -80,9 +60,443 @@ function App() {
     function render() {
         return (
             <div className="Apps" style={{ background: "white" }}>
+                <div style={{ margin: 30, /*background: "grey", */padding: 20 }}>
+                    <div>
+                        <Button text="Next" onClick={() => tabPaneManageRef.current?.next()} />
+                        <Button text="Prev" onClick={() => tabPaneManageRef.current?.previous()} />
+                        <Button text="Switch To 5" onClick={() => tabPaneManageRef.current?.switch(4)} />
+                        <Button text="Re Add 3" onClick={() => tabPaneManageRef.current?.readd(2)} />
+                        <Button text="Remove 3" onClick={() => tabPaneManageRef.current?.remove(2)} />
+                    </div>
+                    <br />
+                    <TabPane manageRef={tabPaneManageRef} renderActiveTabOnly onTabClose={(index: number) => {
+                        console.log("Tab Closed", index);
+                    }} onTabActive={(index: number) => {
+                        console.log("Tab Active", index);
+                    }} onTabChange={(state: string, index: number) => {
+                        console.log("Tab Changed", state, index);
+                    }}>
+                        <TabPanel header="Panel 1">1 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 2">2 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 3">3 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 4">4 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 5">5 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 6">6 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 7">7 - {basicText()}</TabPanel>
+                    </TabPane>
+                    <br /><br /><br />
+                    <TabPane>
+                        {[1, 2, 3].map(num => <TabPanel header={`Header ${num}`} headerTemplate={(options: any) => {
+                            return (<div style={{ padding: 10, cursor: "pointer", marginRight: 10 }} onClick={options.onClick} className={`${options.scheme}`}>
+                                {options.titleElement} Hello
+                            </div>)
+                        }}>{num} - {basicText()}</TabPanel>)}
+                    </TabPane>
+                    <br /><br /><br />
+                    <TabPane renderActiveTabOnly>
+                        <TabPanel header="Panel 1" disabled>1 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 2" disabled>2 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 3" disabled>3 - {basicText()}</TabPanel>
+                    </TabPane>
+                    <br /><br /><br />
+                    <TabPane scheme={Scheme.SKELETON}>
+                        <TabPanel header="Panel 1" style={{ margin: 10 }}><div className='noseur-skeleton'>1 - {basicText()}</div></TabPanel>
+                        <TabPanel header="Panel 2">2 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 3">3 - {basicText()}</TabPanel>
+                    </TabPane>
+                    <br /><br /><br />
+                    <TabPane>
+                        <TabPanel header="Panel 1" scheme={Scheme.SKELETON}>1 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 2">2 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 2">2 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 3" scheme={Scheme.SKELETON}>3 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 3" scheme={Scheme.SKELETON}>3 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 4">4 - {basicText()}</TabPanel>
+                    </TabPane>
+                    <br /><br /><br />
+                    <Dropdown options={Object.keys(Alignment).map((alignment, index) => ({ label: alignment, value: Object.values(Alignment)[index] }))}
+                        onSelectOption={(option: any) => {
+                            setTabpaneAlignment(option.value);
+                            return true;
+                        }} selectedOptionIndex={6} formControlProps={{ fill: true }} style={{ width: 100 }} />
+                    <br />
+                    <TabPane scheme={Scheme.PRIMARY} scrollable alignment={tabpaneAlignment}>
+                        <TabPanel header="Panel 1">1 - {basicText()}{basicText()}{basicText()}{basicText()}{basicText()}</TabPanel>
+                        <TabPanel header="Panel 2">2 - {basicText()}{basicText()}{basicText()}{basicText()}{basicText()}</TabPanel>
+                        <TabPanel header="Panel 3">3 - {basicText()}{basicText()}{basicText()}{basicText()}{basicText()}</TabPanel>
+                    </TabPane>
+                    <br /><br /><br />
+                    <TabPane scrollable>
+                        <TabPanel header="Panel 1">1 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 2">2 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 3">3 - {basicText()}</TabPanel>
+                    </TabPane>
+                    <br /><br /><br />
+                    <TabPane scrollable alignment={tabpaneAlignment}>
+                        <TabPanel header="Panel 2">2 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 3">3 - {basicText()}</TabPanel>
+                        {Object.keys(Scheme).map((scheme, index) => (
+                            <TabPanel header={`Panel (${scheme})`} scheme={schemes[index]}>{scheme} - {basicText()}</TabPanel>))}
+                    </TabPane>
+                    <br /><br /><br />
+                    <TabPane scheme={Scheme.SUCCESS} activeIndex={1}>
+                        <span>Hello WOrld</span>
+                        <TabPanel header="Panel 1">1 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 2">2 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 3">3 - {basicText()}</TabPanel>
+
+                        <div style={{ flex: 1 }} />
+                        <div>
+                            <TextInput placeholder='search...' />
+                            <Button scheme={Scheme.DANGER} text="Proceed" style={{ marginLeft: 10 }} />
+                        </div>
+                    </TabPane>
+                    <br /><br /><br />
+                    <TabPane scheme={Scheme.PRIMARY} renderActiveTabOnly>
+                        <TabPanel header="Panel 1" fill>1 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 2" fill>2 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 3" fill>3 - {basicText()}</TabPanel>
+                    </TabPane>
+                    <br /><br /><br />
+                    <TabPane renderActiveTabOnly>
+                        <TabPanel header="Panel 1" removable>1 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 2" removable removeIcon="fa fa-angle-up">2 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 3" removable removeIcon={<img style={{ width: 12, height: 12, borderRadius: 100 }} alt="aa" src="https://avatars.githubusercontent.com/u/14879387?v=4" />}>3 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 4" removable>4 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 5" removable>5 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 6" removable>6 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 7" removable>7 - {basicText()}</TabPanel>
+                    </TabPane>
+                    <br /><br /><br />
+                    <TabPane scheme={Scheme.PRIMARY} renderActiveTabOnly>
+                        <TabPanel header="Panel 1" leftIcon="fab fa-google">1 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 2" leftIcon="fa fa-square" rightIcon="fa fa-circle">2 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 3" leftIcon="fab fa-twitter" scheme={Scheme.RETRO} idleScheme={Scheme.DANGER}>3 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 4" leftIcon="fa fa-user">4 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 4" rightIcon="fa fa-search">5 - {basicText()}</TabPanel>
+                    </TabPane>
+                    <br /><br /><br />
+                    <TabPane scheme={Scheme.WARNING} renderActiveTabOnly>
+                        <TabPanel header="Panel 1">1 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 2">2 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 3">3 - {basicText()}</TabPanel>
+                    </TabPane>
+                    <br /><br /><br />
+                    <TabPane>
+                        <TabPanel header="Panel 1">1 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 2">2 - {basicText()}</TabPanel>
+                        <TabPanel header="Panel 3">3 - {basicText()}</TabPanel>
+                    </TabPane>
+                </div>
+                <div style={{ margin: 30, /*background: "grey", */padding: 20 }}>
+                    <div>
+                        <Button text="Expand 1" onClick={() => accordionManageRef.current?.expand([1])} />
+                        <Button text="Collapse 1" onClick={() => accordionManageRef.current?.collapse([1])} />
+                        <Button text="Expand All" onClick={() => accordionManageRef.current?.expandAll()} />
+                        <Button text="Collapse All" onClick={() => accordionManageRef.current?.collapseAll()} />
+                    </div>
+                    <br />
+                    <Accordion manageRef={accordionManageRef}>
+                        <AccordionTab title="Header I"><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab title="Header II"><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab title="Header III"><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                    </Accordion>
+                    <br /><br /><br />
+                    <Accordion onTabExpand={(i: number) => console.log("Opened: ", i)}
+                        onTabCollapse={(i: number) => console.log("Closed: ", i)}>
+                        <AccordionTab title="One"><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab disabled><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                    </Accordion>
+                    <br /><br /><br />
+                    <Accordion multiple onTabChange={(opened: number[], closed: number[]) => console.log("Changed: ", opened, closed)}>
+                        <AccordionTab title="One">hello</AccordionTab>
+                        <AccordionTab>{basicText()}</AccordionTab>
+                        <AccordionTab>{basicText()}</AccordionTab>
+                    </Accordion>
+                    <br /><br /><br />
+                    <Accordion multiple disabled>
+                        <AccordionTab borderless title="1">{basicText()}</AccordionTab>
+                        <AccordionTab borderless title="2"><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab borderless title="3"><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                    </Accordion>
+                    <br /><br /><br />
+                    <Accordion multiple borderless>
+                        <AccordionTab title="One"><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                    </Accordion>
+                    <br /><br /><br />
+                    <Accordion multiple activeIndexes={[0, 1, 2]}>
+                        <AccordionTab title="Two">{basicText()}</AccordionTab>
+                        <AccordionTab><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                    </Accordion>
+                    <br /><br /><br />
+                    <Accordion seperated>
+                        <AccordionTab title="One"><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                    </Accordion>
+                    <br /><br /><br />
+                    <Accordion multiple seperated>
+                        <AccordionTab title="One"><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                    </Accordion>
+                    <br /><br /><br />
+                    <Accordion multiple activeIndexes={[0, 1, 2]}>
+                        <AccordionTab title="Two"><span>{basicText()}</span></AccordionTab>
+                        <AccordionTab scheme={Scheme.SKELETON}><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab scheme={Scheme.SKELETON}><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab scheme={Scheme.SKELETON}><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                    </Accordion>
+                    <br /><br /><br />
+                    <Accordion multiple activeIndexes={[0, 1, 2]} scheme={Scheme.SKELETON}>
+                        <AccordionTab title="Two"><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                        <AccordionTab><div style={{ margin: 10 }}>{basicText()}</div></AccordionTab>
+                    </Accordion>
+                    <br /><br /><br />
+                    {Object.keys(Scheme).map((scheme, index) => (
+                        <Accordion style={{ marginTop: 20 }} scheme={schemes[index]} outlined>
+                            <AccordionTab title={`Header 1 (${scheme})`}>hello</AccordionTab>
+                            <AccordionTab title={`Header 2 (${scheme})`}>{basicText()}</AccordionTab>
+                            <AccordionTab title={`Header 3 (${scheme})`}>{basicText()}</AccordionTab>
+                        </Accordion>))}
+                </div>
+                <div style={{ margin: 30, /*background: "grey", */padding: 20 }}>
+                    <div>
+                        <Button text="Toggle" onClick={() => panelManageRef.current?.toggle()} />
+                        <Button text="Expand" onClick={() => panelManageRef.current?.expand()} />
+                        <Button text="Collapse" onClick={() => panelManageRef.current?.collapse()} />
+                    </div>
+                    <Panel manageRef={panelManageRef} scheme={Scheme.PRIMARY} title="Hello 1" collapsible borderless attrsRelay={{ content: { transition } }}>
+                        Hello World
+                        <br />
+                        Hello World
+                        <br />
+                        Hello World
+                        <br />
+                        Hello World
+                        <br />
+                        Hello World
+                        <br />
+                        Hello World
+                        <br />
+                        <Button text="Hello World" />
+                    </Panel>
+                    <br /><br /><br />
+                    <Panel title="Hello 1" collapsible>
+                        Hello World
+                        <br />
+                        <Button text="Hello World" />
+                    </Panel>
+                    <br /><br /><br />
+                    <Panel collapsed footer={(options: any) => {
+                        return (<div className={options.className}>Footer {options.toggleElement}</div>);
+                    }}>
+                        Hello World
+                        <Button text="Hello World" />
+                    </Panel>
+                    <br /><br /><br />
+                    <Panel footer={(options: any) => {
+                        return (<div className={options.className}>Footer</div>);
+                    }}>
+                        Hello World
+                        <Button text="Hello World" />
+                    </Panel>
+                    <br /><br /><br />
+                    <Panel title="Hello 2" footer={(options: any) => {
+                        return (<div className={options.className}>Footer</div>);
+                    }} collapsible>
+                        Hello World
+                        <Button text="Hello World" />
+                    </Panel>
+                    <br /><br /><br />
+                    <Panel scheme={Scheme.SKELETON} title="Hello 3" collapsible>
+                        <div style={{ margin: 10 }}>
+                            Hello WOrld
+                        </div>
+                        <span style={{ margin: 10 }}>Hello World</span>
+                        <Button text="Hello World" style={{ margin: 10 }} />
+                    </Panel>
+                    <br /><br /><br />
+                    {Object.keys(Scheme).map((scheme, index) => (
+                        <Panel style={{ marginTop: 20 }} scheme={schemes[index]} title={`Sheme ${scheme}`} collapsible>
+                            <span style={{ margin: 10 }}>Hello World {scheme}</span>
+                            <br />
+                            <Button style={{ margin: 10 }} text="Hello World" />
+                        </Panel>))}
+                </div>
+                <div style={{ margin: 30, background: "grey", padding: 20 }}>
+                    Transitions
+                    <Dropdown fill options={Object.keys(Transition).map((alignment, index) => ({ label: alignment, value: Object.values(Transition)[index] }))}
+                        onSelectOption={(option: any) => {
+                            setTransition(option.value);
+                            return true;
+                        }} selectedOptionIndex={0} formControlProps={{ fill: true }} popoverProps={{ style: { height: 300, overflow: "auto" } }} />
+
+                    <Button text="PopoverX" onClick={(e: any) => refs.current["popoverx"].toggle(e/*, refs.current["portaldiv1"] */)} />
+                    <Popover manageRef={(e: any) => refs.current["popoverx"] = e} matchTargetSize={false} pointingArrowClassName={""}
+                        style={{ backgroundColor: "white", padding: 10, "--componentMarginTopOrBottom": "0px" } as any} transition={transition} transitionTimeout={1000}
+                        onShow={() => console.log("onShow")} onHide={() => console.log("onHide")}>
+                        <span>Hello World pop 1</span><br />
+                        <span>Hello World pop 1</span><br />
+                        <span>Hello World pop 1</span><br />
+                        <span>Hello World pop 1</span><br />
+                        <span>Hello World pop 1</span><br />
+                        <TextInput ref={onOpenRef} scheme={Scheme.PRIMARY} fill /><br />
+                        <span>Hello World pop 1</span><br />
+                        <span>Hello World pop 1</span><br />
+                        <span>Hello World pop 1</span><br />
+                    </Popover>
+
+                    <div style={{ padding: 50, paddingTop: 320 }}>
+                        <div className={transition} style={{ width: 70, height: 50, background: "red", "--transitionInfinite": "infinite" } as any}></div>
+                        <br />
+                        <span className={transition} style={{ display: "inline-block", "--transitionInfinite": "infinite" } as any}>Hello World</span>
+                        <br /><br />
+                        <Button className={transition} text="Click me" scheme={Scheme.SUCCESS} />
+                        <br /><br />
+                        <Button className={transition} text="Click me" style={{ "--transitionInfinite": "infinite" } as any} scheme={Scheme.SUCCESS} />
+                    </div>
+                </div>
+                <div style={{ margin: 30, background: "grey", padding: 20 }}>
+                    Toast<br />
+                    <Button text="Show Toast" onClick={() => {
+                        toastManageRef.current?.show({
+                            transition,
+                            foreScheme: true,
+                            lifetime: 100000,
+                            icon: "fa fa-circle",
+                            showProgressbar: true,
+                            content: "Hello World",
+                            scheme: Scheme.SUCCESS,
+                            pauseDelayOnHover: true,
+                            style: { background: "white" }
+                        });
+                    }} />
+                    <Button text="Show Multiple Toast" onClick={() => {
+                        toastManageRef.current?.show(Object.keys(Scheme).map((scheme, index) => ({
+                            transition,
+                            lifetime: 10000,
+                            showProgressbar: true,
+                            scheme: schemes[index],
+                            pauseDelayOnHover: true,
+                            content: "Hello " + scheme,
+                            icon: (MessageSchemesIcons as any)[scheme as any] as any,
+                        })));
+                    }} />
+                    <Button text="Reverse" onClick={() => toastManageRef.current?.reverse()} />
+                    <Button text="Clear" onClick={() => toastManageRef.current?.clear()} />
+                    <NumberInput onInputComplete={(value) => {
+                        toastManageRef.current?.changeLimit(parseInt(value));
+                    }} />
+                    <Dropdown options={Object.keys(Alignment).map((alignment, index) => ({ label: alignment, value: Object.values(Alignment)[index] }))}
+                        onSelectOption={(option: any) => {
+                            toastManageRef.current?.changePosition(option.value);
+                            return true;
+                        }} selectedOptionIndex={7} formControlProps={{ fill: true }} style={{ width: 100 }} />
+                    <Dropdown options={Object.keys(Orientation).map((orientation, index) => ({ label: orientation, value: Object.values(Orientation)[index] }))}
+                        onSelectOption={(option: any) => {
+                            toastManageRef.current?.changeOrientation(option.value);
+                            return true;
+                        }} selectedOptionIndex={1} formControlProps={{ fill: true }} style={{ width: 100 }} />
+                    <Toast manageRef={toastManageRef} />
+                </div>
+                <div style={{ margin: 30, background: "grey", padding: 20 }}>
+                    Messages<br />
+                    <Button text="Show Message" onClick={() => {
+                        messagesManageRef.current?.show({
+                            transition,
+                            lifetime: 1000000,
+                            icon: "fa fa-circle",
+                            showProgressbar: true,
+                            content: "Hello World",
+                            scheme: Scheme.SUCCESS,
+                            pauseDelayOnHover: true,
+                        });
+                    }} />
+                    <Button text="Show Multiple Message" onClick={() => {
+                        messagesManageRef.current?.show(Object.keys(Scheme).map((scheme, index) => ({
+                            transition,
+                            lifetime: 1000000,
+                            showProgressbar: true,
+                            scheme: schemes[index],
+                            pauseDelayOnHover: true,
+                            content: "Hello " + scheme,
+                            icon: (MessageSchemesIcons as any)[scheme as any] as any,
+                        })));
+                    }} />
+                    <Button text="Reverse" onClick={() => messagesManageRef.current?.reverse()} />
+                    <Button text="Clear" onClick={() => messagesManageRef.current?.clear()} />
+                    <NumberInput onInputComplete={(value) => {
+                        messagesManageRef.current?.changeLimit(parseInt(value));
+                    }} />
+                    <Dropdown options={Object.keys(Alignment).map((alignment, index) => ({ label: alignment, value: Object.values(Alignment)[index] }))}
+                        onSelectOption={(option: any) => {
+                            messagesManageRef.current?.changePosition(option.value);
+                            return true;
+                        }} selectedOptionIndex={7} formControlProps={{ fill: true }} style={{ width: 100 }} />
+                    <Dropdown options={Object.keys(Orientation).map((orientation, index) => ({ label: orientation, value: Object.values(Orientation)[index] }))}
+                        onSelectOption={(option: any) => {
+                            messagesManageRef.current?.changeOrientation(option.value);
+                            return true;
+                        }} selectedOptionIndex={1} formControlProps={{ fill: true }} style={{ width: 100 }} />
+                    <Messages manageRef={messagesManageRef} style={{ overflow: "auto", marginTop: 20, width: "100%", height: 500, background: "white" }} onAction={(_: any, key: any) => {
+                        console.log("THE KEY ACTIONS", key);
+                    }} onRemove={(_: any, key: any) => {
+                        console.log("THE KEY REMOVED", key);
+                    }} />
+                </div>
+                <div style={{ margin: 30, background: "grey", padding: 20 }}>
+                    <Message style={{ background: "white" }} lifetime={1000000} content="Hello World" icon="fa fa-circle" showProgressbar pauseDelayOnHover />
+                    <br />
+                    <Message showProgressbar lifetime={1000000} closeOnClick style={{ background: "green", color: "white" }} sticky content={<div>
+                        Hello this is a custom content
+                        <br /><br />
+                        <i className='fa fa-user' style={{ marginRight: 10 }} />
+                        <TextInput scheme={Scheme.PRIMARY} />
+                    </div>} />
+                    <br />
+                    {Object.keys(Scheme).map((scheme, index) => (
+                        <div style={{ marginBottom: 20, display: "flex" }}>
+                            <Message showProgressbar key={index} scheme={schemes[index]} content={`Scheme ${scheme}`}
+                                icon={(MessageSchemesIcons as any)[scheme as any] as any} lifetime={20000} pauseDelayOnHover />
+                            <Message style={{ marginLeft: 20, background: "white" }} showProgressbar key={"" + index + "-"} scheme={schemes[index]} content={`Scheme ${scheme}`}
+                                icon={(MessageSchemesIcons as any)[scheme as any] as any} foreScheme />
+                        </div>
+                    ))}
+                </div>
                 <div style={{ margin: 30 }}>
                     <br /><br />
-                    <DateTimeInput leftContent="fa fa-calendar" placeholder="Select multiple date"/>
+                    <ProgressBar value={60} percentageColors={{
+                        0: {
+                            fg: "blue"
+                        },
+                        5: {
+                            fg: "red"
+                        },
+                        10: {
+                            bg: "brown",
+                            fg: "yellow",
+                        },
+                        49: {
+                            bg: "gold",
+                        },
+                        60: {
+                            bg: "white",
+                            fg: "black",
+                        },
+                    }} />
+                    <br /><br />
+                </div>
+                <div style={{ margin: 30 }}>
+                    <br /><br />
+                    <DateTimeInput leftContent="fa fa-calendar" placeholder="Select multiple date" />
                     <br /><br />
                     <YearInput scheme={Scheme.INFO} placeholder="Select year" selectionMode={DateTimePickerSelectionMode.SINGLE} />
                     <br /><br />
@@ -94,9 +508,9 @@ function App() {
                     <br /><br />
                     <DateInput value={new Date()} borderless scheme={Scheme.INFO} placeholder="Select single date" selectionMode={DateTimePickerSelectionMode.SINGLE} />
                     <br /><br />
-                    <DateTimeInput editable  scheme={Scheme.PRIMARY} placeholder="Select date range" selectionMode={DateTimePickerSelectionMode.RANGE} />
+                    <DateTimeInput editable scheme={Scheme.PRIMARY} placeholder="Select date range" selectionMode={DateTimePickerSelectionMode.RANGE} />
                     <br /><br />
-                    <DateTimeInput highlightToday value={[new Date(),new Date(),new Date()]} scheme={Scheme.DANGER} onSelectDate={(e: any) => console.log(e)} placeholder="Select multiple date" selectionMode={DateTimePickerSelectionMode.MULTIPLE} />
+                    <DateTimeInput highlightToday value={[new Date(), new Date(), new Date()]} scheme={Scheme.DANGER} onSelectDate={(e: any) => console.log(e)} placeholder="Select multiple date" selectionMode={DateTimePickerSelectionMode.MULTIPLE} />
                     <br /><br />
                     <br /><br />
                     <Button text="Modal TimePicker" onClick={(e: any) => refs.current["modal-date3"].toggle(e)} />
@@ -144,7 +558,7 @@ function App() {
                     <br /><br />
                     <br /><br />
                     <DateTimePicker className='dp1' footerLayout='' highlightDatesInRange selectionMode={DateTimePickerSelectionMode.RANGE} bottomLayout='<> ClearElement SelectElement'
-                        labelsMap={{ SelectElement: "Apply" }} leftLayout={DateTimePickerLayout.FINE_LEFT_LAYOUT} />
+                        onSelectDate={(e) => console.log("----", e)} labelsMap={{ SelectElement: "Apply" }} leftLayout={DateTimePickerLayout.FINE_LEFT_LAYOUT} />
                     <br /><br />
                     <DateTimePicker className='isw-dp' disableToDate={new Date(2023, 10, 14)} footerLayout='' dontOverlapDate />
                     <br /><br />
@@ -225,7 +639,11 @@ function App() {
                         text: "Upload your images",
                     }} onSelectFiles={(files) => console.log("SELECTED FILES 2", files[0].type)} scheme={Scheme.INFO} multiple />
                     <br />
-                    <FileInput mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} multiple />
+                    <FileInput clickToChange rounded mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} multiple />
+                    <br />
+                    <FileInput label="Select" mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} multiple />
+                    <br />
+                    <FileInput stickyPreview rounded label={<i className='fa fa-pen' />} attrsRelay={{ label: { style: { borderRadius: "50%" }, alignment: Alignment.BOTTOM_RIGHT } }} mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} />
                     <br />
                     <FileInput mode={FileInputMode.PREVIEW} scheme={Scheme.PRIMARY} orientation={Orientation.HORIZONTAL} maxFileSize={2000000}
                         itemTemplate={(options) => (<div key={options.index} style={{ position: "relative", width: 200, height: 200 }}>
@@ -251,7 +669,7 @@ function App() {
                     <Button text="clear" onClick={() => console.log(inputManageRef.current?.clear())} />
                 </div>
                 <div style={{ margin: 30 }}>
-                    <List paginate scheme={Scheme.SECONDARY} stripedRows={false} showGridlines={false} template={(d) => (<div><i className={d.logo} /> {d.name}</div>)}
+                    <List paginate scheme={Scheme.SECONDARY} stripedRows={false} showGridlines={false} dataKey="name"
                         header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
                             <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
                                 <TextInput fill />
@@ -393,7 +811,10 @@ function App() {
                 </div>
                 <div style={{ margin: 30 }}>
                     <Dropdown options={Object.keys(chartyMap).map((value) => ({ label: value, value }))}
-                        onSelectOption={(option: any) => setCharty(option.value)} selectedOptionIndex={0} formControlProps={{ fill: true }} />
+                        onSelectOption={(option: any) => {
+                            setCharty(option.value);
+                            return true;
+                        }} selectedOptionIndex={0} formControlProps={{ fill: true }} />
                     <br />
                     <Chart style={{ width: 700 }} type={charty} data={chartyMap[charty].data} options={chartyMap[charty].options} />
                 </div>
@@ -410,26 +831,43 @@ function App() {
                             setDynamicDataTable(Array(5).fill((e.currentPage - 1) * 5));
                         }}>
                         <Column sortable style={{ width: '25%' }} header={() => "Icon"} template={(v: any) => <i className={v.logo} />} />
-                        <Column sortable style={{ width: '25%' }} header="Name" dataKey="name" />
+                        <Column sortable style={{ width: '25%' }} header="Name" dataKey="{name} -> {service_code}" />
                         <Column sortable style={{ width: '25%' }} header="Service Code" dataKey="service_code" canUnsort />
                     </Table>
-                    <Table paginate scheme={Scheme.PRIMARY} stripedRows showGridlines={true} hideHeaders={false}
+                    <Table valuedRowProps={(data: any) => {
+                        if (data.service_code === "svc_2") {
+                            console.log("-------", data);
+                            return {
+                                style: {
+                                    borderLeft: "2px solid red"
+                                }
+                            };
+                        }
+                        return {};
+                    }} paginate scheme={Scheme.PRIMARY} stripedRows showGridlines={true} hideHeaders={false}
                         header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
                             <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
                                 <TextInput fill />
                             </FormControl>
-                        </div>)} style={{ marginTop: 20 }} rowsPerPage={5}
+                        </div>)} internalElementProps={{ style: { borderCollapse: "collapse" } }} style={{ marginTop: 20 }} rowsPerPage={5}
                         paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }} footer={() => "The foooter"}
                         data={Array(30).fill(null).map((_, i) => ({ name: "Platform " + (i + 1), service_code: "svc_" + (i + 1), logo: "fa fa-" + Math.min(9, i + 1), }))}>
                         <Column template={(logo: any) => <i className={logo} />} dataKey="logo" />
-                        <Column header="Name" dataKey="name" />
+                        <Column header="Namer" dataKey="name" />
                         <Column header="Service Code" dataKey="service_code" />
                     </Table>
                     <Table paginate scheme={Scheme.DANGER} data={tableData} stripedRows showGridlines={false} hideHeaders={false}
                         sortMode={SortMode.MULTIPLE} style={{ marginTop: 20 }} noDivider
                         paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }}>
                         <Column template={(logo: any) => <i className={logo} />} dataKey="logo" />
-                        <Column canUnsort sortable header="Name" dataKey="name" />
+                        <Column canUnsort sortable header="Name Here" dataKey="name" valuedProps={{
+                            "Admin": {
+                                style: { color: "red", }
+                            },
+                            "Rideon": {
+                                style: { borderLeft: "2px solid green", }
+                            }
+                        }} />
                         <Column canUnsort sortable header="Service Code" dataKey="service_code" />
                     </Table>
                     <Table data={[]} stripedRows showGridlines={true} hideHeaders={false} style={{ marginTop: 20 }}
@@ -444,12 +882,15 @@ function App() {
                 </div>
                 <div style={{ margin: 30 }}>
                     <Dropdown options={Object.keys(Alignment).map((alignment, index) => ({ label: alignment, value: Object.values(Alignment)[index] }))}
-                        onSelectOption={(option: any) => setDialogAlignment(option.value || Alignment.CENTER)} />
+                        onSelectOption={(option: any) => {
+                            setDialogAlignment(option.value || Alignment.CENTER);
+                            return true;
+                        }} />
                     <br />
                     <Button text="Show Basic" leftIcon="fa fa-clone fa-flip-vertical" scheme={Scheme.PRIMARY} onClick={() => setShowDialog(!showDialog)} />
                     <Button text="Show Basic" leftIcon="fa fa-clone fa-flip-vertical" scheme={Scheme.SUCCESS} onClick={() => setShowRivtnDialog(!showRivtnDialog)} />
 
-                    <Dialog visible={showRivtnDialog} style={{ maxWidth: 400 }} onHide={() => setShowRivtnDialog(false)} alignment={dialogAlignment} notClosable>
+                    <Dialog transition={transition} visible={showRivtnDialog} style={{ maxWidth: 400 }} onHide={() => setShowRivtnDialog(false)} alignment={dialogAlignment} notClosable>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <span>Request New 2fa Authenticator</span>
                             <p>A new 2fa QR code and plain text has been sent to your email address.</p>
@@ -459,7 +900,7 @@ function App() {
                             <Button text="Close" scheme={Scheme.SUCCESS} onClick={() => setShowRivtnDialog(false)} fill />
                         </div>
                     </Dialog>
-                    <Dialog visible={showDialog} disableScroll={true} alignment={dialogAlignment} notClosable={false}
+                    <Dialog transition={transition} visible={showDialog} disableScroll={true} alignment={dialogAlignment} notClosable={false}
                         icons={["One", "two",]} header={<i className='fa fa-user' />} noOverlay={false} modalProps={{ style: { background: "rgba(35, 97, 204, 0.4)" } }}
                         closeIcon={<span>Close</span>} dismissableModal={false} container={refs.current["dialogDiv1"]}
                         contentProps={{ style: { background: "red" } }} headerProps={{ style: { background: "green", borderBottom: "none" } }}
@@ -512,7 +953,10 @@ function App() {
                             optionMap={{
                                 label: "{label} - {code}"
                             }} editable
-                            onSearch={(v: any) => console.log(v)}
+                            onSearch={(e: any) => {
+                                console.log(e.target.value);
+                                return null;
+                            }}
                             optionGroupTemplate={(option: any) => <span>{option?.label}</span>}
                             popoverHeaderTemplate={() => <div style={{ fontWeight: "bold", margin: 0, padding: 10, background: "#f8f9fa", borderBottom: "1px solid #dee2e6" }}>
                                 <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
@@ -521,7 +965,10 @@ function App() {
                             </div>}
                             //selectedOptionTemplate={(option: any) => (<div><i className={option?.c}/><span>{option?.label || "Hello"}</span></div>)}
                             popoverFooterTemplate={() => <div style={{ fontWeight: "bold", margin: 10 }}>Yahoo Footer</div>}
-                            onSelectOption={(option: any, event: any) => setDropdownIsValid(true)}
+                            onSelectOption={(option: any, event: any) => {
+                                setDropdownIsValid(true);
+                                return true;
+                            }}
                             onDeSelectOption={(event: any) => setDropdownIsValid(false)} dontMatchTargetSize />
 
                     </FormControl>
@@ -990,6 +1437,34 @@ function App() {
             options: {},
         },
     };
+
+    const tableData = [
+        {
+            logo: "fa fa-user",
+            name: "Rivtn User",
+            service_code: "janus-lunarius",
+        },
+        {
+            logo: "fa fa-flag",
+            name: "Admin",
+            service_code: "janus-geminus",
+        },
+        {
+            logo: "fa fa-shield-alt",
+            name: "Security System",
+            service_code: "soteria",
+        },
+        {
+            logo: "fa fa-gamepad",
+            name: "Rideon",
+            service_code: "rideon",
+        },
+        {
+            logo: "fa fa-search",
+            name: "Logging System",
+            service_code: "mnemosyne",
+        },
+    ];
 
     return render();
 

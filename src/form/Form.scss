@@ -97,6 +97,7 @@ textarea.noseur-input {
 
 .noseur-dropdown>.noseur-fctrl-c>.noseur-fctrl-lc {
 	min-width: auto;
+	margin-right: 10px;
 }
 
 .noseur-dropdown>.noseur-fctrl-c>.noseur-fctrl-lc>img {
@@ -154,8 +155,8 @@ textarea.noseur-input {
 }
 
 .noseur-dropdown-popover-li-grp {
-	pointer-events: none;
 	font-weight: bold;
+	pointer-events: none;
 }
 
 .noseur-dropdown-popover-li-item {
@@ -170,6 +171,13 @@ textarea.noseur-input {
 	margin-right: 10px;
 }
 
+.noseur-dropdown-popover-empty {
+	padding: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* File Input */
 
 .noseur-file-input {
@@ -178,12 +186,31 @@ textarea.noseur-input {
 	width: fit-content;
 }
 
+.noseur-file-input-label {
+	margin: 5px;
+	color: #fff;
+	cursor: pointer;
+	font-weight: 700;
+	padding: 7px 10px;
+	position: absolute;
+	border-radius: 5px;
+	width: fit-content;
+	width: -moz-fit-content;
+	width: -webkit-fit-content;
+	background: hsla(0, 1.4%, 59%, .5);
+}
+
 .noseur-file-input>div>.noseur-file-input-preview {
 	display: flex;
 	position: relative;
 	align-items: center;
 	border-radius: inherit;
 	color: var(--mainColor, #ededed);
+}
+
+.noseur-file-input>.noseur-file-input-previews,
+.noseur-file-input>div>.noseur-file-input-preview>img {
+	border-radius: inherit;
 }
 
 .noseur-file-input>div>.noseur-file-input-preview>.noseur-close {

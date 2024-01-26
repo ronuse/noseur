@@ -107,10 +107,10 @@ export const DateHelper = {
         return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 58, 59);
     },
 
-    withTime(_date: Date) {
-        const now = new Date();
+    withTime(_date: Date, _timeDate?: Date) {
         const date = new Date(_date.getTime());
-        return new Date(date.getFullYear(), date.getMonth(), date.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+        const timeDate = _timeDate ?? new Date();
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeDate.getHours(), timeDate.getMinutes(), timeDate.getSeconds(), timeDate.getMilliseconds());
     },
 
     withoutTime(_date: Date) {

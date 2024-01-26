@@ -27,30 +27,6 @@
 	border-top: 5px solid #f2f2f2;
 }
 
-.noseur-popover-enter {
-	opacity: 0;
-	transform: scaleY(0.8);
-}
-
-.noseur-popover-enter-active {
-	opacity: 1;
-	transform: scaleY(1);
-	transition: transform .12s cubic-bezier(0, 0, 0.2, 1), opacity .12s cubic-bezier(0, 0, 0.2, 1);
-}
-
-.noseur-popover-enter-done {
-	transform: none;
-}
-
-.noseur-popover-exit {
-	opacity: 1;
-}
-
-.noseur-popover-exit-active {
-	opacity: 0;
-	transition: opacity .1s linear;
-}
-
 /* Dialog */
 
 .noseur-dialog,
@@ -218,88 +194,144 @@
 	align-items: center;
 }
 
-/*animation*/
+/* Message */
 
-.noseur-dialog-enter {
-	opacity: 0;
-	transform: scale(0.7);
+.noseur-message {
+	display: flex;
+	overflow: hidden;
+	width: fit-content;
+	border-radius: 5px;
+	align-items: center;
+	flex-direction: column;
 }
 
-.noseur-dialog-enter-active {
+.noseur-message-container {
+	padding: 8px;
+	display: flex;
+	width: fit-content;
+	align-items: center;
+}
+
+.noseur-message-container>i.fa-times {
+	opacity: 0.6;
+	cursor: pointer;
+	margin-bottom: 1px;
+}
+
+.noseur-message-container>i.fa-times:hover {
 	opacity: 1;
-	transform: scale(1);
-	transition: all 150ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.noseur-dialog-enter-done {
-	transform: none;
+.noseur-message>.noseur-progress-bar {
+	width: 100%;
+	height: 5px;
+	border-radius: 0px;
 }
 
-.noseur-dialog-exit-active {
-	opacity: 0;
-	transform: scale(0.7);
-	transition: all 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+/* Toast and Messages */
+
+.noseur-messages {
+	position: relative;
 }
 
-/*alignment animations*/
-.noseur-dialog-top .noseur-dialog,
-.noseur-dialog-bottom .noseur-dialog,
-.noseur-dialog-left .noseur-dialog,
-.noseur-dialog-right .noseur-dialog,
-.noseur-dialog-top-left .noseur-dialog,
-.noseur-dialog-top-right .noseur-dialog,
-.noseur-dialog-bottom-left .noseur-dialog,
-.noseur-dialog-bottom-right .noseur-dialog {
-	margin: .75em;
+.noseur-toast>div,
+.noseur-messages>div {
+	display: flex;
+	flex-direction: column;
 }
 
-.noseur-dialog-top .noseur-dialog-enter,
-.noseur-dialog-top .noseur-dialog-exit-active {
-	transform: translate3d(0px, -100%, 0px);
+.noseur-toast>div {
+	position: fixed;
 }
 
-.noseur-dialog-bottom .noseur-dialog-enter,
-.noseur-dialog-bottom .noseur-dialog-exit-active {
-	transform: translate3d(0px, 100%, 0px);
+.noseur-messages>div {
+	position: absolute;
 }
 
-.noseur-dialog-left .noseur-dialog-enter,
-.noseur-dialog-left .noseur-dialog-exit-active,
-.noseur-dialog-top-left .noseur-dialog-enter,
-.noseur-dialog-top-left .noseur-dialog-exit-active,
-.noseur-dialog-bottom-left .noseur-dialog-enter,
-.noseur-dialog-bottom-left .noseur-dialog-exit-active {
-	transform: translate3d(-100%, 0px, 0px);
+.noseur-toast>div>.noseur-message,
+.noseur-messages>div>.noseur-message {
+	margin-top: var(--messageMarginTop, 0px);
+	margin-left: var(--messageMarginLeft, 0px);
+	margin-right: var(--messageMarginRight, 0px);
+	margin-bottom: var(--messageMarginBottom, 0px);
 }
 
-.noseur-dialog-right .noseur-dialog-enter,
-.noseur-dialog-right .noseur-dialog-exit-active,
-.noseur-dialog-top-right .noseur-dialog-enter,
-.noseur-dialog-top-right .noseur-dialog-exit-active,
-.noseur-dialog-bottom-right .noseur-dialog-enter,
-.noseur-dialog-bottom-right .noseur-dialog-exit-active {
-	transform: translate3d(100%, 0px, 0px);
+.noseur-toast>.noseur-toast-none,
+.noseur-toast>.noseur-toast-top-left,
+.noseur-messages>.noseur-messages-none,
+.noseur-messages>.noseur-messages-top-left {
+	top: 0.5em;
+	left: 0.5em;
 }
 
-.noseur-dialog-top .noseur-dialog-enter-active,
-.noseur-dialog-bottom .noseur-dialog-enter-active,
-.noseur-dialog-left .noseur-dialog-enter-active,
-.noseur-dialog-top-left .noseur-dialog-enter-active,
-.noseur-dialog-bottom-left .noseur-dialog-enter-active,
-.noseur-dialog-right .noseur-dialog-enter-active,
-.noseur-dialog-top-right .noseur-dialog-enter-active,
-.noseur-dialog-bottom-right .noseur-dialog-enter-active {
-	transform: translate3d(0px, 0px, 0px);
-	transition: all .3s ease-out;
+.noseur-toast>.noseur-toast-top-right,
+.noseur-messages>.noseur-messages-top-right {
+	top: 0.5em;
+	right: 0.5em;
+	align-items: flex-end;
 }
 
-.noseur-dialog-top .noseur-dialog-exit-active,
-.noseur-dialog-bottom .noseur-dialog-exit-active,
-.noseur-dialog-left .noseur-dialog-exit-active,
-.noseur-dialog-top-left .noseur-dialog-exit-active,
-.noseur-dialog-bottom-left .noseur-dialog-exit-active,
-.noseur-dialog-right .noseur-dialog-exit-active,
-.noseur-dialog-top-right .noseur-dialog-exit-active,
-.noseur-dialog-bottom-right .noseur-dialog-exit-active {
-	transition: all .3s ease-out;
+.noseur-toast>.noseur-toast-top,
+.noseur-toast>.noseur-toast-top-center,
+.noseur-messages>.noseur-messages-top,
+.noseur-messages>.noseur-messages-top-center {
+	left: 50%;
+	top: 0.5em;
+	transform: translateX(-50%);
+}
+
+.noseur-toast>.noseur-toast-bottom-left,
+.noseur-messages>.noseur-messages-bottom-left {
+	left: 0.5em;
+	bottom: 0.5em;
+}
+
+.noseur-toast>.noseur-toast-bottom-right,
+.noseur-messages>.noseur-messages-bottom-right {
+	right: 0.5em;
+	bottom: 0.5em;
+	align-items: flex-end;
+}
+
+.noseur-toast>.noseur-toast-bottom,
+.noseur-messages>.noseur-messages-bottom,
+.noseur-toast>.noseur-toast-bottom-center,
+.noseur-messages>.noseur-messages-bottom-center {
+	left: 50%;
+	bottom: 0.5em;
+	transform: translateX(-50%);
+}
+
+.noseur-toast>.noseur-toast-left,
+.noseur-messages>.noseur-messages-left,
+.noseur-toast>.noseur-toast-center-left,
+.noseur-messages>.noseur-messages-center-left {
+	top: 50%;
+	left: 0.5em;
+	transform: translateY(-50%);
+}
+
+.noseur-toast>.noseur-toast-right,
+.noseur-messages>.noseur-messages-right,
+.noseur-toast>.noseur-toast-center-right,
+.noseur-messages>.noseur-messages-center-right {
+	top: 50%;
+	right: 0.5em;
+	align-items: flex-end;
+	transform: translateY(-50%);
+}
+
+.noseur-toast>.noseur-toast-center,
+.noseur-messages>.noseur-messages-center {
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%);
+}
+.noseur-toast>.noseur-toast-top,
+.noseur-toast>.noseur-toast-bottom,
+.noseur-toast>.noseur-toast-center,
+.noseur-messages>.noseur-messages-top,
+.noseur-messages>.noseur-messages-bottom,
+.noseur-messages>.noseur-messages-center {
+	align-items: center;
 }

@@ -15,17 +15,20 @@ import { NoseurDivElement, NoseurElement, NoseurObject } from '../constants/Type
 
 export type DropdownEventHandler = () => void | undefined;
 export type DropdownOnDeSelectHandler = (event: any) => void;
-export type DropdownOnSearchHandler = (value: string) => void;
 export type DropdownPanelsHandler = () => NoseurElement | undefined;
-export type DropdownOnSelectHandler = (option: any, event: any) => void;
 export type DropdownOption = { label?: string, value?: any, icon?: any };
+export type DropdownEmptyTemplateHandler = () => NoseurElement | undefined;
+export type DropdownOnSelectHandler = (option: any, event: any) => boolean;
+export type DropdownLoadingTemplateHandler = () => NoseurElement | undefined;
 export type DropdownTemplateHandler = (option: any) => NoseurElement | undefined;
 export type DropdownSelectedIndex = { primaryIndex: number, secondaryIndex: number };
+export type DropdownOnSearchHandler = (value: any, dropdownManageRef?: DropdownManageRef) => NoseurObject<any>[] | undefined | null;
 
 export interface DropdownManageRef {
     hideDropDown: (e: any) => void;
     showDropDown: (e: any) => void;
     toggle: (e: any, ignoreEditable: boolean) => void;
+    changeOptions: (options: NoseurObject<any>[] | undefined) => void;
 }
 
 export interface DropdownProps extends ComponentBaseProps<NoseurDivElement, DropdownManageRef> {
@@ -56,10 +59,12 @@ export interface DropdownProps extends ComponentBaseProps<NoseurDivElement, Drop
     onDropdownHide: DropdownEventHandler;
     optionTemplate: DropdownTemplateHandler;
     onSelectOption: DropdownOnSelectHandler;
+    emptyTemplate: DropdownEmptyTemplateHandler;
     onDeSelectOption: DropdownOnDeSelectHandler;
     popoverHeaderTemplate: DropdownPanelsHandler;
     popoverFooterTemplate: DropdownPanelsHandler;
     optionGroupTemplate: DropdownTemplateHandler;
+    loadingTemplate: DropdownLoadingTemplateHandler;
     selectedOptionTemplate?: DropdownTemplateHandler;
     onInputComplete: InputOnInputCompleteHandler | undefined;
 
@@ -67,6 +72,7 @@ export interface DropdownProps extends ComponentBaseProps<NoseurDivElement, Drop
 
 interface DropdownState {
     popoverVisible: boolean;
+    options: NoseurObject<any>[] | undefined;
     selectedOptionIndex: DropdownSelectedIndex;
 }
 
@@ -88,6 +94,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
 
     state: DropdownState = {
         popoverVisible: false,
+        options: this.props.options,
         selectedOptionIndex: this.props.selectedOptionIndexes || { primaryIndex: this.props.selectedOptionIndex, secondaryIndex: this.props.selectedOptionIndex },
     };
 
@@ -96,6 +103,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
     optionGroupTemplate: any;
     internalPopoverElement: any;
     internalTextInputElement: any;
+    internalManageRefCache?: DropdownManageRef;
     functionStackManager = new FunctionStackManager();
 
     constructor(props: DropdownProps) {
@@ -110,20 +118,31 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
     }
 
     componentDidMount() {
-        ObjectHelper.resolveManageRef(this, {
+        this.internalManageRefCache = {
             toggle: this.togglePopover,
+            changeOptions: (options: NoseurObject<any>[] | undefined) => {
+                this.setState({ options });
+            },
             hideDropDown: (e: any) => { if (this.state.popoverVisible) { this.togglePopover(e, true); } },
             showDropDown: (e: any) => { if (!this.state.popoverVisible) { this.togglePopover(e, true); } },
-        });
+        };
+        ObjectHelper.resolveManageRef(this, this.internalManageRefCache);
     }
 
     componentDidUpdate(prevProps: Readonly<DropdownProps>, _: Readonly<DropdownState>) {
-        if (!BoolHelper.deepEqual(this.props, prevProps, ["selectedOptionIndex"])) {
+        if (!BoolHelper.deepEqual(this.props, prevProps, ["selectedOptionIndex", "options"])) {
+            let options = this.state.options;
+            if (this.props.selectedOptionIndex === prevProps.selectedOptionIndex) options = this.props.options;
             this.setState({
+                options,
                 selectedOptionIndex: this.props.selectedOptionIndexes
                     || { primaryIndex: this.props.selectedOptionIndex, secondaryIndex: this.props.selectedOptionIndex }
             });
         }
+    }
+
+    componentWillUnmount() {
+        ObjectHelper.resolveManageRef(this, null);
     }
 
     togglePopover(e: any, ignoreEditable: boolean = true) {
@@ -143,14 +162,15 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
     }
 
     selectOption(e: any, selectedOptionIndex: DropdownSelectedIndex, option?: any) {
-        this.setState({ selectedOptionIndex: selectedOptionIndex });
         if (selectedOptionIndex.primaryIndex === -1) {
             if (this.props.onDeSelectOption) this.props.onDeSelectOption(e);
             return;
         };
-        if (this.props.onSelectOption) this.props.onSelectOption(option, e);
-        if (this.props.renderOptionAsPlaceholder) this.internalTextInputElement!.placeholder = this.resolveOptionLabel(option);
-        else this.internalTextInputElement!.value = this.resolveOptionLabel(option);
+        if (!this.props.onSelectOption || this.props.onSelectOption(option, e)) {
+            this.setState({ selectedOptionIndex: selectedOptionIndex });
+            if (this.props.renderOptionAsPlaceholder) this.internalTextInputElement!.placeholder = this.resolveOptionLabel(option);
+            else this.internalTextInputElement!.value = this.resolveOptionLabel(option);
+        }
         return this.togglePopover(e, false);
     }
 
@@ -185,12 +205,12 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
     }
 
     getSelectedOption() {
-        if (!this.props.options || this.state.selectedOptionIndex == null || this.state.selectedOptionIndex.primaryIndex == null ||
-            this.state.selectedOptionIndex.primaryIndex < 0 || this.state.selectedOptionIndex.primaryIndex >= Object.keys(this.props.options).length) {
+        if (!this.state.options || this.state.selectedOptionIndex == null || this.state.selectedOptionIndex.primaryIndex == null ||
+            this.state.selectedOptionIndex.primaryIndex < 0 || this.state.selectedOptionIndex.primaryIndex >= Object.keys(this.state.options).length) {
             return null;
         }
         const childrenKey = this.props.optionGroupChildrenKey;
-        const selectedOption = this.props.options[this.state.selectedOptionIndex.primaryIndex];
+        const selectedOption = this.state.options[this.state.selectedOptionIndex.primaryIndex];
         return (TypeChecker.isArray(selectedOption) && childrenKey in selectedOption)
             ? selectedOption[childrenKey][this.state.selectedOptionIndex.secondaryIndex || 0]
             : selectedOption;
@@ -238,7 +258,8 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
             }
             const className = Classname.build((this.props.scheme && isSelected ? this.props.scheme : null),
                 (this.props.scheme && !this.props.disabled ? `${this.props.scheme}-bg-hv` : null), {
-                'default-style': !this.props.scheme
+                'default-style': !this.props.scheme,
+                'noseur-disabled': (option as any).not_selectable,
             }, "noseur-dropdown-popover-li-item", option.className);
             listItems.push(this.buildListItem(option, false, groupIndex, index, isSelected, className));
         });
@@ -281,7 +302,11 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
             inputProps.style.cursor = "pointer";
         } else if (this.props.onSearch) {
             inputProps.onInput = (e: any) => {
-                this.props.onSearch && this.props.onSearch(e.target.value);
+                if (this.props.onSearch) {
+                    const options = this.props.onSearch(e, this.internalManageRefCache);
+                    if (options === null) return;
+                    this.setState({ options });
+                }
             }
         }
 
@@ -293,7 +318,14 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
         const popoverProps: NoseurObject<any> = this.props.popoverProps || {};
         popoverProps.matchTargetSize = !this.props.dontMatchTargetSize;
         popoverProps.className = Classname.build("noseur-dropdown-popover", popoverProps.className);
-        if (this.props.options) listItems = this.renderOption(this.props.options);
+        if (this.state.options) {
+            if (!this.state.options.length && this.props.emptyTemplate) listItems = this.props.emptyTemplate();
+            else listItems = this.renderOption(this.state.options);
+        } else {
+            listItems = this.props.loadingTemplate ? this.props.loadingTemplate() : (<div className="noseur-dropdown-popover-empty">
+                <i style={{ fontSize: 30 }} className="fa fa-spinner fa-spin" />
+            </div>);
+        }
         const popoverHeader = (this.props.popoverHeaderTemplate) ? this.props.popoverHeaderTemplate() : null;
         const popoverFooter = (this.props.popoverFooterTemplate) ? this.props.popoverFooterTemplate() : null;
 

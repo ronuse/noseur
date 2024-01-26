@@ -26,27 +26,12 @@ export interface ComposedPasswordProps extends ComponentBaseProps<HTMLDivElement
 
     onShow: ComposedPasswordEventHandler;
     onHide: ComposedPasswordEventHandler;
-    computeStrength: ComposedPasswordStrengthHandler;
+    strengthComputer: ComposedPasswordStrengthHandler;
 }
 
 interface ComposedPasswordState {
     hidden: boolean;
 };
-
-// 20% symbol
-// 20% number
-// 20% lowercase
-// 20% uppercase
-// 20% less than 6 char long
-function defaultStrengthComputer(value: string): NumberRange<0, 100> {
-    let progressValue = 100;
-    if (value.length < 6) progressValue -= 20;
-    if (!(/\d/.test(value))) progressValue -= 20;
-    if (!(/[a-z]/.test(value))) progressValue -= 20;
-    if (!(/[A-Z]/.test(value))) progressValue -= 20;
-    if (!(/[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(value))) progressValue -= 20;
-    return progressValue;
-}
 
 class ComposedPasswordComponent extends React.Component<ComposedPasswordProps, ComposedPasswordState> {
 
@@ -60,7 +45,7 @@ class ComposedPasswordComponent extends React.Component<ComposedPasswordProps, C
             show: 'fa fa-eye',
             hide: 'fa fa-eye-slash'
         },
-        computeStrength: defaultStrengthComputer
+        strengthComputer: composedPasswordDefaultStrengthComputer
     }
 
     state: ComposedPasswordState = {
@@ -80,7 +65,7 @@ class ComposedPasswordComponent extends React.Component<ComposedPasswordProps, C
         const value = e.target.value;
         if (this.props.onInput) this.props.onInput(e);
         if (!TypeChecker.isBoolean(this.props.strengthIndicator) || !this.props.strengthIndicator || !this.progressBarComponent) return;
-        this.progressBarComponent?.setValue(this.props.computeStrength(value));
+        this.progressBarComponent?.setValue(this.props.strengthComputer(value));
     }
 
     onToggle(_: any) {
@@ -131,3 +116,17 @@ export const ComposedPassword = React.forwardRef<HTMLDivElement, Partial<Compose
     <ComposedPasswordComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
 ));
 
+// 20% symbol
+// 20% number
+// 20% lowercase
+// 20% uppercase
+// 20% less than 6 char long
+export function composedPasswordDefaultStrengthComputer(value: string): NumberRange<0, 100> {
+    let progressValue = 100;
+    if (value.length < 6) progressValue -= 20;
+    if (!(/\d/.test(value))) progressValue -= 20;
+    if (!(/[a-z]/.test(value))) progressValue -= 20;
+    if (!(/[A-Z]/.test(value))) progressValue -= 20;
+    if (!(/[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(value))) progressValue -= 20;
+    return progressValue;
+}

@@ -75,6 +75,10 @@ export class ChartComponent extends React.Component<ChartProps, ChartState> {
         }
     }
 
+    componentWillUnmount() {
+        ObjectHelper.resolveManageRef(this, null);
+    }
+
     renderChart(type: ChartTypeRegistry | string, data: ChartData, options: NoseurObject<any>) {
         if (this.chart) this.chart.destroy();
         this.chart = new ChartJs(this.canvasElement, { type, data, options, });

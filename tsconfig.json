@@ -28,6 +28,7 @@
         "jsx": "react",
         "esModuleInterop": true,
         "skipLibCheck": true,
+        "downlevelIteration": true,
         "forceConsistentCasingInFileNames": true,
     }
 }

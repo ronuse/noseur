@@ -70,7 +70,7 @@ class FormGroupComponent extends React.Component<FormGroupProps, FormGroupState>
         };
         delete props.children;
 
-        return (<form {...props} method={this.props.method} action={this.props.action} onSubmit={this.props.onSubmit || ((e: any) => e.preventDefault())}>
+        return (<form {...props} method={this.props.method} action={this.props.action} onSubmit={this.props.onSubmit || ((e: any) => e.preventDefault())} ref={this.props.forwardRef}>
             {this.resolveChildren(this.props.children as any)}
         </form>);
     }
