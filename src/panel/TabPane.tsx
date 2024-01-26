@@ -3,12 +3,12 @@ import React from "react";
 import { Button } from "../form/Button";
 import { Scheme } from "../constants/Scheme";
 import { Classname } from "../utils/Classname";
+import { BoolHelper } from "../utils/BoolHelper";
 import { Alignment } from "../constants/Alignment";
+import { ObjectHelper } from "../utils/ObjectHelper";
 import { MicroBuilder } from "../utils/MicroBuilder";
 import { NoseurElement, NoseurInputValue, NoseurLabel } from "../constants/Types";
 import { ComponentBaseProps, ComponentElementBasicAttributes, TransitionProps } from "../core/ComponentBaseProps";
-import { BoolHelper } from "../utils/BoolHelper";
-import { ObjectHelper } from "../utils/ObjectHelper";
 
 export interface TabPanelHeaderOptions {
     index: number;

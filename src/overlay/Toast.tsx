@@ -5,16 +5,17 @@ import { Portal } from "./Portal";
 import ReactDOM from "react-dom/client";
 import { DOMHelper } from "../utils/DOMUtils";
 import { Classname } from "../utils/Classname";
-import { Message, MessageManageRef, MessageProps } from "./Message";
 import { TypeChecker } from "../utils/TypeChecker";
 import { ObjectHelper } from "../utils/ObjectHelper";
+import { Orientation } from "../constants/Orientation";
 import { Alignment, Position } from "../constants/Alignment";
 import { ComponentBaseProps } from "../core/ComponentBaseProps";
 import { NoseurObject, NoseurRawElement } from "../constants/Types";
-import { Orientation } from "../constants/Orientation";
+import { Message, MessageManageRef, MessageProps } from "./Message";
 
 enum ToastType {
     TOAST = "toast",
+    TOASTER = "toaster",
     MESSAGES = "messages",
 }
 
@@ -183,7 +184,7 @@ class ToastComponent extends React.Component<ToastProps, ToastState> {
         root.render(this.state.reverse ? messages.reverse() : messages);
     }
 
-    buildPositionRoot(position: Alignment) {
+    buildPositionRoot(type: ToastType, position: Alignment) {
         const style: any = {};
 
         if (this.state.orientation === Orientation.HORIZONTAL) {
@@ -207,7 +208,7 @@ class ToastComponent extends React.Component<ToastProps, ToastState> {
             }
         }
 
-        return (<div key={position} className={`noseur-${this.props.__type__}-${position}`} style={style} ref={(r: any) => {
+        return (<div key={position} className={`noseur-${type}-${position}`} style={style} ref={(r: any) => {
             if (!(position in this.positionElementsMap)) {
                 this.positionElementsMap[position] = ReactDOM.createRoot(r);
                 this.renderMessages(position);
@@ -218,9 +219,10 @@ class ToastComponent extends React.Component<ToastProps, ToastState> {
     render() {
         const breadsKeys = Object.keys(this.state.breads);
         if (!breadsKeys.length && this.props.__type__ === ToastType.TOAST) return null;
+        const type = (this.props.__type__ === ToastType.TOASTER) ? ToastType.TOAST : this.props.__type__;
 
-        const className = Classname.build(`noseur-${this.props.__type__}`, this.props.className);
-        const positionElements = breadsKeys.map((position) => this.buildPositionRoot(position as Alignment));
+        const className = Classname.build(`noseur-${type}`, this.props.className);
+        const positionElements = breadsKeys.map((position) => this.buildPositionRoot(type, position as Alignment));
 
         const content = (<div ref={this.props.forwardRef} className={className} id={this.props.id} style={this.props.style} >
             {positionElements}
@@ -229,6 +231,14 @@ class ToastComponent extends React.Component<ToastProps, ToastState> {
     }
 
 }
+
+interface ToasterInterfaceRelay {
+    destroy: () => void;
+    init: (props: Partial<ToastProps>, ref?: any) => void;
+    toast: (message: Partial<MessageProps> | Partial<MessageProps>[], key?: string | string[]) => void;
+};
+
+export type ToasterInterface = ToasterInterfaceRelay & ToastManageRef;
 
 export type MessagesProps = ToastProps;
 export type MessagesManageRef = ToastManageRef;
@@ -241,4 +251,81 @@ export const Messages = React.forwardRef<HTMLDivElement, Partial<MessagesProps>>
     <ToastComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} __type__={ToastType.MESSAGES} />
 ));
 
+let noseurInternalGlobalToasterRoot: ReactDOM.Root | null;
+let noseurInternalGlobalToasterManageRef: ToastManageRef | null;
+
+export const Toaster: ToasterInterface = {
+    init: (props: Partial<ToastProps>, onMount?: () => void, ref?: any) => {
+        if (noseurInternalGlobalToasterRoot) {
+            onMount && onMount();
+            return;
+        }
+        const ___noseur_toaster___ = React.createElement(ToastComponent, {
+            ...(props as any),
+            container: document.body,
+            __type__: ToastType.TOASTER,
+            forwardRef: ref ?? props.forwardRef,
+            manageRef: (r) => {
+                noseurInternalGlobalToasterManageRef = r;
+                onMount && onMount();
+            },
+        });
+        const wrapper = document.createDocumentFragment();
+        DOMHelper.appendChild(wrapper, document.body);
+        noseurInternalGlobalToasterRoot = ReactDOM.createRoot(wrapper)
+        noseurInternalGlobalToasterRoot.render(___noseur_toaster___);
+    },
+    destroy: () => {
+        if (!noseurInternalGlobalToasterRoot) return;
+        noseurInternalGlobalToasterRoot.unmount();
+        noseurInternalGlobalToasterRoot = null;
+    },
+    toast: (message: Partial<MessageProps> | Partial<MessageProps>[], key?: string | string[]) => {
+        Toaster.show(message, key);
+    },
+    clear: () => {
+        if (!noseurInternalGlobalToasterRoot || !noseurInternalGlobalToasterManageRef) Toaster.init({});
+        noseurInternalGlobalToasterManageRef?.clear();
+    },
+    reverse: () => {
+        if (!noseurInternalGlobalToasterRoot || !noseurInternalGlobalToasterManageRef) {
+            Toaster.init({}, Toaster.reverse());
+        }
+        noseurInternalGlobalToasterManageRef?.reverse();
+    },
+    changeLimit: (limit: number) => {
+        if (!noseurInternalGlobalToasterRoot || !noseurInternalGlobalToasterManageRef) {
+            return Toaster.init({}, Toaster.changeLimit(limit));
+        }
+        noseurInternalGlobalToasterManageRef?.changeLimit(limit);
+    },
+    remove: (key: string | string[]) => {
+        if (!noseurInternalGlobalToasterRoot || !noseurInternalGlobalToasterManageRef) Toaster.init({});
+        noseurInternalGlobalToasterManageRef?.remove(key);
+    },
+    changePosition: (position: Alignment) => {
+        if (!noseurInternalGlobalToasterRoot || !noseurInternalGlobalToasterManageRef) {
+            return Toaster.init({}, Toaster.changePosition(position));
+        }
+        noseurInternalGlobalToasterManageRef?.changePosition(position);
+    },
+    changeOrientation: (orientation: Orientation) => {
+        if (!noseurInternalGlobalToasterRoot || !noseurInternalGlobalToasterManageRef) {
+            return Toaster.init({}, Toaster.changeOrientation(orientation));
+        }
+        noseurInternalGlobalToasterManageRef?.changeOrientation(orientation);
+    },
+    show: (message: Partial<MessageProps> | Partial<MessageProps>[], key?: string | string[]) => {
+        if (!noseurInternalGlobalToasterRoot || !noseurInternalGlobalToasterManageRef) {
+            return Toaster.init({}, () => Toaster.show(message, key));
+        }
+        noseurInternalGlobalToasterManageRef?.show(message, key);
+    },
+    swap: (key: string | string[], message: Partial<MessageProps> | Partial<MessageProps>[], borrowLifetime?: boolean) => {
+        if (!noseurInternalGlobalToasterRoot || !noseurInternalGlobalToasterManageRef) {
+            return Toaster.init({}, () => Toaster.swap(key, message, borrowLifetime));
+        }
+        noseurInternalGlobalToasterManageRef?.swap(key, message, borrowLifetime);
+    },
+};
 

@@ -5,7 +5,7 @@ import {
     AlertInterface, alertPopover, loadingAlert, DateInput, TimeInput,
     MoneyInput, EmailInput, PasswordInput, alertDialog, DateTimeInput, Message,
     TextAreaInput, NumberInput, NoseurObject, ComposedPassword, YearPicker, MonthPicker, MessageSchemesIcons,
-    Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator, FileInputManageRef, Messages, MessagesManageRef, ToastManageRef, Toast, Transition, Panel, PanelManageRef, Accordion, AccordionTab, AccordionManageRef, TabPane, TabPanel, TabPaneManageRef,
+    Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator, FileInputManageRef, Messages, MessagesManageRef, ToastManageRef, Toast, Toaster, Transition, Panel, PanelManageRef, Accordion, AccordionTab, AccordionManageRef, TabPane, TabPanel, TabPaneManageRef,
     Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType,
 } from "@ronuse/noseur";
 
@@ -363,6 +363,39 @@ function App() {
                         <br /><br />
                         <Button className={transition} text="Click me" style={{ "--transitionInfinite": "infinite" } as any} scheme={Scheme.SUCCESS} />
                     </div>
+                </div>
+                <div style={{ margin: 30, background: "grey", padding: 20 }}>
+                    Toaster<br />
+                    <Button text="Show Toast With Function Call" onClick={() => {
+                        Toaster.toast({
+                            transition,
+                            foreScheme: true,
+                            lifetime: 100000,
+                            icon: "fa fa-circle",
+                            showProgressbar: true,
+                            content: "Hello World",
+                            scheme: Scheme.SUCCESS,
+                            pauseDelayOnHover: true,
+                            style: { background: "white" }
+                        });
+                    }} />
+                    <Button text="Show Multiple Toast With Function Call" onClick={() => {
+                        Toaster.toast(Object.keys(Scheme).map((scheme, index) => ({
+                            transition,
+                            lifetime: 10000,
+                            showProgressbar: true,
+                            scheme: schemes[index],
+                            pauseDelayOnHover: true,
+                            content: "Hello " + scheme,
+                            icon: (MessageSchemesIcons as any)[scheme as any] as any,
+                        })));
+                    }} />
+                    <Button text="Clear Toast With Function Call" onClick={() => {
+                        Toaster.clear();
+                    }} />
+                    <Button text="Destroy Toast With Function Call" onClick={() => {
+                        Toaster.destroy();
+                    }} />
                 </div>
                 <div style={{ margin: 30, background: "grey", padding: 20 }}>
                     Toast<br />
