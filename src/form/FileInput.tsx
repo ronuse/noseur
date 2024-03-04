@@ -182,6 +182,7 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
         maxFileSizeHumanReadable: ObjectHelper.humanFileSize(this.props.maxFileSize, true)
     };
 
+    componentUnmounted: boolean = false;
     internalLabelElement?: HTMLDivElement | null;
     buttonManagerRef: ButtonManageRef | undefined;
     internalInputElement: HTMLInputElement | undefined;
@@ -226,6 +227,7 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
         });
         this.props.onMount && this.props.onMount((e) => this.onControlClick(ControlType.SELECT, e), this.onDrop, this.onDragOver);
         this.initializeElementsListeners();
+        this.componentUnmounted = true;
     }
 
     componentDidUpdate(): void {
@@ -239,6 +241,8 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
     }
 
     componentWillUnmount(): void {
+        if (!this.componentUnmounted) return;
+        this.componentUnmounted = true;
         this.props.onUnMount && this.props.onUnMount((e) => this.onControlClick(ControlType.SELECT, e), this.onDrop, this.onDragOver);
         ObjectHelper.resolveManageRef(this, null);
         this.destroyElementsListeners();
@@ -529,6 +533,7 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
         if (this.props.mode === FileInputMode.ELEMENT) return input;
         return (<div ref={(e: any) => {
             if (!!this.internalCompoundElement && !e) this.componentWillUnmount();
+            else if (this.componentUnmounted && !!e) this.componentDidMount();
             this.internalCompoundElement = e;
         }} tabIndex={0} className={className} style={this.props.style} onDragOver={this.onDragOver} onDragEnter={this.onDragBegin} onDragExit={this.onDragComplete} onDrop={this.onDrop}>
             {input}
@@ -558,9 +563,9 @@ export interface FileInputPreviewOption {
 }
 
 export function fileInputBuildFileInputPreview(options: FileInputPreviewOption) {
-    const file = options.file || new File([], (options.url || "Unknown "));
+    const file = options.file ?? new File([], (options.url ?? "Unknown "));
     let fileType = file.type;
-    let previewType: FileInputPreviewType = options.previewType || FileInputPreviewType.AUTO;
+    let previewType: FileInputPreviewType = options.previewType ?? FileInputPreviewType.AUTO;
     if (previewType === FileInputPreviewType.AUTO) {
         if (fileType.includes("pdf")) previewType = FileInputPreviewType.PDF;
         if (fileType.includes("text")) previewType = FileInputPreviewType.TEXT;

@@ -12,6 +12,7 @@ import { FunctionStackManager } from "../utils/FunctionStackManager";
 import { FormControl, FormControlProps } from "../compose/form/FormControl";
 import { InputOnInputCompleteHandler, InputProps, TextInput } from "./Input";
 import { NoseurDivElement, NoseurElement, NoseurObject } from '../constants/Types';
+import { Alignment, Position } from "../constants/Alignment";
 
 export type DropdownEventHandler = () => void | undefined;
 export type DropdownOnDeSelectHandler = (event: any) => void;
@@ -51,6 +52,8 @@ export interface DropdownProps extends ComponentBaseProps<NoseurDivElement, Drop
     options: NoseurObject<any>[] | undefined;
     formControlProps: Partial<FormControlProps>;
     selectedOptionIndexes: DropdownSelectedIndex;
+    iconPosition: Alignment.LEFT | Alignment.RIGHT;
+    togglePosition: Alignment.LEFT | Alignment.RIGHT;
     popoverRef: React.ForwardedRef<NoseurDivElement>;
     textInputRef: React.ForwardedRef<HTMLInputElement>;
 
@@ -88,6 +91,8 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
         formControlProps: {},
         selectedOptionIndex: -1,
         scheme: Scheme.SECONDARY,
+        iconPosition: Position.LEFT,
+        togglePosition: Position.RIGHT,
         toggleIcon: "fa fa-angle-down",
         optionGroupChildrenKey: "items",
     };
@@ -130,14 +135,23 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
     }
 
     componentDidUpdate(prevProps: Readonly<DropdownProps>, _: Readonly<DropdownState>) {
-        if (!BoolHelper.deepEqual(this.props, prevProps, ["selectedOptionIndex", "options"])) {
+        const optionsChanged = !BoolHelper.deepEqual(this.props, prevProps, ["options"]);
+        const selectedOptionIndexChanged = !BoolHelper.deepEqual(this.props, prevProps, ["selectedOptionIndex"]);
+        if (optionsChanged || selectedOptionIndexChanged) {
             let options = this.state.options;
-            if (this.props.selectedOptionIndex === prevProps.selectedOptionIndex) options = this.props.options;
-            this.setState({
-                options,
-                selectedOptionIndex: this.props.selectedOptionIndexes
-                    || { primaryIndex: this.props.selectedOptionIndex, secondaryIndex: this.props.selectedOptionIndex }
-            });
+            if (optionsChanged) options = this.props.options;
+            const newState: any = { options };
+            if (selectedOptionIndexChanged) {
+                const selectedOptionIndex = this.props.selectedOptionIndexes
+                    ?? { primaryIndex: this.props.selectedOptionIndex, secondaryIndex: this.props.selectedOptionIndex };
+                if (selectedOptionIndex.primaryIndex === -1) {
+                    if (this.props.renderOptionAsPlaceholder) this.internalTextInputElement!.placeholder = this.props.placeholder;
+                    else this.internalTextInputElement!.value = "";
+                } else {
+                    newState.selectedOptionIndex = selectedOptionIndex;
+                }
+            }
+            this.setState(newState);
         }
     }
 
@@ -164,12 +178,12 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
     selectOption(e: any, selectedOptionIndex: DropdownSelectedIndex, option?: any) {
         if (selectedOptionIndex.primaryIndex === -1) {
             if (this.props.onDeSelectOption) this.props.onDeSelectOption(e);
-            return;
         };
-        if (!this.props.onSelectOption || this.props.onSelectOption(option, e)) {
+        if (selectedOptionIndex.primaryIndex === -1 || (!this.props.onSelectOption || this.props.onSelectOption(option, e))) {
             this.setState({ selectedOptionIndex: selectedOptionIndex });
-            if (this.props.renderOptionAsPlaceholder) this.internalTextInputElement!.placeholder = this.resolveOptionLabel(option);
-            else this.internalTextInputElement!.value = this.resolveOptionLabel(option);
+            const optionLabel = option ? this.resolveOptionLabel(option) : (this.props.renderOptionAsPlaceholder ? this.props.placeholder : "");
+            if (this.props.renderOptionAsPlaceholder) this.internalTextInputElement!.placeholder = optionLabel;
+            else this.internalTextInputElement!.value = optionLabel;
         }
         return this.togglePopover(e, false);
     }
@@ -345,7 +359,20 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
         </Popover>);
     }
 
-    renderRightContent(optionIsSelected: boolean) {
+    renderToggleIcon() {
+        return TypeChecker.isString(this.props.toggleIcon)
+            ? <i className={Classname.build(this.props.toggleIcon, (this.props.scheme ? `${this.props.scheme}-tx` : null))} />
+            : this.props.toggleIcon;
+    }
+
+    renderLeftContent(selectedOption: any, formControlProps: Partial<FormControlProps>) {
+        const icon = this.props.iconPosition === Position.LEFT ? this.resolveOptionIcon(selectedOption) : null;
+        const leftContent = this.props.selectedOptionTemplate ? null : icon ?? formControlProps.leftContent;
+        const toggleIcon = this.props.togglePosition === Position.LEFT ? this.renderToggleIcon() : null;
+        return (<div className={"noseur-dropdown-left-content"}>{toggleIcon}{leftContent}</div>)
+    }
+
+    renderRightContent(selectedOption: any, optionIsSelected: boolean) {
         let closeIconClassname;
         if (this.props.cleareable && optionIsSelected) {
             closeIconClassname = (<i className={Classname.build("fa fa-close", `${Scheme.DANGER}-tx-hv`)} onClick={(e: any) => {
@@ -354,10 +381,9 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
                 if (this.internalTextInputElement && this.props.renderOptionAsPlaceholder) this.internalTextInputElement.placeholder = this.props.placeholder;
             }} />);
         }
-        const toggleIcon = TypeChecker.isString(this.props.toggleIcon)
-            ? <i className={Classname.build(this.props.toggleIcon, (this.props.scheme ? `${this.props.scheme}-tx` : null))} />
-            : this.props.toggleIcon;
-        return (<div className={"noseur-dropdown-right-content"}>{closeIconClassname}{toggleIcon}</div>)
+        const icon = this.props.iconPosition === Position.RIGHT ? this.resolveOptionIcon(selectedOption) : null;
+        const toggleIcon = this.props.togglePosition === Position.RIGHT ? this.renderToggleIcon() : null;
+        return (<div className={"noseur-dropdown-right-content"}>{closeIconClassname}{icon}{toggleIcon}</div>)
     }
 
     render() {
@@ -368,10 +394,12 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
         const className = Classname.build('noseur-dropdown', this.props.formControlProps?.className, { "noseur-disabled": this.props.disabled });
 
         return (<React.Fragment>
-            <FormControl {...formControlProps} className={className} borderless={this.props.borderless}
+            <FormControl {...formControlProps}
+                className={className} borderless={this.props.borderless}
+                leftContent={this.renderLeftContent(selectedOption, formControlProps)}
+                rightContent={this.renderRightContent(selectedOption, !!selectedOption)}
                 contentStyle={{ width: "initial", ...(formControlProps.style || {}) }} fill={this.props.fill}
-                leftContent={this.props.selectedOptionTemplate ? null : this.resolveOptionIcon(selectedOption) || formControlProps.leftContent}
-                scheme={this.props.scheme || formControlProps.scheme} ref={(r: any) => this.compoundElement = r} rightContent={this.renderRightContent(!!selectedOption)} onClick={this.togglePopover}>
+                scheme={this.props.scheme || formControlProps.scheme} ref={(r: any) => this.compoundElement = r} onClick={this.togglePopover}>
                 {selectedOptionElement}
             </FormControl>
             {popover}

@@ -6,7 +6,7 @@ import {
     MoneyInput, EmailInput, PasswordInput, alertDialog, DateTimeInput, Message,
     TextAreaInput, NumberInput, NoseurObject, ComposedPassword, YearPicker, MonthPicker, MessageSchemesIcons,
     Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator, FileInputManageRef, Messages, MessagesManageRef, ToastManageRef, Toast, Toaster, Transition, Panel, PanelManageRef, Accordion, AccordionTab, AccordionManageRef, TabPane, TabPanel, TabPaneManageRef,
-    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType,
+    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType, Position,
 } from "@ronuse/noseur";
 
 function App() {
@@ -373,8 +373,30 @@ function App() {
                             lifetime: 100000,
                             icon: "fa fa-circle",
                             showProgressbar: true,
-                            content: "Hello World",
+                            content: "Hello World 1",
                             scheme: Scheme.SUCCESS,
+                            pauseDelayOnHover: true,
+                            style: { background: "white" }
+                        });
+                        Toaster.toast({
+                            transition,
+                            foreScheme: true,
+                            lifetime: 100000,
+                            icon: "fa fa-square",
+                            showProgressbar: true,
+                            content: "Hello World 2",
+                            scheme: Scheme.DANGER,
+                            pauseDelayOnHover: true,
+                            style: { background: "white" }
+                        });
+                        Toaster.toast({
+                            transition,
+                            foreScheme: true,
+                            lifetime: 100000,
+                            icon: "fa fa-square",
+                            showProgressbar: true,
+                            content: "Hello World 3",
+                            scheme: Scheme.WARNING,
                             pauseDelayOnHover: true,
                             style: { background: "white" }
                         });
@@ -796,17 +818,150 @@ function App() {
                         selectedOptionIndex={1}
                         cleareable formControlProps={{ leftContent: (<i className="fa fa-search" style={{ marginLeft: 10 }} />), style: { background: "rgba(217, 217, 217, 0.2)" } }}
                         borderless style={{ width: 400 }} placeholder="Hello" scheme={Scheme.PRIMARY} renderOptionAsPlaceholder onInputComplete={(v: string) => console.log("DONE", v)} />
+
+                    <br />
+                    <Dropdown editable togglePosition={Position.LEFT} options={[
+                        {
+                            user: {
+                                profile: {
+                                    data: {
+                                        logo: "https://cdn.countryflags.com/thumbs/nigeria/flag-3d-round-250.png"
+                                    }
+                                },
+                                u: "You"
+                            },
+                            name: "Nigeria"
+                        },
+                        {
+                            user: {
+                                profile: {
+                                    data: {
+                                        logo: "https://cdn.countryflags.com/thumbs/uganda/flag-3d-round-250.png"
+                                    }
+                                },
+                                u: "Me"
+                            },
+                            name: "Uganda"
+                        }
+                    ]} optionMap={{
+                        value: "{name}",
+                        label: "{user.u}",
+                        icon: "{user.profile.data.logo}"
+                    }}
+                        selectedOptionIndex={1}
+                        cleareable formControlProps={{ leftContent: (<i className="fa fa-search" style={{ marginLeft: 10 }} />), style: { background: "rgba(217, 217, 217, 0.2)" } }}
+                        borderless style={{ width: 400 }} placeholder="Hello" scheme={Scheme.PRIMARY} renderOptionAsPlaceholder onInputComplete={(v: string) => console.log("DONE", v)} />
+
+                    <br />
+                    <Dropdown editable togglePosition={Position.LEFT} iconPosition={Position.RIGHT} options={[
+                        {
+                            user: {
+                                profile: {
+                                    data: {
+                                        logo: "https://cdn.countryflags.com/thumbs/nigeria/flag-3d-round-250.png"
+                                    }
+                                },
+                                u: "You"
+                            },
+                            name: "Nigeria"
+                        },
+                        {
+                            user: {
+                                profile: {
+                                    data: {
+                                        logo: "https://cdn.countryflags.com/thumbs/uganda/flag-3d-round-250.png"
+                                    }
+                                },
+                                u: "Me"
+                            },
+                            name: "Uganda"
+                        }
+                    ]} optionMap={{
+                        value: "{name}",
+                        label: "{user.u}",
+                        icon: "{user.profile.data.logo}"
+                    }}
+                        selectedOptionIndex={1}
+                        cleareable formControlProps={{ style: { background: "rgba(217, 217, 217, 0.2)" } }}
+                        borderless style={{ width: 400 }} placeholder="Hello" scheme={Scheme.PRIMARY} renderOptionAsPlaceholder onInputComplete={(v: string) => console.log("DONE", v)} />
+
+                    <br />
+                    <Dropdown editable togglePosition={Position.RIGHT} iconPosition={Position.RIGHT} options={[
+                        {
+                            user: {
+                                profile: {
+                                    data: {
+                                        logo: "https://cdn.countryflags.com/thumbs/nigeria/flag-3d-round-250.png"
+                                    }
+                                },
+                                u: "You"
+                            },
+                            name: "Nigeria"
+                        },
+                        {
+                            user: {
+                                profile: {
+                                    data: {
+                                        logo: "https://cdn.countryflags.com/thumbs/uganda/flag-3d-round-250.png"
+                                    }
+                                },
+                                u: "Me"
+                            },
+                            name: "Uganda"
+                        }
+                    ]} optionMap={{
+                        value: "{name}",
+                        label: "{user.u}",
+                        icon: "{user.profile.data.logo}"
+                    }}
+                        selectedOptionIndex={1}
+                        cleareable formControlProps={{ style: { background: "rgba(217, 217, 217, 0.2)" } }}
+                        borderless style={{ width: 400 }} placeholder="Hello" scheme={Scheme.PRIMARY} renderOptionAsPlaceholder onInputComplete={(v: string) => console.log("DONE", v)} />
+
+                    <br />
+                    <Dropdown editable togglePosition={Position.LEFT} iconPosition={Position.RIGHT} options={[
+                        {
+                            user: {
+                                profile: {
+                                    data: {
+                                        logo: "https://cdn.countryflags.com/thumbs/nigeria/flag-3d-round-250.png"
+                                    }
+                                },
+                                u: "You"
+                            },
+                            name: "Nigeria"
+                        },
+                        {
+                            user: {
+                                profile: {
+                                    data: {
+                                        logo: "https://cdn.countryflags.com/thumbs/uganda/flag-3d-round-250.png"
+                                    }
+                                },
+                                u: "Me"
+                            },
+                            name: "Uganda"
+                        }
+                    ]} optionMap={{
+                        value: "{name}",
+                        label: "{user.u}",
+                        icon: "{user.profile.data.logo}"
+                    }}
+                        selectedOptionIndex={1}
+                        formControlProps={{ style: { background: "rgba(217, 217, 217, 0.2)" } }}
+                        borderless style={{ width: 400 }} placeholder="Hello" scheme={Scheme.PRIMARY} onInputComplete={(v: string) => console.log("DONE", v)} />
                 </div>
                 <div style={{ margin: 30 }}>
                     <Button text={"Show Alert Dialog Func"} onClick={() => alertDialog({
-                        message: "Hello World"
+                        message: "Hello World",
+                        transition,
                     }).show()} />
                     <Button text={"Show Alert Popover Func"} onClick={() => alertPopover({
                         message: "Hello World"
                     }).show()} />
                     <Button text={"Show Alert Loading"} onClick={() => loadingD.show()} />
                     <Button text={"Show Alert Dialog"} onClick={() => setShowAlertDialog(!showAlertDialog)} />
-                    <AlertDialog icon="fa fa-circle" visible={showAlertDialog} onHide={() => setShowAlertDialog(!showAlertDialog)} message={
+                    <AlertDialog icon="fa fa-circle" transitionTimeout={500} visible={showAlertDialog} onHide={() => setShowAlertDialog(!showAlertDialog)} message={
                         (<p>
                             Are you sure you want to delete the email <br />
                             <b>address@domain.com</b> from this account. <br />

@@ -41,6 +41,7 @@ class ViewportSensorComponent extends React.Component<ViewportSensorProps, Viewp
 
     container?: HTMLDivElement;
     documentScrollHandler?: any;
+    componentUnmounted: boolean = false;
     internalManageRefCache?: ViewportSensorManageRef;
 
     constructor(props: ViewportSensorProps) {
@@ -88,9 +89,12 @@ class ViewportSensorComponent extends React.Component<ViewportSensorProps, Viewp
 
         }, true);
         this.documentScrollHandler.attach();
+        this.componentUnmounted = true;
     }
 
     componentWillUnmount() {
+        if (!this.componentUnmounted) return;
+        this.componentUnmounted = true;
         this.documentScrollHandler && this.documentScrollHandler.detach();
         ObjectHelper.resolveManageRef(this, null);
         this.documentScrollHandler = undefined;
@@ -99,6 +103,7 @@ class ViewportSensorComponent extends React.Component<ViewportSensorProps, Viewp
     render() {
         const ref = (r: any) => {
             if (!!this.container && !r) this.componentWillUnmount();
+            else if (this.componentUnmounted && !!r) this.componentDidMount();
             this.container = r;
             ObjectHelper.resolveRef(this.props.forwardRef, r);
         };

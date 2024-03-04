@@ -24,6 +24,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
     public static defaultProps: Partial<ListProps> = {
         paginate: false,
         rowsPerPage: 10,
+        dataRefreshKeys: [],
         internalElementProps: {},
     };
 
@@ -38,7 +39,8 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
     }
 
     componentDidUpdate(prevProps: Readonly<ListProps>, _: Readonly<DataState>) {
-        if (!BoolHelper.deepEqual(prevProps.data, this.props.data, ["totalRecords"])
+        if (prevProps.totalRecords !== this.props.totalRecords ||
+            !BoolHelper.deepEqual(prevProps.data, this.props.data, [...this.props.dataRefreshKeys])
             || ((!this.state.activeData || !this.state.activeData.length) && this.props.data?.length)) {
             this.setState({ activeData: this.props.data ?? [] });
         }
@@ -59,7 +61,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
     }
 
     renderListBody() {
-        if (!this.state.activeData) return;
+        if (!this.state.activeData || this.state.isLoading) return;
         let data = this.state.activeData.slice(this.state.dataOffset, (this.props.rowsPerPage + this.state.dataOffset));
         if (!data.length && !this.props.allowNoDataPagination) data = this.state.activeData;
 

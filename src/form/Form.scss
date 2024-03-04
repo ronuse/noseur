@@ -75,6 +75,8 @@ textarea.noseur-input {
 	width: 18px;
 	height: 18px;
 	outline: none;
+	min-width: 18px;
+	min-height: 18px;
 	user-select: none;
 	border-width: 2px;
 	border-radius: 5px;
@@ -97,10 +99,12 @@ textarea.noseur-input {
 
 .noseur-dropdown>.noseur-fctrl-c>.noseur-fctrl-lc {
 	min-width: auto;
-	margin-right: 10px;
+	margin-right: 5px;
 }
 
-.noseur-dropdown>.noseur-fctrl-c>.noseur-fctrl-lc>img {
+.noseur-dropdown>.noseur-fctrl-c>.noseur-fctrl-lc>img,
+.noseur-dropdown>.noseur-fctrl-c>.noseur-fctrl-lc>.noseur-dropdown-left-content>img,
+.noseur-dropdown>.noseur-fctrl-c>.noseur-fctrl-rc>.noseur-dropdown-right-content>img {
 	width: auto;
 	height: 22px;
 	margin-left: 9px;
@@ -110,12 +114,23 @@ textarea.noseur-input {
 	min-width: auto;
 }
 
+.noseur-dropdown-left-content {
+	margin: 0px;
+	display: flex;
+	margin-left: 5px;
+	align-items: center;
+	align-self: flex-start;
+}
+
 .noseur-dropdown-right-content {
 	margin: 0px;
+	display: flex;
 	margin-right: 5px;
+	align-items: center;
 	align-self: flex-end;
 }
 
+.noseur-dropdown-left-content>*,
 .noseur-dropdown-right-content>* {
 	margin: 10px;
 }

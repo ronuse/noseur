@@ -54,9 +54,18 @@ class CheckboxComponent extends React.Component<CheckboxProps, CheckboxState> {
 
     constructor(props: CheckboxProps) {
         super(props);
+
         this.onClick = this.onClick.bind(this);
         this.onKeyDown = this.onKeyDown.bind(this);
         this.onCheckBoxClicked = this.onCheckBoxClicked.bind(this);
+        this.getFirstCheckedValue = this.getFirstCheckedValue.bind(this);
+    }
+
+    componentDidUpdate(prevProps: Readonly<CheckboxProps>): void {
+        if ((prevProps.checked !== undefined && prevProps.checked !== this.props.checked)
+            || (prevProps.checkedIndex !== undefined && prevProps.checkedIndex !== this.props.checkedIndex)) {
+            this.setState({ checkedIndex: this.getFirstCheckedValue() });
+        }
     }
 
     onClick(event: React.MouseEvent<HTMLLabelElement>) {
@@ -76,7 +85,7 @@ class CheckboxComponent extends React.Component<CheckboxProps, CheckboxState> {
 
     onCheckBoxClicked(event: React.FormEvent<NoseurFormElement | HTMLLabelElement>) {
         if (this.props.readOnly) return;
-        let newCheckedIndex = this.getCheckStatesIndex()+1;
+        let newCheckedIndex = this.getCheckStatesIndex() + 1;
         if (newCheckedIndex >= this.props.checkStates.length) newCheckedIndex = 0;
         if (this.props.onChange) {
             const checkState = this.props.checkStates[newCheckedIndex];
@@ -118,15 +127,15 @@ class CheckboxComponent extends React.Component<CheckboxProps, CheckboxState> {
             checked: checkState.checked,
             required: this.props.required,
 
-            onClick: () => {},
-            onChange: (e: React.FormEvent<NoseurFormElement>) => { e.stopPropagation();}
+            onClick: () => { },
+            onChange: (e: React.FormEvent<NoseurFormElement>) => { e.stopPropagation(); }
         };
         return <input type="checkbox" {...props} />
     }
 
     buildBox(checkState: NoseurCheckState) {
         const scheme = this.props.checkStates.length == 2 && this.props.checkStates[0].scheme == Scheme.NIL
-            ? this.props.scheme : (checkState.scheme || this.props.scheme);
+            ? this.props.scheme : (checkState.scheme ?? this.props.scheme);
         const className = Classname.build("noseur-checkbox-box",
             (!this.props.noStyle && scheme) ? `${scheme}-bd-3px-bx-sw-fc` : null,
             (!this.props.noStyle && !checkState.scheme) ? `noseur-form-bd-cl` : null,

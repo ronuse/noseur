@@ -7,8 +7,8 @@ import { Popover } from "../../overlay/Popover";
 import { Classname } from "../../utils/Classname";
 import { Alignment } from "../../constants/Alignment";
 import { MicroBuilder } from "../../utils/MicroBuilder";
-import { ComponentBaseProps } from "../../core/ComponentBaseProps";
 import { Button, ButtonProps, DOMHelper, ObjectHelper, Scheme } from "../../";
+import { ComponentBaseProps, TransitionProps } from "../../core/ComponentBaseProps";
 import { NoseurDivElement, NoseurElement, NoseurIconElement, NoseurRawElement } from "../../constants/Types";
 
 export type AlertEvent = () => void;
@@ -22,7 +22,7 @@ export type AlertControl = {
     ref?: React.ForwardedRef<any>,
 };
 
-export interface AlertProps extends ComponentBaseProps<HTMLDivElement> {
+export interface AlertProps extends ComponentBaseProps<HTMLDivElement>, TransitionProps {
     visible: boolean;
     componentProps: any;
     alignment: Alignment;
@@ -52,6 +52,7 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
         component: Dialog,
         componentProps: {},
         dismissableModal: true,
+        transitionTimeout: 500,
         alignment: Alignment.CENTER,
         alignFooter: Alignment.RIGHT,
         confirm: {
@@ -166,11 +167,13 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
         const icon = MicroBuilder.buildIcon(this.props.icon, { scheme: this.props.scheme, className: "noseur-dialog-content-icon" });
         const ref = (e: any) => {
             if (!!this.internalComponentRef && !e) this.componentWillUnmount();
+            else if (!this.documentClickListener && !!e) this.componentDidMount();
             this.internalComponentRef = e;
             ObjectHelper.resolveRef(cachedComponentPropsRef, e);
         }
         const forwardRef = (e: any) => {
             if (!!this.internalComponentRef && !e) this.componentWillUnmount();
+            else if (!this.documentClickListener && !!e) this.componentDidMount();
             this.internalComponentRef = e;
             ObjectHelper.resolveRef(cachedComponentPropsForwardRef, e);
         }
@@ -191,8 +194,11 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
             onHide: this.onHide,
             closeIcon: closeIcon,
             visible: this.state.visible,
+            transition: this.props.transition,
             dismissable: this.props.dismissableModal,
             dismissableModal: this.props.dismissableModal,
+            transitionOptions: this.props.transitionOptions,
+            transitionTimeout: this.props.transitionTimeout,
         }, (<div className="noseur-alert-content" ref={this.props.forwardRef}>
             {icon}
             {this.props.message}
@@ -242,6 +248,7 @@ export function alert(props: Partial<AlertProps>): AlertInterface {
             onUnMount && onUnMount();
         },
         show: (onMount?: Function, onUnMount?: Function) => {
+            mounted = true;
             updateAlert({ visible: true, onHide: () => {
 				updateAlert({ visible: false }, undefined, onUnMount);
 			}}, onMount);
@@ -254,7 +261,7 @@ export function alert(props: Partial<AlertProps>): AlertInterface {
 export interface LoadingAlertDialog<T> extends AlertProps {
     loadingProps: Partial<AlertProps>;
     loadingElement: NoseurIconElement;
-    onLoading: (alert: AlertInterface, params?: T) => Promise<boolean>;
+    onLoading: (alert: AlertInterface, params?: T) => Promise<boolean | undefined>;
 };
 
 export function loadingAlert<T>(props: Partial<LoadingAlertDialog<T>>, params?: T) {
@@ -284,6 +291,7 @@ export function loadingAlert<T>(props: Partial<LoadingAlertDialog<T>>, params?: 
         if (props.onLoading) {
             props.onLoading(alert, params).then((result) => {
                 if (result) alert.update(doneProps, onMount);
+                else if (result === undefined) alert.destroy();
             });
         }
         alert.update({ ...loadingProps, visible: true, onHide: () => {

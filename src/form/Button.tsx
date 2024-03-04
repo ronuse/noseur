@@ -35,7 +35,7 @@ export interface ButtonProps extends ComponentBaseProps<NoseurButtonElement, But
 };
 
 interface ButtonState {
-    isLoading: boolean,
+    isLoading?: boolean;
     rippleState: { isRippling: boolean, x: number, y: number, diameter?: number };
 };
 
@@ -48,7 +48,6 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
     };
 
     state: ButtonState = {
-        isLoading: false,
         rippleState: { isRippling: false, x: -1, y: -1 },
     };
 

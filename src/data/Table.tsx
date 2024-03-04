@@ -38,6 +38,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
     public static defaultProps: Partial<TableProps> = {
         paginate: false,
         rowsPerPage: 10,
+        dataRefreshKeys: [],
         internalElementProps: {},
         sortMode: SortMode.SINGLE,
         sortIcons: {
@@ -54,7 +55,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
     };
 
 
-    usedDataKeys: string[] = [];
+    usedDataKeys: any[] = [];
     columnSelfRefs: NoseurObject<any> = {};
 
     constructor(props: TableProps) {
@@ -64,7 +65,8 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
     }
 
     componentDidUpdate(prevProps: Readonly<TableProps>, _: Readonly<TableState>) {
-        if (!BoolHelper.deepEqual(prevProps.data, this.props.data, [...this.usedDataKeys, "totalRecords"])
+        if (prevProps.totalRecords !== this.props.totalRecords ||
+            !BoolHelper.deepEqual(prevProps.data, this.props.data, [this.usedDataKeys, ...this.props.dataRefreshKeys])
             || ((!this.state.activeData || !this.state.activeData.length) && this.props.data?.length)) {
             this.setState({ activeData: this.props.data ?? [] });
             Object.keys(this.columnSelfRefs).forEach((dk: string) => {
@@ -102,7 +104,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
     }
 
     renderTableBody() {
-        if (!this.state.activeData) return;
+        if (!this.state.activeData || this.state.isLoading) return;
         let data = this.state.activeData.slice(this.state.dataOffset, (this.props.rowsPerPage + this.state.dataOffset));
         if (!data.length && !this.props.allowNoDataPagination) data = this.state.activeData;
         const children: any = (this.props.children as any).length ? this.props.children : [this.props.children];
@@ -196,6 +198,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
             id: this.props.id,
             ...this.props.internalElementProps,
         };
+        if (!(this.props.children as any)?.length) return null;
         const tableBody = this.renderTableBody();
         const tableFooter = this.renderTableFooter();
         const tableHeader = this.props.hideHeaders ? null : this.renderTableHeader();

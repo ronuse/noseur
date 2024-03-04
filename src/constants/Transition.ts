@@ -28,6 +28,7 @@ export enum Transition {
 	ROLL_IN = 'noseur-roll-in',
 	ZOOM_IN = "noseur-zoom-in",
 	FADE_IN = "noseur-fade-in",
+	DIALOGY = "noseur-dialogy",
 	GELATINE = "noseur-gelatine",
 	ZOOM_OUT = "noseur-zoom-out",
 	BOUNCE_IN = "noseur-bounce-in",

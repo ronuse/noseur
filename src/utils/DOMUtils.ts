@@ -3,13 +3,16 @@ import { NoseurObject } from "../constants/Types";
 import { Alignment } from "../constants/Alignment";
 import { Orientation } from "../constants/Orientation";
 
-let uniqueElementIdsCount = 0;;
 let __noseurGlobal__Browser: NoseurObject<any>;
+let uniqueElementIdsCounter: NoseurObject<number> = {};
 
 export const DOMHelper = {
 
 	uniqueElementId(prefix: string = 'noseur-auto-id-') {
-		return prefix + (uniqueElementIdsCount++)
+		if (!(prefix in uniqueElementIdsCounter)) {
+			uniqueElementIdsCounter[prefix] = 1;
+		}
+		return prefix + (uniqueElementIdsCounter[prefix]++)
 	},
 
 	isElement(element: any) {

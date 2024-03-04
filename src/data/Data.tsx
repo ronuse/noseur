@@ -21,6 +21,7 @@ export type DataComparatorHandler = (sortDirection: SortDirection, dataKey: stri
 
 export interface DataManageRef {
     setData: (data?: NoseurObject<any>[]) => void;
+    setLoadingState: (isLoading: boolean) => void;
 }
 
 export interface DataInternalElementProps {
@@ -39,6 +40,7 @@ export interface DataProps<T> extends ComponentBaseProps<T, DataManageRef> {
     stripedRows: boolean;
     rowSelection: boolean;
     showGridlines: boolean;
+    dataRefreshKeys: any[];
     dataSelectionKey: string;
     emptyState: NoseurElement;
     data?: NoseurObject<any>[];
@@ -58,6 +60,7 @@ export interface DataProps<T> extends ComponentBaseProps<T, DataManageRef> {
 }
 
 export interface DataState {
+    isLoading?: boolean;
     dataOffset: number;
     currentPage: number;
     activeData?: NoseurObject<any>[];
@@ -67,6 +70,7 @@ export class DataComponent<T, P extends DataProps<T>, S extends DataState> exten
 
     componentDidMount() {
         ObjectHelper.resolveManageRef(this, {
+            setLoadingState: (isLoading: boolean) => this.setState({ isLoading }),
             setData: (data?: NoseurObject<any>[]) => this.setState({ activeData: data }),
         });
     }
@@ -81,7 +85,7 @@ export class DataComponent<T, P extends DataProps<T>, S extends DataState> exten
     }
 
     renderLoadingState() {
-        if (!!this.state.activeData) return null;
+        if (!!this.state.activeData && !this.state.isLoading) return null;
         return <div className="noseur-data-loading-state">{this.props.loadingState}</div>
     }
 

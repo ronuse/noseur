@@ -65,6 +65,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         closeIcon: "fa fa-times",
         alignment: Alignment.CENTER,
         baseZIndex: BaseZIndex.MODAL,
+        transition: Transition.DIALOGY,
         maximizeIcons: {
             minimize: "fa fa-window-minimize",
             maximize: "fa fa-window-maximize",
@@ -80,6 +81,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
 
     internalModalElement: any;
     internalDialogElement: any;
+    componentUnmounted: boolean = false;
 
     constructor(props: DialogProps) {
         super(props);
@@ -99,10 +101,11 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
             toggle: () => this.setState({ visible: !this.props.visible }),
         });
         if (this.props.visible) {
-            this.setState({ visible: true }, () => {
+            this.setState({ modalVisible: true }, () => {
                 ZIndexHandler.setElementZIndex(this.internalModalElement, this.props.baseZIndex);
             });
         }
+        this.componentUnmounted = true;
     }
 
     componentDidUpdate(prevProps: Readonly<DialogProps>) {
@@ -123,6 +126,8 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
     }
 
     componentWillUnmount() {
+        if (!this.componentUnmounted) return;
+        this.componentUnmounted = true;
         ZIndexHandler.removeElementZIndex(this.internalModalElement);
         ObjectHelper.resolveManageRef(this, null);
     }
@@ -295,6 +300,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         const cacheClassName = modalProps.className;
         modalProps.ref = (r: HTMLDivElement) => {
             if (!!this.internalModalElement && !r) this.componentWillUnmount();
+            else if (this.componentUnmounted && !!r) this.componentDidMount();
             this.internalModalElement = r;
             ObjectHelper.resolveRef(cacheModalRef, r);
         };
@@ -303,10 +309,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
             'noseur-component-overlay': !this.props.noOverlay,
             'noseur-dialog-visible': this.state.modalVisible
         }, `noseur-dialog-${alignment}`, cacheClassName);
-        const transitionTimeout = this.props.transitionTimeout ?? {
-            exit: alignment === Alignment.CENTER ? 1000 : 2000,
-            enter: alignment === Alignment.CENTER ? 1000 : 2000,
-        };
+        const transitionTimeout = this.props.transitionTimeout ?? 500;
         const footer = this.renderFooter();
         const header = this.renderHeader(id);
         const transition = this.props.transition;
