@@ -118,8 +118,9 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
                     value: (child.props.dataKey ? ObjectHelper.objectGetWithStringTemplate(data, child.props.dataKey) : data),
                 });
             });
-            let valuedRowProps = this.props.valuedRowProps ? this.props.valuedRowProps(data) : null;
-            return (<tr key={index} role="row" data-n-group="body-row" {...valuedRowProps}>{columns}</tr>);
+            let valuedRowProps = this.buildRowProps(data);
+            return (<tr key={index} role="row" data-n-group="body-row" {...valuedRowProps}
+                onClick={this.props.onRowSelection ? () => this.props.onRowSelection(data) : undefined}>{columns}</tr>);
         });
 
         return (<tbody key="body" className="noseur-tbody" data-n-group="body">

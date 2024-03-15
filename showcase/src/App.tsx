@@ -4,7 +4,7 @@ import {
     TextInput, Dropdown, Scheme, Month, YearInput, MonthInput,
     AlertInterface, alertPopover, loadingAlert, DateInput, TimeInput,
     MoneyInput, EmailInput, PasswordInput, alertDialog, DateTimeInput, Message,
-    TextAreaInput, NumberInput, NoseurObject, ComposedPassword, YearPicker, MonthPicker, MessageSchemesIcons,
+    TextAreaInput, NumberInput, NoseurObject, ComposedPassword, YearPicker, MonthPicker, MessageSchemesIcons, RadioButton,
     Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator, FileInputManageRef, Messages, MessagesManageRef, ToastManageRef, Toast, Toaster, Transition, Panel, PanelManageRef, Accordion, AccordionTab, AccordionManageRef, TabPane, TabPanel, TabPaneManageRef,
     Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType, Position,
 } from "@ronuse/noseur";
@@ -60,6 +60,72 @@ function App() {
     function render() {
         return (
             <div className="Apps" style={{ background: "white" }}>
+                <div style={{ margin: 30 }}>
+                    <div style={{ margin: 30 }}>
+                        <RadioButton />
+                        {Object.keys(Scheme).map((scheme, index) => (
+                            <RadioButton key={scheme} scheme={schemes[index]} id={schemes[index]} name={"schemed-checkbox"} label={schemes[index]}
+                                onChange={(e: any) => console.log(scheme, e.checked, e.value, e.checkState)} />
+                        ))}
+                        <br />
+                        <br />
+                        <RadioButton label={"Default"} />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Default Primary"} />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Always Render Input"} id="name" name="user-name" alwaysRenderInput />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Checked"} checked />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Checked = false"} checked={false} />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Disabled"} disabled />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Disabled Checked"} disabled checked />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Read only"} readOnly />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Read only Checked"} readOnly checked />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Required"} required />
+                        <RadioButton scheme={Scheme.DANGER} label={"Highlight"} highlight />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Default Checked"} defaultChecked />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Checked Index 0"} checkedIndex={0} />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Checked Index 1"} checkedIndex={1} />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Default Checked Index = 1"} defaultCheckedIndex={1} />
+                        <br />
+                        <br />
+                        <RadioButton toggleable scheme={Scheme.PRIMARY} checkStates={[
+                            {
+                                icon: null,
+                                value: "none",
+                                checked: false,
+                                scheme: Scheme.NIL,
+                            },
+                            {
+                                value: "up",
+                                checked: true,
+                                icon: "fa fa-arrow-up",
+                                scheme: Scheme.PRIMARY,
+                            },
+                            {
+                                value: "right",
+                                checked: true,
+                                scheme: Scheme.WARNING,
+                                icon: "fa fa-arrow-right",
+                            },
+                            {
+                                value: "down",
+                                checked: true,
+                                scheme: Scheme.SUCCESS,
+                                icon: "fa fa-arrow-down",
+                            },
+                            {
+                                value: "left",
+                                checked: true,
+                                scheme: Scheme.INFO,
+                                icon: "fa fa-arrow-left",
+                            },
+                        ]} />
+                        <br />
+                        <br />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Align Label TOP"} alignLabel={Alignment.TOP} />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Align Label LEFT"} alignLabel={Alignment.LEFT} />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Align Label RIGHT"} alignLabel={Alignment.RIGHT} />
+                        <RadioButton scheme={Scheme.PRIMARY} label={"Align Label BOTTOM"} alignLabel={Alignment.BOTTOM} />
+                    </div>
+                </div>
                 <div style={{ margin: 30, /*background: "grey", */padding: 20 }}>
                     <div>
                         <Button text="Next" onClick={() => tabPaneManageRef.current?.next()} />

@@ -132,9 +132,9 @@ export const ObjectHelper = {
         let templateValue = "";
         let openedTemplate = false;
         let subValueMap = valueMap;
-        const chop = options.chop || '';
-        const prefix = options.prefix || '{';
-        const suffix = options.suffix || '}';
+        const chop = options.chop ?? '';
+        const prefix = options.prefix ?? '{';
+        const suffix = options.suffix ?? '}';
         const seperator = options.seperator || '.';
         for (let index = 0; index < unprocessed.length; index++) {
             const ch = unprocessed[index];
@@ -177,32 +177,58 @@ export const ObjectHelper = {
         return value;
     },
 
-    objectGetWithStringTemplate(valueMap: NoseurObject<any>, template: string) {
+    objectGetWithStringTemplate(valueMap: NoseurObject<any>, template: string, options: {
+        prefix?: string;
+        suffix?: string;
+        optional?: string;
+        seperator?: string;
+    } = {}) {
         let expandedString = "";
         let templateValue = "";
         let openedTemplate = false;
         let subValueMap = valueMap;
-        if (template.indexOf("{") < 0) return subValueMap[template] || "";
-        for (let index = 0; index < template.length; index++) {
+        let parsingAltValue = false;
+        const prefix = options.prefix ?? '{';
+        const suffix = options.suffix ?? '}';
+        const optional = options.optional ?? '?';
+        const seperator = options.seperator ?? '.';
+        const templateLength = template.length;
+        if (template.indexOf(prefix) < 0) return subValueMap[template] ?? "";
+        for (let index = 0; index < templateLength; index++) {
             const ch = template[index];
-            if (ch == '{') {
+            if (!parsingAltValue && ch == prefix) {
                 openedTemplate = true;
                 continue;
             }
-            if (openedTemplate && ch == ".") {
-                subValueMap = subValueMap[templateValue];
+            if (openedTemplate && ch == seperator) {
+                let altValue = templateValue.endsWith(optional) ? {} : undefined;
+                const splitted = templateValue.split(optional);
+                templateValue = splitted[0];
+                try { altValue = JSON.parse(splitted[1]); } catch (_) { }
+                subValueMap = subValueMap[templateValue] ?? altValue;
                 templateValue = "";
                 continue;
             }
-            if (ch == '}') {
+            if (ch == suffix) {
+                if (parsingAltValue && templateValue[templateValue.length - 1] !== optional) {
+                    parsingAltValue = false;
+                    templateValue += suffix;
+                    continue;
+                }
                 openedTemplate = false;
-                expandedString += subValueMap[templateValue];
+                parsingAltValue = false;
+                let altValue = templateValue.endsWith(optional) ? "" : undefined;
+                const splitted = templateValue.split(optional);
+                templateValue = splitted[0];
+                if (splitted.length > 1) altValue = splitted[1];
+                expandedString += subValueMap[templateValue] ?? altValue;
                 subValueMap = valueMap;
                 templateValue = "";
                 continue;
             };
             if (openedTemplate) {
                 templateValue += ch;
+                if (ch === optional && ((index + 1) < templateLength) && template[index + 1] === prefix) parsingAltValue = true;
             } else {
                 expandedString += ch;
             }
@@ -263,6 +289,23 @@ export const ObjectHelper = {
 
 
         return bytes.toFixed(dp) + ' ' + units[u];
+    },
+
+    merge<T>(...obj: any[][] | NoseurObject<any>[] | T[]): any {
+        if (!obj.length) return {};
+        const isObject = TypeChecker.isDict((obj as any)[0]);
+        let result: any = ObjectHelper.clone(obj[0]);
+        for (let index = 1; index < obj.length; index++) {
+            const entry = ObjectHelper.clone(obj[index] as any);
+            if (isObject) {
+                Object.keys(entry).map((key) => {
+                    result[key] = entry[key];
+                });
+                continue;
+            }
+            (result as any[]).concat(entry);
+        }
+        return result;
     },
 
 }

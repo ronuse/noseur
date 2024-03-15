@@ -37,6 +37,7 @@ export * from "./form/Button";
 export * from "./form/Checkbox";
 export * from "./form/Dropdown";
 export * from "./form/FileInput";
+export * from "./form/RadioButton";
 
 // overlay
 export * from "./overlay/Portal";

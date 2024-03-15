@@ -66,9 +66,10 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
         if (!data.length && !this.props.allowNoDataPagination) data = this.state.activeData;
 
         return data.map((rowData: NoseurObject<any>, index: number) => {
-            let valuedRowProps = this.props.valuedRowProps ? this.props.valuedRowProps(rowData) : null;
+            let valuedRowProps = this.buildRowProps(data);;
             const value = this.props.dataKey ? ObjectHelper.objectGetWithStringTemplate(rowData, this.props.dataKey) : rowData;
-            return (<li key={index} role="row" data-n-group="row" {...valuedRowProps}>{this.props.template ? this.props.template(value) : `${value}`}</li>);
+            return (<li key={index} role="row" data-n-group="row" {...valuedRowProps}
+                onClick={this.props.onRowSelection ? () => this.props.onRowSelection(data) : undefined}>{this.props.template ? this.props.template(value) : `${value}`}</li>);
         });
     }
 

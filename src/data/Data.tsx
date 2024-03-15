@@ -10,12 +10,12 @@ export interface RowProps {
     id?: string;
     key?: string;
     className?: string;
-    style: React.CSSProperties;
+    style?: React.CSSProperties;
 }
 
 export type DataFixtureTemplateHandler = () => NoseurElement;
 export type DataRowSelectionHandler = (value: any) => boolean;
-export type DataRowValuedPropsHandler = (data?: any) => Partial<RowProps>;
+export type DataRowValuedPropsHandler = (data?: any) => RowProps;
 export type DateSelectionElementTemplateHandler = (index: number) => NoseurElement;
 export type DataComparatorHandler = (sortDirection: SortDirection, dataKey: string, p: any, c: any) => number;
 
@@ -33,6 +33,7 @@ export interface DataInternalElementProps {
 
 export interface DataProps<T> extends ComponentBaseProps<T, DataManageRef> {
     paginate: boolean;
+    rowProps: RowProps;
     noDivider: boolean;
     scrollable: boolean;
     rowsPerPage: number;
@@ -92,6 +93,11 @@ export class DataComponent<T, P extends DataProps<T>, S extends DataState> exten
     renderFixtures(fixture: DataFixtureTemplateHandler, className: string) {
         if (!fixture) return null;
         return <div className={className}>{fixture()}</div>
+    }
+
+    buildRowProps(data?: any) {
+        const valuedRowProps = this.props.valuedRowProps ? this.props.valuedRowProps(data) : {};
+        return ObjectHelper.merge(this.props.rowProps, valuedRowProps);
     }
 
     onPageChange(event: PaginatorPageChangeOption) {

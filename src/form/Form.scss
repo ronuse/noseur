@@ -1,5 +1,5 @@
 .noseur-form-bd-cl {
-	border-color: #dfdfdf;
+	border-color: var(--formBorderColor, #dfdfdf);
 }
 
 /* Button */
@@ -188,9 +188,9 @@ textarea.noseur-input {
 
 .noseur-dropdown-popover-empty {
 	padding: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 /* File Input */
@@ -303,4 +303,41 @@ textarea.noseur-input {
 .noseur-file-input.noseur-file-input-controlled>.noseur-file-input-previews>.noseur-file-input-preview {
 	width: auto;
 	border: none;
+}
+
+/* Radio button */
+
+.noseur-radiobutton {
+	display: flex;
+	cursor: pointer;
+	width: fit-content;
+	align-items: center;
+}
+
+.noseur-radiobutton>input {
+	display: none;
+}
+
+.noseur-radiobutton-box {
+	width: 18px;
+	height: 18px;
+	outline: none;
+	min-width: 18px;
+	min-height: 18px;
+	user-select: none;
+	border-width: 2px;
+	border-radius: 100%;
+	border-style: solid;
+	align-items: center;
+	display: inline-flex;
+	vertical-align: bottom;
+	justify-content: center;
+	border-color: var(--mainColor, var(--formBorderColor, #dfdfdf));
+}
+
+.noseur-radiobutton-box>.noseur-icon {
+	font-size: 12px;
+	border-radius: 100%;
+	color: var(--mainColor, var(--formBorderColor, #dfdfdf));
+	background-color: var(--mainColor, var(--formBorderColor, #dfdfdf));
 }

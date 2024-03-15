@@ -123,6 +123,7 @@ class AccordionComponent extends React.Component<AccordionProps, AccordionState>
         const cachedOnHeaderClicked = props.onHeaderClick;
         props.key = props.key ?? index;
         props.collapsed = !activeIndexes.includes(index);
+        props.active = !props.collapsed;
         props.scheme = props.scheme ?? this.props.scheme;
         props.outlined = props.outlined ?? this.props.outlined;
         props.disabled = props.disabled ?? this.props.disabled;

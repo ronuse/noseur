@@ -38,6 +38,7 @@ export interface PanelManageRef {
 }
 
 export interface PanelProps extends ComponentBaseProps<HTMLDivElement, PanelManageRef, PannelAttributtesRelays> {
+    active: boolean;
     outlined: boolean;
     title: NoseurLabel;
     collapsed: boolean;
@@ -122,6 +123,7 @@ class PanelComponent extends React.Component<PanelProps, PanelState> {
         const toggleElement = buildFixtureComponents ? MicroBuilder.buildIcon((collapsed ? this.props.collapsibleIcons.expand : this.props.collapsibleIcons.collapse),
             { scheme, className: "noseur-cursor-pointer" }, { onClick: () => this.onToggle() }) : null;
         const className = Classname.build(`noseur-panel-${type}`, {
+            'active': this.props.active,
             'noseur-skeleton': scheme === Scheme.SKELETON,
             'noseur-panel-header-only': type === "header" && collapsed && !this.props.footer,
             'noseur-panel-footer-only': type === "footer" && collapsed && !this.props.header,
