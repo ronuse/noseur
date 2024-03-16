@@ -6,7 +6,7 @@ import {
     MoneyInput, EmailInput, PasswordInput, alertDialog, DateTimeInput, Message,
     TextAreaInput, NumberInput, NoseurObject, ComposedPassword, YearPicker, MonthPicker, MessageSchemesIcons, RadioButton,
     Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator, FileInputManageRef, Messages, MessagesManageRef, ToastManageRef, Toast, Toaster, Transition, Panel, PanelManageRef, Accordion, AccordionTab, AccordionManageRef, TabPane, TabPanel, TabPaneManageRef,
-    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType, Position,
+    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType, Position, ScrollPanel,
 } from "@ronuse/noseur";
 
 function App() {
@@ -60,6 +60,39 @@ function App() {
     function render() {
         return (
             <div className="Apps" style={{ background: "white" }}>
+                <div style={{ margin: 30 }}>
+                    {Object.keys(Scheme).map((scheme, index) => (
+                        <ScrollPanel key={scheme} scroller={{ trackWidth: 5 }}
+                        scheme={schemes[index]} style={{ flex: 1, width: "400px", height: "300px", marginBottom: 30 }}>
+                            {scheme} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()}
+                        </ScrollPanel>
+                    ))}
+                    <br />
+                    <ScrollPanel style={{ flex: 1, width: "400px", height: "300px" }} alwaysScroll hideScrollBarY>
+                        {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()}
+                    </ScrollPanel>
+                    <br />
+                    <ScrollPanel style={{ flex: 1, width: "400px", height: "300px" }} alwaysScroll hideScrollBarX>
+                        {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()}
+                    </ScrollPanel>
+                    <br />
+                    <ScrollPanel style={{ flex: 1, width: "400px", height: "300px" }} alwaysScrollY>
+                        {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()}
+                    </ScrollPanel>
+                    <br />
+                    <ScrollPanel style={{ flex: 1, width: "400px", height: "300px" }} alwaysScrollX>
+                        {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()}
+                    </ScrollPanel>
+                    <br />
+                    <ScrollPanel style={{ flex: 1, width: "400px", height: "300px" }} isForm onSubmit={(e) => console.log("Yeah")}>
+                        {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()}
+                        <Button text="Submit" />
+                    </ScrollPanel>
+                    <br />
+                    <ScrollPanel style={{ flex: 1, width: "400px", height: "300px" }} hideScrollBars>
+                        {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()}
+                    </ScrollPanel>
+                </div>
                 <div style={{ margin: 30 }}>
                     <div style={{ margin: 30 }}>
                         <RadioButton />

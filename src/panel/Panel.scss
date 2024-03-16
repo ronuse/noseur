@@ -348,3 +348,54 @@
 .noseur-tabpane-content {
     flex: 1;
 }
+
+/* ScrollPanel */
+
+.noseur-scrollpanel {
+	overflow: auto;
+	box-sizing: border-box;
+}
+
+.noseur-scrollpanel::-webkit-scrollbar {
+	height: 10px;
+	cursor: pointer;
+	width: var(--scrollTrackWidth, 10px);
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.noseur-scrollpanel::-webkit-scrollbar-track {
+	cursor: pointer;
+	background-color: var(--scrollTrackBg, transparent);
+	border-radius: var(--scrollTrackBorderRadius, 10px);
+}
+
+.noseur-scrollpanel::-webkit-scrollbar-thumb {
+	cursor: pointer;
+	border-radius: var(--scrollThumbBorderRadius, 10px);
+	background-color: var(--scrollThumbBg, var(--mainColor, rgb(193, 193, 193)));
+}
+
+.noseur-scrollpanel::-webkit-scrollbar-corner {
+	cursor: pointer;
+	background-color: transparent;
+}
+
+.noseur-scrollpanel-hidden-scrollbar-x::-webkit-scrollbar {
+	height: 0;
+}
+
+.noseur-scrollpanel-hidden-scrollbar-y::-webkit-scrollbar {
+	width: 0;
+}
+
+.noseur-scrollpanel-always-show-scrollbars {
+	overflow: scroll;
+}
+
+.noseur-scrollpanel-always-show-scrollbar-x {
+	overflow-x: scroll;
+}
+
+.noseur-scrollpanel-always-show-scrollbar-y {
+	overflow-x: scroll;
+}

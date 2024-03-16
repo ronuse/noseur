@@ -56,6 +56,7 @@ export * from "./data/List";
 export * from "./panel/Panel";
 export * from "./panel/TabPane";
 export * from "./panel/Accordion";
+export * from "./panel/ScrollPanel";
 
 // sensor
 export * from "./sensor/ViewportSensor";
