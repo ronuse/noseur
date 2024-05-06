@@ -1,0 +1,337 @@
+/* Popover */
+
+.noseur-popover {
+	border: 0 none;
+	min-width: 50px;
+	position: absolute;
+	--popoverArrowLeftOffset: 0px;
+	--componentMarginTopOrBottom: 10px;
+	box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+}
+
+.noseur-popover-arrow:before {
+	content: " ";
+	display: block;
+	position: absolute;
+	pointer-events: none;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	top: calc(0px - var(--componentMarginTopOrBottom, 5px));
+	left: calc(var(--popoverArrowLeftOffset, 0px) + 1.25rem);
+	border-bottom: var(--componentMarginTopOrBottom, 5px) solid #f2f2f2;
+}
+
+.noseur-popover-arrow-flipped:before {
+	top: 100%;
+	border-bottom: 0px;
+	border-top: 5px solid #f2f2f2;
+}
+
+/* Dialog */
+
+.noseur-dialog,
+.noseur-dialog-modal.noseur-component-overlay {
+	pointer-events: auto;
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+.noseur-dialog {
+	width: 50%;
+	display: flex;
+	max-width: 95%;
+	max-height: 90%;
+	position: relative;
+	transform: scale(1);
+	flex-direction: column;
+	-webkit-transform: scale(1);
+}
+
+.noseur-dialog-modal {
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: 0px;
+	width: 100%;
+	height: 100%;
+	display: none;
+	position: fixed;
+	align-items: center;
+	pointer-events: none;
+	-ms-flex-pack: center;
+	justify-content: center;
+	background-color: transparent;
+	transition-property: background-color;
+	-webkit-transition-property: background-color;
+	transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.noseur-dialog-modal.noseur-component-overlay {
+	background-color: rgba(0, 0, 0, 0.4);
+}
+
+.noseur-dialog-visible {
+	display: flex;
+}
+
+.noseur-dialog-maximized {
+	transition: none;
+	width: 100vw !important;
+	height: 100vh !important;
+	max-height: 100%;
+	top: 0 !important;
+	left: 0 !important;
+}
+
+.noseur-dialog-content {
+	margin: 0px;
+	padding: 1rem;
+	overflow: auto;
+	background-color: white;
+}
+
+.noseur-dialog-content-bd-t {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+
+.noseur-dialog-content-bd-b {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+}
+
+.noseur-dialog-maximized .noseur-dialog-content {
+	-ms-flex-positive: 1;
+	flex-grow: 1;
+}
+
+.noseur-dialog-header {
+	margin: 0px;
+	display: flex;
+	padding: 1rem;
+	overflow: auto;
+	align-items: center;
+	background: #ffffff;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	justify-content: space-between;
+	border-bottom: 1px solid #e9ecef;
+}
+
+.noseur-dialog-header.nl {
+	justify-content: flex-end;
+}
+
+.noseur-dialog .noseur-dialog-header .noseur-dialog-title {
+	font-weight: 600;
+	font-size: 1.25rem;
+}
+
+.noseur-dialog-header-right {
+	margin-left: 0.5rem;
+}
+
+
+.noseur-dialog-header-right>.noseur-dialog-header-close-icon,
+.noseur-dialog-header-right>.noseur-dialog-header-maximize-icon {
+	padding: 0.5rem;
+	margin-right: 1rem;
+	cursor: pointer;
+}
+
+.noseur-dialog .noseur-dialog-footer {
+	overflow: auto;
+	border-top: 1px solid #e9ecef;
+	background: #ffffff;
+	color: #212529;
+	padding: 1rem;
+	text-align: right;
+	border-bottom-right-radius: 4px;
+	border-bottom-left-radius: 4px;
+}
+
+/*alignment*/
+
+.noseur-dialog-left {
+	justify-content: flex-start;
+}
+
+.noseur-dialog-right {
+	justify-content: flex-end;
+}
+
+.noseur-dialog-top {
+	align-items: flex-start;
+}
+
+.noseur-dialog-top-left {
+	justify-content: flex-start;
+	align-items: flex-start;
+}
+
+.noseur-dialog-top-right {
+	justify-content: flex-end;
+	align-items: flex-start;
+}
+
+.noseur-dialog-bottom {
+	align-items: flex-end;
+}
+
+.noseur-dialog-bottom-left {
+	justify-content: flex-start;
+	align-items: flex-end;
+}
+
+.noseur-dialog-bottom-right {
+	justify-content: flex-end;
+	align-items: flex-end;
+}
+
+.noseur-confirm-dialog .noseur-dialog-content {
+	display: flex;
+	overflow: auto;
+	align-items: center;
+}
+
+/* Message */
+
+.noseur-message {
+	display: flex;
+	overflow: hidden;
+	width: fit-content;
+	border-radius: 5px;
+	align-items: center;
+	flex-direction: column;
+}
+
+.noseur-message-container {
+	padding: 8px;
+	display: flex;
+	width: fit-content;
+	align-items: center;
+}
+
+.noseur-message-container>i.fa-times {
+	opacity: 0.6;
+	cursor: pointer;
+	margin-bottom: 1px;
+}
+
+.noseur-message-container>i.fa-times:hover {
+	opacity: 1;
+}
+
+.noseur-message>.noseur-progress-bar {
+	width: 100%;
+	height: 5px;
+	border-radius: 0px;
+}
+
+/* Toast and Messages */
+
+.noseur-messages {
+	position: relative;
+}
+
+.noseur-toast>div,
+.noseur-messages>div {
+	display: flex;
+	flex-direction: column;
+}
+
+.noseur-toast>div {
+	position: fixed;
+}
+
+.noseur-messages>div {
+	position: absolute;
+}
+
+.noseur-toast>div>.noseur-message,
+.noseur-messages>div>.noseur-message {
+	margin-top: var(--messageMarginTop, 0px);
+	margin-left: var(--messageMarginLeft, 0px);
+	margin-right: var(--messageMarginRight, 0px);
+	margin-bottom: var(--messageMarginBottom, 0px);
+}
+
+.noseur-toast>.noseur-toast-none,
+.noseur-toast>.noseur-toast-top-left,
+.noseur-messages>.noseur-messages-none,
+.noseur-messages>.noseur-messages-top-left {
+	top: 0.5em;
+	left: 0.5em;
+}
+
+.noseur-toast>.noseur-toast-top-right,
+.noseur-messages>.noseur-messages-top-right {
+	top: 0.5em;
+	right: 0.5em;
+	align-items: flex-end;
+}
+
+.noseur-toast>.noseur-toast-top,
+.noseur-toast>.noseur-toast-top-center,
+.noseur-messages>.noseur-messages-top,
+.noseur-messages>.noseur-messages-top-center {
+	left: 50%;
+	top: 0.5em;
+	transform: translateX(-50%);
+}
+
+.noseur-toast>.noseur-toast-bottom-left,
+.noseur-messages>.noseur-messages-bottom-left {
+	left: 0.5em;
+	bottom: 0.5em;
+}
+
+.noseur-toast>.noseur-toast-bottom-right,
+.noseur-messages>.noseur-messages-bottom-right {
+	right: 0.5em;
+	bottom: 0.5em;
+	align-items: flex-end;
+}
+
+.noseur-toast>.noseur-toast-bottom,
+.noseur-messages>.noseur-messages-bottom,
+.noseur-toast>.noseur-toast-bottom-center,
+.noseur-messages>.noseur-messages-bottom-center {
+	left: 50%;
+	bottom: 0.5em;
+	transform: translateX(-50%);
+}
+
+.noseur-toast>.noseur-toast-left,
+.noseur-messages>.noseur-messages-left,
+.noseur-toast>.noseur-toast-center-left,
+.noseur-messages>.noseur-messages-center-left {
+	top: 50%;
+	left: 0.5em;
+	transform: translateY(-50%);
+}
+
+.noseur-toast>.noseur-toast-right,
+.noseur-messages>.noseur-messages-right,
+.noseur-toast>.noseur-toast-center-right,
+.noseur-messages>.noseur-messages-center-right {
+	top: 50%;
+	right: 0.5em;
+	align-items: flex-end;
+	transform: translateY(-50%);
+}
+
+.noseur-toast>.noseur-toast-center,
+.noseur-messages>.noseur-messages-center {
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%);
+}
+.noseur-toast>.noseur-toast-top,
+.noseur-toast>.noseur-toast-bottom,
+.noseur-toast>.noseur-toast-center,
+.noseur-messages>.noseur-messages-top,
+.noseur-messages>.noseur-messages-bottom,
+.noseur-messages>.noseur-messages-center {
+	align-items: center;
+}

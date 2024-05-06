@@ -1,0 +1,406 @@
+/* Form Control */
+
+.noseur-fctrl {
+    margin: 0px;
+    display: flex;
+    width: fit-content;
+    align-items: stretch;
+    flex-direction: column;
+}
+
+.noseur-fctrl>.noseur-fctrl-l {
+    margin-bottom: 5px;
+}
+
+.noseur-fctrl>.noseur-fctrl-il,
+.noseur-fctrl>.noseur-fctrl-hl {
+    margin-top: 5px;
+    font-size: 13px;
+}
+
+.noseur-fctrl-c {
+    margin: 0px;
+    width: 100%;
+    display: flex;
+    outline: none;
+    position: relative;
+    border-radius: 6px;
+    align-items: center;
+    box-sizing: border-box;
+    border: 1px solid #dfdfdf;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+.noseur-fctrl-lc,
+.noseur-fctrl-rc,
+.noseur-fctrl-coc {
+    top: 0px;
+    margin: 0px;
+    height: 100%;
+    display: flex;
+    min-width: 40px;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.noseur-fctrl-coc {
+    position: absolute;
+}
+
+.noseur-fctrl-lc {
+    top: 0px;
+    left: 0px;
+}
+
+.noseur-fctrl-rc {
+    right: 0px;
+}
+
+.noseur-fctrl-coc {
+    left: 10px;
+}
+
+.noseur-fctrl-cc {
+    flex: 1;
+    padding: 0px;
+}
+
+input.noseur-fctrl-cc {
+    width: 0px;
+}
+
+/* ComposedPassword */
+
+.noseur-composed-password {
+    display: flex;
+    width: fit-content;
+    flex-direction: column;
+}
+
+.noseur-composed-password>.noseur-fctrl {
+    width: 100%;
+}
+
+.noseur-composed-password>.noseur-progress-bar {
+    height: 5px;
+    margin-top: 5px;
+}
+
+/* Alert */
+
+.noseur-alert {
+    max-width: 90%;
+    width: max-content !important;
+}
+
+.noseur-popover.noseur-alert {
+    padding: 1rem;
+    background-color: white;
+}
+
+.noseur-popover.noseur-alert,
+.noseur-alert>.noseur-dialog-content {
+    border-radius: 4px;
+}
+
+.noseur-alert>.noseur-dialog-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.noseur-popover.noseur-alert>.noseur-alert-content,
+.noseur-alert>.noseur-dialog-content>.noseur-alert-content {
+    flex: 1;
+    display: flex;
+}
+
+.noseur-popover.noseur-alert>.noseur-alert-footer,
+.noseur-alert>.noseur-dialog-content>.noseur-alert-footer {
+    display: flex;
+    padding-top: 1rem;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.noseur-alert-footer-left {
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+}
+
+.noseur-alert-footer-center {
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.noseur-alert-footer>* {
+    margin-left: 1rem;
+    margin-right: 0rem;
+}
+
+.noseur-alert-footer-left>* {
+    margin-left: 0px;
+    margin-right: 1rem;
+}
+
+.noseur-alert-footer-center>* {
+    margin-left: 0px;
+    margin-right: 1rem;
+}
+
+.noseur-alert-footer-center>*:last-child {
+    margin-right: 0px;
+}
+
+.noseur-popover.noseur-alert>.noseur-alert-content>.noseur-dialog-content-icon,
+.noseur-alert>.noseur-dialog-content>.noseur-alert-content>.noseur-dialog-content-icon {
+    margin: 0px 1rem 1rem 0px;
+    font-size: 3em;
+}
+
+.noseur-popover.noseur-alert.noseur-alert-loading>.noseur-alert-content>.noseur-dialog-content-icon,
+.noseur-alert.noseur-alert-loading>.noseur-dialog-content>.noseur-alert-content>.noseur-dialog-content-icon {
+    margin: 0px;
+}
+
+/* Date Time Picker */
+
+.noseur-date-time-picker,
+.noseur-date-time-picker-column,
+.noseur-date-time-picker-header,
+.noseur-date-time-picker-footer,
+.noseur-date-time-picker-weekdays,
+.noseur-date-time-picker-top-panel,
+.noseur-date-time-picker-layout-row,
+.noseur-date-time-picker-left-panel,
+.noseur-date-time-picker-right-panel,
+.noseur-date-time-picker-bottom-panel,
+.noseur-date-time-picker-layout-column,
+.noseur-date-time-picker-year-mode-header,
+.noseur-date-time-picker-year-mode-footer,
+.noseur-date-time-picker-month-mode-header,
+.noseur-date-time-picker-month-mode-footer {
+    display: flex;
+}
+
+.noseur-date-time-picker,
+.noseur-date-time-picker-column,
+.noseur-date-time-picker-layout-column {
+    width: fit-content;
+    flex-direction: column;
+}
+
+.noseur-date-time-picker-modal,
+.noseur-date-time-picker-inline,
+.noseur-date-time-picker-popover {
+    padding: 15px;
+    border-radius: 7px;
+    border: 1px solid var(--dataBorderColor, rgb(145, 144, 144));
+}
+
+.noseur-date-time-picker-modal {
+    width: 100% !important;
+    padding: 0px !important;
+}
+
+.noseur-date-time-picker-modal .noseur-date-time-picker-layout-column {
+    flex: 1;
+}
+
+.noseur-date-time-picker-popover {
+    background: var(--containerBackground, white);
+}
+
+.noseur-date-time-picker-time-only {
+    padding: 0px 7px;
+    --componentMarginTopOrBottom: 0px !important;
+}
+
+.noseur-date-time-picker-top-panel,
+.noseur-date-time-picker-bottom-panel {
+    flex: 1;
+}
+
+.noseur-date-time-picker-time-only>div>div>.noseur-date-time-picker-time {
+    margin: 0px;
+}
+
+.noseur-date-time-picker-popover {
+    margin: 15px;
+}
+
+.noseur-date-time-picker-seperator {
+    flex: 1;
+}
+
+.noseur-date-time-picker-header,
+.noseur-date-time-picker-footer,
+.noseur-date-time-picker-year-mode-header,
+.noseur-date-time-picker-year-mode-footer,
+.noseur-date-time-picker-month-mode-header,
+.noseur-date-time-picker-month-mode-footer {
+    width: auto;
+    flex-grow: 1;
+    align-items: center;
+}
+
+.noseur-date-time-picker-header,
+.noseur-date-time-picker-year-mode-header,
+.noseur-date-time-picker-month-mode-header {
+    margin-bottom: 15px;
+}
+
+.noseur-date-time-picker-footer,
+.noseur-date-time-picker-year-mode-footer,
+.noseur-date-time-picker-month-mode-footer {
+    margin-top: 15px;
+}
+
+.noseur-date-time-picker-header>span,
+.noseur-date-time-picker-footer>span,
+.noseur-date-time-picker-year-mode-header>span,
+.noseur-date-time-picker-year-mode-footer>span,
+.noseur-date-time-picker-month-mode-header>span,
+.noseur-date-time-picker-month-mode-footer>span {
+    margin: 0px 5px;
+}
+
+.noseur-date-time-picker-footer>button:first-child,
+.noseur-date-time-picker-top-panel>button:first-child,
+.noseur-date-time-picker-year-mode-footer:first-child,
+.noseur-date-time-picker-month-mode-footer:first-child,
+.noseur-date-time-picker-bottom-panel>button:first-child {
+    margin-right: 10px;
+}
+
+.noseur-date-time-picker-footer>button:not(.noseur-date-time-picker-footer>button:first-child),
+.noseur-date-time-picker-top-panel>button:not(.noseur-date-time-picker-top-panel>button:first-child),
+.noseur-date-time-picker-bottom-panel>button:not(.noseur-date-time-picker-bottom-panel>button:first-child) .noseur-date-time-picker-year-mode-footer>button:not(.noseur-date-time-picker-year-mode-footer>button:first-child),
+.noseur-date-time-picker-month-mode-footer>button:not(.noseur-date-time-picker-month-mode-footer>button:first-child) {
+    margin-left: 10px;
+}
+
+.noseur-date-time-picker-left-panel,
+.noseur-date-time-picker-right-panel {
+    height: 100%;
+    flex-direction: column;
+}
+
+.noseur-date-time-picker-left-panel {
+    margin-right: 25px;
+}
+
+.noseur-date-time-picker-right-panel {
+    margin-left: 25px;
+}
+
+.noseur-date-time-picker-weekdays>.noseur-date-time-picker-weekdays-day {
+    flex: 1;
+    display: flex;
+    font-weight: 500;
+    align-items: center;
+    justify-content: center;
+}
+
+.noseur-date-time-picker-days {
+    display: grid;
+    margin-top: 15px;
+}
+
+.noseur-date-time-picker-days>.noseur-date-time-picker-days-date {
+    width: 75%;
+    margin: 2px;
+    justify-self: center;
+}
+
+.noseur-date-time-picker-days>.noseur-date-time-picker-days-date-today,
+.noseur-date-time-picker-days>.noseur-date-time-picker-days-date-in-range,
+.noseur-date-time-picker-days>.noseur-date-time-picker-days-date-hover:hover {
+    background: var(--stripColor, #dee2e6);
+}
+
+.noseur-date-time-picker-row,
+.noseur-date-time-picker-time,
+.noseur-date-time-picker-column {
+    width: fit-content;
+    align-items: center;
+    justify-content: center;
+}
+
+.noseur-date-time-picker-days-underline {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-top: 1px solid var(--dataBorderColor, rgb(145, 144, 144));
+    border-bottom: 1px solid var(--dataBorderColor, rgb(145, 144, 144));
+}
+
+.noseur-date-time-picker-selected-dates {
+    width: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.noseur-date-time-picker-selected-dates>.noseur-date-time-picker-selected-dates-selected-date:first-child {
+    margin-right: 10px;
+}
+
+.noseur-date-time-picker-selected-dates>.noseur-date-time-picker-selected-dates-selected-date:not(.noseur-date-time-picker-selected-dates>.noseur-date-time-picker-selected-dates-selected-date:first-child) {
+    margin-left: 10px;
+}
+
+.noseur-date-time-picker-time {
+    width: auto;
+    height: auto;
+    display: flex;
+}
+
+.noseur-date-time-picker-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.noseur-date-time-picker-time-hours,
+.noseur-date-time-picker-time-minutes,
+.noseur-date-time-picker-time-seconds,
+.noseur-date-time-picker-time-meridian {
+    margin: 0px 5px;
+}
+
+.noseur-date-time-picker-long-year,
+.noseur-date-time-picker-month-name {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+}
+
+.noseur-date-time-picker-long-year-enabled,
+.noseur-date-time-picker-month-name-enabled {
+    cursor: pointer;
+}
+
+.noseur-date-time-picker-long-year-selected,
+.noseur-date-time-picker-month-name-selected,
+.noseur-date-time-picker-long-year-enabled:hover,
+.noseur-date-time-picker-month-name-enabled:hover {
+    color: var(--textColor, black);
+}
+
+.noseur-date-time-picker-years,
+.noseur-date-time-picker-months {
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: auto auto auto;
+}
+
+/* Date Time Picker */
+
+.noseur-date-time-input {
+    width: auto;
+}
+
+.noseur-date-time-input-date-time-picker {
+    --componentMarginTopOrBottom: 3px !important;
+}

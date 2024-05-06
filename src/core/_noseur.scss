@@ -1,0 +1,426 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css");
+
+.noseur-reset-styles {
+	all: unset;
+}
+
+.noseur-reset-styles>* {
+	all: unset;
+}
+
+.noseur-noselect {
+	-webkit-touch-callout: none;
+	/* iOS Safari */
+	-webkit-user-select: none;
+	/* Safari */
+	-khtml-user-select: none;
+	/* Konqueror HTML */
+	-moz-user-select: none;
+	/* Old versions of Firefox */
+	-ms-user-select: none;
+	/* Internet Explorer/Edge */
+	user-select: none;
+	/* Non-prefixed version, currently
+									supported by Chrome, Edge, Opera and Firefox */
+}
+
+.noseur-no-pointer-event {
+	pointer-events: none;
+}
+
+.noseur-all-pointer-event {
+	pointer-events: all;
+}
+
+.noseur-readonly {
+	@extend .noseur-no-pointer-event;
+	cursor: default;
+}
+
+.noseur-cursor-pointer {
+	cursor: pointer;
+}
+
+.noseur-disabled {
+	@extend .noseur-no-pointer-event;
+	opacity: 0.5;
+}
+
+.noseur-overflow-hidden {
+	overflow: hidden !important;
+}
+
+/* Sizes */
+
+.noseur-wd-auto {
+	width: auto;
+}
+
+.noseur-wd-100-pct {
+	width: 100%;
+}
+
+.noseur-flex-1 {
+	flex: 1;
+}
+
+/* Margins, Padding */
+
+.noseur-mg-l-15 {
+	margin-left: 15px;
+}
+
+.noseur-mg-r-15 {
+	margin-right: 15px;
+}
+
+.noseur-mg-t-05rem {
+	margin-top: .5rem;
+}
+
+.noseur-mg-l-05rem {
+	margin-left: .5rem;
+}
+
+.noseur-mg-r-05rem {
+	margin-right: .5rem;
+}
+
+.noseur-mg-b-05rem {
+	margin-bottom: .5rem;
+}
+
+.noseur-pd-10 {
+	padding: 10px;
+}
+
+.noseur-pd-l-0 {
+	padding-left: 0px;
+}
+
+.noseur-pd-r-0 {
+	padding-right: 0px;
+}
+
+/* Styling */
+
+.noseur-no-bg {
+	background: none;
+	background-color: rgba(0, 0, 0, 0);
+	background-image: none;
+}
+
+/* Layout */
+
+@mixin n__noseur-fl-d-r() {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+}
+
+.noseur-fl-d-r {
+	@include n__noseur-fl-d-r();
+}
+
+.noseur-fl-d-r-r {
+	@include n__noseur-fl-d-r();
+	flex-direction: row-reverse;
+}
+
+@mixin n__noseur-fl-d-c() {
+	display: flex;
+	flex-direction: column;
+}
+
+.noseur-fl-d-c {
+	@include n__noseur-fl-d-c();
+}
+
+.noseur-fl-d-c-r {
+	@include n__noseur-fl-d-c();
+	flex-direction: column-reverse;
+}
+
+.noseur-p-stk {
+	position: sticky;
+}
+
+/* Border Properties */
+
+.noseur-rounded-bd {
+	border-radius: 50%;
+}
+
+.noseur-bd-radius-20 {
+	border-radius: 20px;
+}
+
+.noseur-no-bd {
+	border: none;
+}
+
+.noseur-no-bd-t {
+	border-top: none !important;
+}
+
+.noseur-raised-bd {
+	box-shadow: 1px 2.5px 5px rgba(0, 0, 0, 0.25);
+	-moz-box-shadow: 1px 2.5px 5px rgba(0, 0, 0, 0.25);
+	-webkit-box-shadow: 1px 2.5px 5px rgba(0, 0, 0, 0.25);
+}
+
+/* Skeleton  */
+
+span.noseur-skeleton {
+	display: inline-block;
+	max-height: 25px;
+}
+
+.noseur-skeleton {
+	position: relative;
+	color: #e4e4e4;
+	background-color: #e4e4e4;
+	pointer-events: none;
+	border: none;
+	overflow: hidden;
+	-webkit-touch-callout: none;
+	/* iOS Safari */
+	-webkit-user-select: none;
+	/* Safari */
+	-khtml-user-select: none;
+	/* Konqueror HTML */
+	-moz-user-select: none;
+	/* Old versions of Firefox */
+	-ms-user-select: none;
+	/* Internet Explorer/Edge */
+	user-select: none;
+	/* Non-prefixed version, currently
+									supported by Chrome, Edge, Opera and Firefox */
+}
+
+.noseur-skeleton>* {
+	visibility: hidden;
+}
+
+.noseur-skeleton::placeholder {
+	color: transparent;
+}
+
+.noseur-skeleton::after {
+	display: block;
+	content: "";
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0px;
+	overflow: hidden;
+	transform: translateX(-100%);
+	background: -webkit-gradient(linear, left top,
+			right top, from(transparent),
+			color-stop(rgba(255, 255, 255, 0.5)),
+			to(transparent));
+
+	background: linear-gradient(90deg, transparent,
+			rgba(255, 255, 255, 0.5), transparent);
+
+	animation: noseur-skeleton 1.0s infinite;
+}
+
+@keyframes noseur-skeleton {
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+/* Ripple */
+
+/* Ripple effect */
+
+.noseur-rp {
+	opacity: 1;
+	content: "";
+	width: 50%;
+	height: 50%;
+	display: block;
+	position: absolute;
+	border-radius: 50%;
+	animation: 0.9s ease 1 forwards noseur-rp-ef;
+	background-color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes noseur-rp-ef {
+
+	0% {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	50% {
+		opacity: 0.375;
+		transform: scale(10);
+	}
+
+	100% {
+		opacity: 0;
+		transform: scale(35);
+	}
+
+}
+
+/* End The loading Class */
+
+@function toRgba($color, $a: 1) {
+    @return "rgba(" + red($color) + ", " + green($color) + ", " + blue($color)+ "," $a + ")";
+}
+
+/* Scheme */
+
+$schemes: (
+	info: (#8950FC, white, #e5dee6),
+	dark: (#000000, white, #dee2e6),
+	light: (#FFFFFF, black, #dee2e6),
+	retro: (#49f560, black, #dee2e6),
+	danger: (#F64E60, white, #e6dede),
+	warning: (#FFA800, white, #e6e4de),
+	primary: (#3699ff, white, #dee4e6),
+	success: (#1BC5BD, white, #dee6df),
+	dracula: (#282a36, #f8f8f2, #dee2e6),
+	secondary: (#E4E6EF, #3F4254, #dee2e6),
+	retro-reverse: (black, #49f560, #dee2e6),
+);
+
+@mixin noseur-scheme-tx($main: #293742) {
+	color: $main;
+}
+
+@mixin noseur-scheme($main: #f5f8fa, $accent: #293742) {
+	color: $accent;
+	border-color: $main;
+	background-color: $main;
+}
+
+@mixin noseur-scheme-bd-cl($main: #293742) {
+	border-color: $main;
+}
+
+@mixin noseur-scheme-bg-hv($main: #f5f8fa, $accent: #293742) {
+	color: $accent;
+	background-color: $main;
+}
+
+@mixin noseur-scheme-bd-3px-sw-ac($main: #f5f8fa) {
+	box-shadow: 0 0 0 3px var(--focusBoxShadowColor, $main);
+	-moz-box-shadow: 0 0 0 3px var(--focusBoxShadowColor, $main);
+	-webkit-box-shadow: 0 0 0 3px var(--focusBoxShadowColor, $main);
+}
+
+@mixin noseur-scheme-bd-rd($main: #f5f8fa) {
+	box-shadow: 1px 2.5px 5px var(--boxShadowColor, $main);
+	-moz-box-shadow: 1px 2.5px 5px var(--boxShadowColor, $main);
+	-webkit-box-shadow: 1px 2.5px 5px var(--boxShadowColor, $main);
+}
+
+@mixin noseur-scheme-bg-accent($accent: #f5f8fa) {
+	background-color: $accent;
+}
+
+@mixin noseur-scheme-rp($accent: #f5f8fa) {
+	background-color: rgba($accent, 0.7);
+}
+
+@mixin noseur-scheme-vars($main: #f5f8fa, $accent: #293742, $secondary-accent: #e5dee6) {
+	--mainColor: #{$main};
+	--textColor: #{$main};
+	--accentColor: #{$accent};
+	--fixtureColor: #{$accent};
+	--fixtureBackgroundColor: #{$main};
+	--borderColor: #{$secondary-accent};
+	--stripColor: #{toRgba($main, 0.07)};
+	--dataBorderColor: #{$secondary-accent};
+	--boxShadowColor: #{toRgba($main, 0.25)};
+	--mainColor01Percent: #{toRgba($main, 0.1)};
+	--secondaryAccentColor: #{$secondary-accent};
+	--focusBoxShadowColor: #{toRgba($main, 0.3)};
+}
+
+@mixin noseur-scheme-vars-outlined($main: #f5f8fa) {
+	--borderColor: #{$main};
+	--dataBorderColor: #{$main};
+}
+
+.noseur-stateless {
+	@include noseur-scheme;
+	border-color: #a7b6c2;
+}
+
+@each $name,
+$palette in $schemes {
+
+	$main: nth($palette, 1);
+	$accent: nth($palette, 2);
+	$secondary-accent: nth($palette, 3);
+
+	.noseur-#{$name} {
+		@include noseur-scheme($main, $accent);
+	}
+
+	.noseur-#{$name}-vars {
+		@include noseur-scheme-vars($main, $accent, $secondary-accent);
+		@if $name =="secondary" {
+			--textColor: #{$accent};
+		}
+	}
+
+	.noseur-#{$name}-vars-outlined {
+		@include noseur-scheme-vars-outlined($main);
+	}
+
+	.noseur-#{$name}-tx,
+	.noseur-#{$name}-tx-hv:hover {
+		@if $name =="secondary" {
+			@include noseur-scheme-tx($accent);
+		}
+
+		@else {
+			@include noseur-scheme-tx($main);
+		}
+	}
+
+	.noseur-#{$name}-bg-accent {
+		@if $name =="secondary" {
+			@include noseur-scheme-bg-accent($main);
+		}
+
+		@else {
+			@include noseur-scheme-bg-accent($accent);
+		}
+	}
+
+	.noseur-#{$name}-bd-cl,
+	.noseur-#{$name}-bd-cl-fc:focus,
+	.noseur-#{$name}-bd-cl-hv:hover {
+		@include noseur-scheme-bd-cl($main);
+	}
+
+	.noseur-#{$name}-bg-hv:hover {
+		@include noseur-scheme-bg-hv($main, $accent);
+	}
+
+	.noseur-#{$name}-bd-3px-bx-sw-ac:active,
+	.noseur-#{$name}-bd-3px-bx-sw-fc:focus {
+		@include noseur-scheme-bd-3px-sw-ac($main);
+	}
+
+	.noseur-#{$name}-bd-rd {
+		@include noseur-scheme-bd-rd($main);
+	}
+
+	.noseur-#{$name}>.noseur-rp {
+		@include noseur-scheme-rp($accent);
+	}
+
+	.noseur-#{$name}-rp>.noseur-rp {
+		@include noseur-scheme-rp($main);
+	}
+
+}

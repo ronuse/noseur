@@ -1,0 +1,65 @@
+{
+  "name": "@ronuse/noseur",
+  "version": "1.0.0",
+  "description": "Configurable React Components by Ronuse",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -Rf dist",
+    "_build:css": "sass src/ -o dist/esm/ ",
+    "build:css": "sass --no-source-map src:dist/esm",
+    "build:css:production": "sass --no-source-map --style=compressed src:dist/esm",
+    "lint": "eslint \"{**/*,*}.{js,ts,jsx,tsx}\"",
+    "pack": "npm run clean && npm run build && npm run build:css && npm pack",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "showcase": "cd showcase; npm run watch"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ronuse/noseur.git"
+  },
+  "keywords": [
+    "react",
+    "component",
+    "ui",
+    "theme",
+    "ronuse"
+  ],
+  "author": "Adewale Azeez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ronuse/noseur/issues"
+  },
+  "homepage": "https://ronuse.github.io/noseur",
+  "dependencies": {
+    "@types/chart.js": "^2.9.38",
+    "@types/node-sass": "^4.11.3",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.2.7",
+    "@types/react-transition-group": "^4.4.6",
+    "@types/sass": "^1.45.0",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "chart.js": "^4.4.0",
+    "css-loader": "^6.7.3",
+    "eslint": "^8.36.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "install": "^0.13.0",
+    "node-sass": "^8.0.0",
+    "npm": "^9.6.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-transition-group": "^4.4.5",
+    "sass": "^1.59.3",
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2"
+  }
+}

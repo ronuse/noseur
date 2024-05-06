@@ -1,0 +1,343 @@
+.noseur-form-bd-cl {
+	border-color: var(--formBorderColor, #dfdfdf);
+}
+
+/* Button */
+
+.noseur-button {
+	outline: none;
+	cursor: pointer;
+	overflow: hidden;
+	border-width: 1px;
+	border-radius: 7px;
+	text-align: center;
+	position: relative;
+	width: fit-content;
+	align-items: center;
+	border-style: solid;
+	height: fit-content;
+	display: inline-flex;
+	text-decoration: none;
+	vertical-align: bottom;
+	justify-content: center;
+	padding: 10px 15px 10px 15px;
+}
+
+.noseur-button:hover {
+	filter: brightness(97%);
+}
+
+/* Input and TextArea */
+
+.noseur-input {
+	flex: 1;
+	outline: none;
+	color: #3e3f41;
+	padding: 0.7rem;
+	font-size: 15px;
+	border-radius: 6px;
+	background: transparent;
+	box-sizing: border-box;
+	border: 1px solid #dfdfdf;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}
+
+.noseur-input-filled {
+	background-color: #eff2f5;
+}
+
+.noseur-input-flushed {
+	border: none;
+	border-radius: 0px;
+	padding: 0.7rem 0px 0.7rem 0px;
+	border-bottom: 1px solid #dfdfdf;
+}
+
+textarea.noseur-input {
+	flex: initial;
+}
+
+/* Checkbox */
+
+.noseur-checkbox {
+	display: flex;
+	cursor: pointer;
+	width: fit-content;
+	align-items: center;
+}
+
+.noseur-checkbox>input {
+	display: none;
+}
+
+.noseur-checkbox-box {
+	width: 18px;
+	height: 18px;
+	outline: none;
+	min-width: 18px;
+	min-height: 18px;
+	user-select: none;
+	border-width: 2px;
+	border-radius: 5px;
+	border-style: solid;
+	align-items: center;
+	display: inline-flex;
+	vertical-align: bottom;
+	justify-content: center;
+}
+
+.noseur-checkbox-box>.noseur-icon {
+	font-size: 12px;
+}
+
+/* Dropdown */
+
+.noseur-dropdown {
+	cursor: pointer;
+}
+
+.noseur-dropdown>.noseur-fctrl-c>.noseur-fctrl-lc {
+	min-width: auto;
+	margin-right: 5px;
+}
+
+.noseur-dropdown>.noseur-fctrl-c>.noseur-fctrl-lc>img,
+.noseur-dropdown>.noseur-fctrl-c>.noseur-fctrl-lc>.noseur-dropdown-left-content>img,
+.noseur-dropdown>.noseur-fctrl-c>.noseur-fctrl-rc>.noseur-dropdown-right-content>img {
+	width: auto;
+	height: 22px;
+	margin-left: 9px;
+}
+
+.noseur-dropdown-inputtext {
+	min-width: auto;
+}
+
+.noseur-dropdown-left-content {
+	margin: 0px;
+	display: flex;
+	margin-left: 5px;
+	align-items: center;
+	align-self: flex-start;
+}
+
+.noseur-dropdown-right-content {
+	margin: 0px;
+	display: flex;
+	margin-right: 5px;
+	align-items: center;
+	align-self: flex-end;
+}
+
+.noseur-dropdown-left-content>*,
+.noseur-dropdown-right-content>* {
+	margin: 10px;
+}
+
+.noseur-dropdown-popover {
+	min-width: 190px;
+	background-color: white;
+	border-radius: 0px 0px 3px 3px;
+	--componentMarginTopOrBottom: 3px;
+	box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%) !important;
+}
+
+.noseur-dropdown-popover-list {
+	margin: 0px;
+	padding: 0px;
+	overflow: auto;
+	margin-top: 7px;
+	/*height: 350px;*/
+	margin-bottom: 7px;
+}
+
+.noseur-dropdown-popover-list>li {
+	border: none;
+	font-size: 14px;
+	cursor: pointer;
+	list-style-type: none;
+	padding: 12px 15px 12px 15px;
+}
+
+.noseur-dropdown-popover-list>li.default-style:hover {
+	cursor: pointer;
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.noseur-dropdown-popover-list>li.default-style[aria-selected="true"] {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+.noseur-dropdown-popover-li-grp {
+	font-weight: bold;
+	pointer-events: none;
+}
+
+.noseur-dropdown-popover-li-item {
+	display: flex;
+}
+
+.noseur-dropdown-popover-li-item>img {
+	width: 20px;
+	height: 20px;
+	max-width: 20px;
+	max-height: 20px;
+	margin-right: 10px;
+}
+
+.noseur-dropdown-popover-empty {
+	padding: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* File Input */
+
+.noseur-file-input {
+	display: flex;
+	overflow: auto;
+	width: fit-content;
+}
+
+.noseur-file-input-label {
+	margin: 5px;
+	color: #fff;
+	cursor: pointer;
+	font-weight: 700;
+	padding: 7px 10px;
+	position: absolute;
+	border-radius: 5px;
+	width: fit-content;
+	width: -moz-fit-content;
+	width: -webkit-fit-content;
+	background: hsla(0, 1.4%, 59%, .5);
+}
+
+.noseur-file-input>div>.noseur-file-input-preview {
+	display: flex;
+	position: relative;
+	align-items: center;
+	border-radius: inherit;
+	color: var(--mainColor, #ededed);
+}
+
+.noseur-file-input>.noseur-file-input-previews,
+.noseur-file-input>div>.noseur-file-input-preview>img {
+	border-radius: inherit;
+}
+
+.noseur-file-input>div>.noseur-file-input-preview>.noseur-close {
+	top: 0px;
+	right: 0px;
+	margin: 5px;
+	position: absolute;
+	padding: 10px 12px;
+}
+
+.noseur-file-input>div>.noseur-file-input-preview-empty,
+.noseur-file-input>div>.noseur-file-input-preview>.noseur-file-input-preview-image,
+.noseur-file-input>div>.noseur-file-input-preview>.noseur-file-input-preview-video {
+	width: 125px;
+	height: 120px;
+	font-size: 30px;
+	justify-content: center;
+	border: 1px solid var(--mainColor01Percent, rgba(237, 237, 237, 0.5));
+}
+
+.noseur-file-input>div>.noseur-file-input-preview-empty {
+	cursor: pointer;
+}
+
+.noseur-file-input>div>.noseur-file-input-preview-empty>i {
+	padding: 20px;
+	border-radius: 100%;
+	background: var(--mainColor01Percent, rgba(237, 237, 237, 0.5));
+}
+
+.noseur-file-input>div>.noseur-file-input-preview>.noseur-file-input-preview-binary {
+	display: flex;
+	align-items: center;
+}
+
+.noseur-file-input>div>.noseur-file-input-preview>.noseur-file-input-preview-binary>* {
+	margin-right: 5px;
+}
+
+.noseur-file-input>div>.noseur-file-input-preview>.noseur-file-input-preview-binary>.noseur-close {
+	cursor: pointer;
+	margin-left: 5px;
+}
+
+.noseur-file-input>div.noseur-fl-d-r>.noseur-file-input-preview:not(.noseur-file-input-preview:first-child) {
+	margin-left: 15px;
+}
+
+.noseur-file-input>div.noseur-fl-d-c>.noseur-file-input-preview:not(.noseur-file-input-preview:first-child) {
+	margin-top: 15px;
+}
+
+.noseur-file-input.noseur-file-input-controlled {
+	width: auto;
+	border-radius: 7px;
+	flex-direction: column;
+	border: 1px solid var(--mainColor, rgba(237, 237, 237, 0.2));
+}
+
+.noseur-file-input.noseur-file-input-controlled>.noseur-file-input-fixture {
+	padding: 15px;
+	display: flex;
+	background-color: var(--stripColor, rgba(237, 237, 237, 0.5));
+	border-bottom: 1px solid var(--mainColor, rgba(237, 237, 237, 0.5));
+}
+
+.noseur-file-input.noseur-file-input-controlled>.noseur-file-input-fixture>button:not(.noseur-file-input-fixture>button:first-child) {
+	margin-left: 10px;
+}
+
+.noseur-file-input.noseur-file-input-controlled>.noseur-file-input-previews {
+	margin: 15px;
+}
+
+.noseur-file-input.noseur-file-input-controlled>.noseur-file-input-previews>.noseur-file-input-preview {
+	width: auto;
+	border: none;
+}
+
+/* Radio button */
+
+.noseur-radiobutton {
+	display: flex;
+	cursor: pointer;
+	width: fit-content;
+	align-items: center;
+}
+
+.noseur-radiobutton>input {
+	display: none;
+}
+
+.noseur-radiobutton-box {
+	width: 18px;
+	height: 18px;
+	outline: none;
+	min-width: 18px;
+	min-height: 18px;
+	user-select: none;
+	border-width: 2px;
+	border-radius: 100%;
+	border-style: solid;
+	align-items: center;
+	display: inline-flex;
+	vertical-align: bottom;
+	justify-content: center;
+	border-color: var(--mainColor, var(--formBorderColor, #dfdfdf));
+}
+
+.noseur-radiobutton-box>.noseur-icon {
+	font-size: 12px;
+	border-radius: 100%;
+	color: var(--mainColor, var(--formBorderColor, #dfdfdf));
+	background-color: var(--mainColor, var(--formBorderColor, #dfdfdf));
+}

@@ -40,6 +40,8 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+*node_modules/
+*jspm_packages/
 
 # TypeScript v1 declaration files
 typings/
@@ -80,7 +82,12 @@ typings/
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+dist/
+.vs/
+.vscode/
+*dist/
+build/
+*build/
 
 # Gatsby files
 .cache/
@@ -102,3 +109,7 @@ dist
 
 # TernJS port file
 .tern-port
+
+
+# Others
+*.DS_Store

@@ -1,0 +1,111 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+p {
+  margin: 0px;
+}
+
+.noseur-checkbox {
+  margin: 5px;
+}
+
+.isw-dp {
+  border: none;
+  background: #F3F5F6;
+  color: #5F738C !important;
+}
+
+.isw-dp>div>div>.noseur-date-time-picker-header {
+  font-weight: bold;
+}
+
+.isw-dp>div>div>.noseur-date-time-picker-weekdays>span {
+  font-weight: 400;
+}
+
+.isw-dp>div>div>.noseur-date-time-picker-header>button {
+  padding: 10px 13px;
+  border-radius: 50px;
+  background-color: white;
+  border: 1px solid #5F738C;
+}
+
+.isw-dp>div>div>.noseur-date-time-picker-days>* {
+  color: #5F738C !important;
+}
+
+.isw-dp>div>div>.noseur-date-time-picker-days>*:hover,
+.isw-dp>div>div>.noseur-date-time-picker-days>.noseur-date-time-picker-days-date-selected {
+  color: #479FC8;
+  cursor: pointer;
+  background: #EBF8FE;
+  border-radius: 6.83333px;
+  box-shadow: 0px 1.70833px 3.41667px rgba(0, 0, 0, 0.12);
+}
+
+.dp1 {
+  color: #a7a7a8 !important;
+  background-color: #241745;
+}
+
+.dp1>div>div>.noseur-date-time-picker-header {
+  border: 1px solid #5f5f61;
+  border-radius: 7px;
+  padding: 10px;
+}
+
+.dp1>div>div>.noseur-date-time-picker-header>button {
+  color: #a7a7a8;
+}
+
+.dp1>div>div>.noseur-date-time-picker-weekdays {
+  color: #4e4e4f;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #5f5f61;
+}
+
+.dp1>div>div>.noseur-date-time-picker-days>* {
+  border-radius: 0px;
+  color: #a7a7a8 !important;
+}
+
+.dp1>div>div>.noseur-date-time-picker-bottom-panel {
+  color: red !important;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #5f5f61;
+}
+
+.dp1>div>div>.noseur-date-time-picker-bottom-panel>button:last-child {
+  color: white;
+  font-weight: bold;
+  background: #3e69de;
+  border-color: #3e69de;
+}
+
+.dp1>div>div>.noseur-date-time-picker-days>*:hover,
+.dp1>div>div>.noseur-date-time-picker-days>.noseur-date-time-picker-days-date-selected {
+  color: white !important;
+  background: #3e69de;
+  box-shadow: 0px 1.70833px 3.41667px rgba(0, 0, 0, 0.12);
+}
+
+.dp1>div>div>.noseur-date-time-picker-days>*.noseur-date-time-picker-days-date-in-range {
+  color: white !important;
+  background: #5f5f61;
+}
+
+.dp1 > div:nth-child(2) > div:nth-child(1) > div > button {
+  color: white;
+}
