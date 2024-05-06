@@ -36,6 +36,7 @@ interface TableState extends DataState {
 class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableState> {
 
     public static defaultProps: Partial<TableProps> = {
+        rowsContent: {},
         paginate: false,
         rowsPerPage: 10,
         dataRefreshKeys: [],
@@ -52,8 +53,8 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
         dataOffset: 0,
         currentPage: 1,
         activeData: this.props.data,
+        rowsContent: ObjectHelper.clone(this.props.rowsContent),
     };
-
 
     usedDataKeys: any[] = [];
     columnSelfRefs: NoseurObject<any> = {};
@@ -62,6 +63,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
         super(props);
 
         this.onSort = this.onSort.bind(this);
+        this.resolveRowContentPositions = this.resolveRowContentPositions.bind(this);
     }
 
     componentDidUpdate(prevProps: Readonly<TableProps>, _: Readonly<TableState>) {
@@ -108,18 +110,30 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
         let data = this.state.activeData.slice(this.state.dataOffset, (this.props.rowsPerPage + this.state.dataOffset));
         if (!data.length && !this.props.allowNoDataPagination) data = this.state.activeData;
         const children: any = (this.props.children as any).length ? this.props.children : [this.props.children];
+        const rowsContents = this.state.rowsContent;
 
         const rows = data.map((data: NoseurObject<any>, index: number) => {
+            const row = index + 1;
             const columns = children?.map((child: React.ReactElement<ColumnProps>, sindex: number) => {
                 return React.createElement(ColumnComponent, {
                     ...(child.props),
                     sortable: false,
-                    key: (child.props.key || sindex),
+                    key: (child.props.key ?? sindex),
+                    rowControlOptions: {
+                        toggleContent: (() => {
+                            this.setState({ rowsContent: this.toggleRowContent(row, data) });
+                        }).bind(this)
+                    },
                     value: (child.props.dataKey ? ObjectHelper.objectGetWithStringTemplate(data, child.props.dataKey) : data),
                 });
             });
             let valuedRowProps = this.buildRowProps(data);
-            return (<tr key={index} role="row" data-n-group="body-row" {...valuedRowProps}
+            return (<tr key={`row-${index}`} role="row" data-n-group="body-row" {...valuedRowProps} ref={(r) => {
+                if (!r) return;
+                if (!(row in rowsContents)) return;
+                if (!(row in this.rowContentElementMaps)) this.rowContentElementMaps[row] = {};
+                this.rowContentElementMaps[row].rowElement = r;
+            }}
                 onClick={this.props.onRowSelection ? () => this.props.onRowSelection(data) : undefined}>{columns}</tr>);
         });
 
@@ -223,6 +237,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
             style: this.props.style,
         };
         const emptyState = this.renderEmptyState();
+        const rowContents = this.renderRowContents();
         const loadingState = this.renderLoadingState();
         const header = this.renderFixtures(this.props.header, "noseur-data-header");
         const footer = this.renderFixtures(this.props.footer, "noseur-data-footer");
@@ -233,13 +248,14 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
         const paginator = this.renderPaginator(!!footer);
         const table = this.renderTable(!!header, !!footer);
 
-        return (<div {...props} className={className}>
+        return (<div {...props} className={className} ref={(_) => this.resolveRowContentPositions()}>
             {header}
             {table}
             {emptyState}
             {loadingState}
             {paginator}
             {footer}
+            {rowContents}
         </div>);
     }
 

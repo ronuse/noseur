@@ -3,11 +3,11 @@ import "./Data.css";
 import React from 'react';
 import { Classname } from "../utils/Classname";
 import { BoolHelper } from "../utils/BoolHelper";
-import { DataComponent, DataProps, DataState } from "./Data";
 import { ObjectHelper } from "../utils/ObjectHelper";
+import { DataComponent, DataProps, DataState, RowControlOptions } from "./Data";
 import { NoseurElement, NoseurObject, SortDirection } from '../constants/Types';
 
-export type ListTemplateHandler = (value: any) => NoseurElement;
+export type ListTemplateHandler = (value: any, rowControlOptions?: RowControlOptions) => NoseurElement;
 
 export interface ListProps extends DataProps<HTMLUListElement> {
     dataKey: string;
@@ -24,6 +24,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
     public static defaultProps: Partial<ListProps> = {
         paginate: false,
         rowsPerPage: 10,
+        rowsContent: {},
         dataRefreshKeys: [],
         internalElementProps: {},
     };
@@ -32,6 +33,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
         dataOffset: 0,
         currentPage: 1,
         activeData: this.props.data,
+        rowsContent: ObjectHelper.clone(this.props.rowsContent),
     };
 
     constructor(props: ListProps) {
@@ -64,12 +66,26 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
         if (!this.state.activeData || this.state.isLoading) return;
         let data = this.state.activeData.slice(this.state.dataOffset, (this.props.rowsPerPage + this.state.dataOffset));
         if (!data.length && !this.props.allowNoDataPagination) data = this.state.activeData;
+        const rowsContents = this.state.rowsContent;
 
         return data.map((rowData: NoseurObject<any>, index: number) => {
+            const row = index + 1;
             let valuedRowProps = this.buildRowProps(data);;
             const value = this.props.dataKey ? ObjectHelper.objectGetWithStringTemplate(rowData, this.props.dataKey) : rowData;
-            return (<li key={index} role="row" data-n-group="row" {...valuedRowProps}
-                onClick={this.props.onRowSelection ? () => this.props.onRowSelection(data) : undefined}>{this.props.template ? this.props.template(value) : `${value}`}</li>);
+            return (<li key={index} role="row" data-n-group="row" {...valuedRowProps} ref={(r) => {
+                if (!r) return;
+                if (!(row in rowsContents)) return;
+                if (!(row in this.rowContentElementMaps)) this.rowContentElementMaps[row] = {};
+                this.rowContentElementMaps[row].rowElement = r;
+            }}
+                onClick={this.props.onRowSelection
+                    ? () => this.props.onRowSelection(data) : undefined}>{this.props.template
+                        ? this.props.template(value, {
+                            toggleContent: (() => {
+                                this.setState({ rowsContent: this.toggleRowContent(row, data) });
+                            }).bind(this)
+                        })
+                        : `${value}`}</li>);
         });
     }
 
@@ -97,6 +113,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
             style: this.props.style,
         };
         const emptyState = this.renderEmptyState();
+        const rowContents = this.renderRowContents();
         const loadingState = this.renderLoadingState();
         const header = this.renderFixtures(this.props.header, "noseur-data-header");
         const footer = this.renderFixtures(this.props.footer, "noseur-data-footer");
@@ -107,13 +124,14 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
         const paginator = this.renderPaginator(!!footer);
         const list = this.renderList(!!header, !!footer);
 
-        return (<div {...props} className={className}>
+        return (<div {...props} className={className} ref={(_) => this.resolveRowContentPositions()}>
             {header}
             {list}
             {emptyState}
             {loadingState}
             {paginator}
             {footer}
+            {rowContents}
         </div>);
     }
 

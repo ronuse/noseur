@@ -50,8 +50,8 @@ class ProgressBarComponent extends React.Component<ProgressBarProps, ProgressBar
         });
     }
 
-    componentDidUpdate(): void {
-        if (this.state.currentValue !== this.props.value) {
+    componentDidUpdate(prevProps: Partial<ProgressBarProps>): void {
+        if (prevProps.value !== this.props.value) {
             this.setState({ currentValue: this.props.value });
         }
     }

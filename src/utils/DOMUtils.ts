@@ -143,8 +143,8 @@ export const DOMHelper = {
 			.replace(/rem/g, ""));
 	},
 
-	getElementStyle(element: any) {
-		return element.currentStyle || window.getComputedStyle(element);
+	getElementStyle(element: any): CSSStyleDeclaration {
+		return element.currentStyle ?? (window.getComputedStyle ? window.getComputedStyle(element) : element.style);
 	},
 
 	getElementWidth(element: any, excludeMargin = false) {
@@ -153,14 +153,18 @@ export const DOMHelper = {
 		return elementRect.width + (excludeMargin ? 0 : (parseInt(style.marginLeft) + parseInt(style.marginRight))) + parseInt(style.paddingLeft) + parseInt(style.paddingRight);
 	},
 
-	getElementSuperflousWidth(element: any) {
+	getElementSuperflousWidth(element: any, withPadding?: boolean) {
 		const style = element.currentStyle || window.getComputedStyle(element);
-		return parseInt(style.marginLeft) + parseInt(style.marginRight);
+		let width = parseInt(style.marginLeft) + parseInt(style.marginRight);
+		if (withPadding) width += (parseInt(style.paddingLeft) + parseInt(style.paddingRight));
+		return width;
 	},
 
-	getElementSuperflousHeight(element: any) {
+	getElementSuperflousHeight(element: any, withPadding?: boolean) {
 		const style = element.currentStyle || window.getComputedStyle(element);
-		return parseInt(style.marginTop) + parseInt(style.marginBottom);
+		let height = parseInt(style.marginTop) + parseInt(style.marginBottom)
+		if (withPadding) height += (parseInt(style.paddingTop) + parseInt(style.paddingBottom));
+		return height;
 	},
 
 	absolutePositionRelatively(element: any, target: any, horizontal: "left" | "right" = "right") {

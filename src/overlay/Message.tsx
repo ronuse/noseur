@@ -25,6 +25,7 @@ export type MessageAttributtesRelays = {
 
 export interface MessageManageRef {
     close: () => void;
+    update: (messageProps: Partial<MessageProps>, borrowLifetime?: boolean) => void;
 }
 
 export interface MessageProps extends ComponentBaseProps<HTMLDivElement, MessageManageRef, MessageAttributtesRelays>, TransitionProps {
@@ -49,6 +50,21 @@ export interface MessageProps extends ComponentBaseProps<HTMLDivElement, Message
 
 interface MessageState {
     mount: boolean;
+    props: {
+        fill: boolean;
+        scheme: Scheme;
+        sticky: boolean;
+        lifetime: number;
+        className: string;
+        foreScheme: boolean;
+        closeOnClick: boolean;
+        icon: NoseurIconElement;
+        showProgressbar: boolean;
+        pauseDelayOnHover: boolean;
+        container: NoseurRawElement;
+        style: React.CSSProperties | undefined;
+        content: NoseurElement | MessageContentHandler;
+    } & TransitionProps;
 }
 
 class MessageComponent extends React.Component<MessageProps, MessageState> {
@@ -61,6 +77,7 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
 
     state: MessageState = {
         mount: false,
+        props: this.props as any,
     };
 
     timer?: Timer;
@@ -82,6 +99,28 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
     componentDidMount() {
         ObjectHelper.resolveManageRef(this, {
             close: this.onClose,
+            update: (messageProps: Partial<MessageProps>, borrowLifetime: boolean = true) => {
+                const shouldNowBeSticky = messageProps.sticky;
+                const currentlySticky = this.state.props.sticky;
+                this.setState({ props: ObjectHelper.merge(this.state.props, messageProps) }, (() => {
+                    if (currentlySticky && !shouldNowBeSticky) {
+                        if (this.timer) {
+                            if (borrowLifetime) this.timer.resume();
+                            else this.timer.restart(this.state.props.lifetime);
+                        } else {
+                            this.onEntered();
+                        }
+                        return;
+                    }
+                    if (!this.timer) return;
+                    if (!currentlySticky && shouldNowBeSticky) {
+                        this.timer.pause();
+                        return;
+                    }
+                    if (borrowLifetime) return;
+                    this.timer.restart(this.state.props.lifetime);
+                }).bind(this));
+            }
         });
         this.setState({ mount: true });
     }
@@ -97,11 +136,11 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
     }
 
     onEntered() {
-        if (this.props.sticky) return;
+        if (this.state.props.sticky) return;
         this.timer = new Timer({
             delay: 800,
-            timeout: this.props.lifetime,
-            isInterval: !!this.props.showProgressbar,
+            timeout: this.state.props.lifetime,
+            isInterval: !!this.state.props.showProgressbar,
             cbs: {
                 onAction: this.onTimerAction,
                 onEnd: () => {
@@ -134,7 +173,7 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
 
     onMouseLeave(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
         this.props.onMouseLeave && this.props.onMouseLeave(event);
-        if (this.props.pauseDelayOnHover && this.timer) this.timer.resume();
+        if (this.state.props.pauseDelayOnHover && this.timer) this.timer.resume();
     }
 
     onClick(event: any) {
@@ -144,15 +183,16 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
     }
 
     renderIcon(hasSiblings: boolean) {
-        return MicroBuilder.buildIcon(this.props.icon, {
+        return MicroBuilder.buildIcon(this.state.props.icon, {
             applyFaScheme: true,
+            style: { marginLeft: 10 },
             relativeAlignment: (hasSiblings ? Alignment.LEFT : undefined),
-            scheme: (this.props.foreScheme ? this.props.scheme : undefined),
+            scheme: (this.state.props.foreScheme ? this.state.props.scheme : undefined),
         });
     }
 
     renderCloseIcon(contentIsPresent: boolean) {
-        const scheme = this.props.attrsRelay?.closeIcon?.scheme ?? (this.props.foreScheme ? this.props.scheme : undefined);
+        const scheme = this.props.attrsRelay?.closeIcon?.scheme ?? (this.state.props.foreScheme ? this.state.props.scheme : undefined);
         const className = Classname.build("fa fa-times", (scheme ? `${scheme}-tx-hv` : null), this.props.attrsRelay?.closeIcon?.className);
         return (<i onClick={(e) => {
             e.stopPropagation();
@@ -163,7 +203,7 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
 
     renderContent() {
         const className = Classname.build("noseur-message-content", this.props.attrsRelay?.content?.className);
-        const content = (this.props.content instanceof Function ? this.props.content(this.props.attrsRelay?.content) : this.props.content);
+        const content = (this.state.props.content instanceof Function ? this.state.props.content(this.props.attrsRelay?.content) : this.state.props.content);
 
         return (<div className={className} id={this.props.attrsRelay?.content?.id}>
             {content}
@@ -184,25 +224,25 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
             }
         };
         return (<ProgressBar {...progressProps} noLabel={progressProps.noLabel || true}
-            scheme={progressProps.scheme ?? (this.props.foreScheme ? this.props.scheme : (scheme ? `${scheme}-bg-accent` : undefined) as Scheme)} />);
+            scheme={progressProps.scheme ?? (this.state.props.foreScheme ? this.state.props.scheme : (scheme ? `${scheme}-bg-accent` : undefined) as Scheme)} />);
     }
 
     render() {
-        const transition = this.props.transition;
-        const content = (this.props.content ? this.renderContent() : null);
-        const closeIcon = (this.props.sticky ? null : this.renderCloseIcon(!!content));
-        const icon = (this.props.icon ? this.renderIcon(!!content || !!closeIcon) : null);
-        const scheme = (!this.props.foreScheme && this.props.scheme ? this.props.scheme : null);
-        const progressBar = (this.props.showProgressbar ? this.renderProgressBar(scheme ?? undefined) : null);
+        const transition = this.state.props.transition;
+        const content = (this.state.props.content ? this.renderContent() : null);
+        const closeIcon = (this.state.props.sticky ? null : this.renderCloseIcon(!!content));
+        const icon = (this.state.props.icon ? this.renderIcon(!!content || !!closeIcon) : null);
+        const scheme = (!this.state.props.foreScheme && this.state.props.scheme ? this.state.props.scheme : null);
+        const progressBar = (this.state.props.showProgressbar ? this.renderProgressBar(scheme ?? undefined) : null);
         const className = Classname.build("noseur-message", {
-            "noseur-wd-100-pct": this.props.fill
-        }, scheme, (this.props.scheme ? `${this.props.scheme}-bd-rd ${this.props.scheme}-vars` : null),
-            (this.props.closeOnClick ? "noseur-cursor-pointer" : null), this.props.className);
+            "noseur-wd-100-pct": this.state.props.fill
+        }, scheme, (this.state.props.scheme ? `${this.state.props.scheme}-bd-rd ${this.state.props.scheme}-vars` : null),
+            (this.state.props.closeOnClick ? "noseur-cursor-pointer" : null), this.state.props.className);
 
-        const children = (<CSSTransition classNames={transition} options={this.props.transitionOptions}
-            timeout={transition === Transition.NONE ? 0 : this.props.transitionTimeout}
+        const children = (<CSSTransition classNames={transition} options={this.state.props.transitionOptions}
+            timeout={transition === Transition.NONE ? 0 : this.state.props.transitionTimeout}
             in={this.state.mount} unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExited={this.onExited}>
-            <div ref={this.props.forwardRef} className={className} id={this.props.id} style={this.props.style}
+            <div ref={this.props.forwardRef} className={className} id={this.props.id} style={this.state.props.style}
                 onClick={this.onClick} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <div className="noseur-message-container container">
                     {icon}
@@ -212,7 +252,7 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
                 {progressBar}
             </div>
         </CSSTransition>);
-        return (!this.props.container ? children : <Portal children={children} container={this.props.container} visible={true} />);
+        return (!this.state.props.container ? children : <Portal children={children} container={this.state.props.container} visible={true} />);
     }
 
 }

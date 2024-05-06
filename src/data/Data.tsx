@@ -5,6 +5,7 @@ import { ObjectHelper } from "../utils/ObjectHelper";
 import { ComponentBaseProps } from "../core/ComponentBaseProps";
 import { NoseurElement, NoseurObject, SortDirection } from "../constants/Types";
 import { Paginator, PaginatorPageChangeOption, PaginatorProps, PaginatorTemplateOptions } from "../presentation/Paginator";
+import { DOMHelper } from "../utils/DOMUtils";
 
 export interface RowProps {
     id?: string;
@@ -13,15 +14,24 @@ export interface RowProps {
     style?: React.CSSProperties;
 }
 
+export interface RowControlOptions {
+    toggleContent: () => void;
+}
+
 export type DataFixtureTemplateHandler = () => NoseurElement;
 export type DataRowSelectionHandler = (value: any) => boolean;
 export type DataRowValuedPropsHandler = (data?: any) => RowProps;
-export type DateSelectionElementTemplateHandler = (index: number) => NoseurElement;
+export type DataRowExpansionTemplateHandler = (data: any) => NoseurElement;
+export type DataSelectionElementTemplateHandler = (index: number) => NoseurElement;
 export type DataComparatorHandler = (sortDirection: SortDirection, dataKey: string, p: any, c: any) => number;
 
 export interface DataManageRef {
+    expandContent: (row: number) => void;
+    toggleContent: (row: number) => void;
+    collapseContent: (row: number) => void;
     setData: (data?: NoseurObject<any>[]) => void;
     setLoadingState: (isLoading: boolean) => void;
+    setAndExpandRowContent: (row: number, content: NoseurElement) => void;
 }
 
 export interface DataInternalElementProps {
@@ -44,10 +54,12 @@ export interface DataProps<T> extends ComponentBaseProps<T, DataManageRef> {
     dataRefreshKeys: any[];
     dataSelectionKey: string;
     emptyState: NoseurElement;
+    multiRowExpansion: boolean;
     data?: NoseurObject<any>[];
     loadingState: NoseurElement;
-    paginatorProps: PaginatorProps;
     allowNoDataPagination: boolean;
+    rowsContent: { [key: number]: any };
+    paginatorProps: Partial<PaginatorProps>;
     paginatorTemplate: PaginatorTemplateOptions;
     internalElementProps: Partial<DataInternalElementProps>;
 
@@ -56,8 +68,9 @@ export interface DataProps<T> extends ComponentBaseProps<T, DataManageRef> {
     compareData: DataComparatorHandler;
     onRowSelection: DataRowSelectionHandler;
     valuedRowProps: DataRowValuedPropsHandler;
+    rowExpansionTemplate: DataRowExpansionTemplateHandler;
     onPageChange?: (event: PaginatorPageChangeOption) => void;
-    selectionElementTemplate: DateSelectionElementTemplateHandler;
+    selectionElementTemplate: DataSelectionElementTemplateHandler;
 }
 
 export interface DataState {
@@ -65,14 +78,21 @@ export interface DataState {
     dataOffset: number;
     currentPage: number;
     activeData?: NoseurObject<any>[];
+    rowsContent: { [key: number]: any };
 };
 
 export class DataComponent<T, P extends DataProps<T>, S extends DataState> extends React.Component<P, S> {
 
+    rowContentElementMaps: { [key: number]: { rowElement?: any; contentElement?: any; expanded?: boolean; originalHeight?: number; } } = {};
+
     componentDidMount() {
         ObjectHelper.resolveManageRef(this, {
+            toggleContent: (row: number) => this.internalToggleRowContent(row),
             setLoadingState: (isLoading: boolean) => this.setState({ isLoading }),
+            expandContent: (row: number) => this.internalToggleRowContent(row, true),
+            collapseContent: (row: number) => this.internalToggleRowContent(row, false),
             setData: (data?: NoseurObject<any>[]) => this.setState({ activeData: data }),
+            setAndExpandRowContent: (row: number, content: NoseurElement) => this.internalToggleRowContent(row, undefined, content)
         });
     }
 
@@ -109,7 +129,7 @@ export class DataComponent<T, P extends DataProps<T>, S extends DataState> exten
 
     renderPaginator(hasFooter: boolean) {
         if (!this.props.paginate) return null;
-        const props: PaginatorProps = {
+        const props: Partial<PaginatorProps> = {
             ...(this.props.paginatorProps || {}),
             rowsPerPage: this.props.rowsPerPage,
             template: this.props.paginatorTemplate,
@@ -128,6 +148,66 @@ export class DataComponent<T, P extends DataProps<T>, S extends DataState> exten
         });
 
         return (<Paginator {...props} className={className} />);
+    }
+
+    internalToggleRowContent(row: number, expand?: boolean, content?: NoseurElement) {
+        if (expand === true && (row in this.state.rowsContent)) return;
+        if (expand === false && !(row in this.state.rowsContent)) return;
+        const rowsContent = this.toggleRowContent(row, ((this.state.activeData ?? {}) as any)[row-1], expand, content);
+        this.setState({ rowsContent });
+    }
+
+    toggleRowContent(row: number, data: any, expand?: boolean, content?: NoseurElement) {
+        let rowsContent = this.state.rowsContent;
+        if (expand === false || row in rowsContent) {
+            delete rowsContent[row];
+        } else {
+            if (!this.props.multiRowExpansion) {
+                rowsContent = {};
+            }
+            if (content) {
+                rowsContent[row] = content;
+            } else {
+                if (!!this.props.rowExpansionTemplate) {
+                    rowsContent[row] = this.props.rowExpansionTemplate(data);
+                } else {
+                    rowsContent[row] = this.props.rowsContent[row];
+                }
+            }
+        }
+        return rowsContent;
+    }
+
+    renderRowContents() {
+        const rowsContents = this.state.rowsContent;
+        return Object.keys(rowsContents).map((row: any) => {
+            if (!(row in this.rowContentElementMaps)) this.rowContentElementMaps[row] = {};
+            return (<div key={row} ref={(r) => this.rowContentElementMaps[row].contentElement = r} className="noseur-data-row-content">{rowsContents[row]}</div>);
+        });
+    }
+
+    resolveRowContentPositions() {
+        const rows = Object.keys(this.rowContentElementMaps) as any[];
+        for (let row of rows) {
+            const rowContentElementMap = this.rowContentElementMaps[row];
+            if (!rowContentElementMap.rowElement || !rowContentElementMap.contentElement) {
+                if (rowContentElementMap.expanded && rowContentElementMap.rowElement) {
+                    rowContentElementMap.rowElement.style.height = rowContentElementMap.originalHeight + "px";
+                }
+                delete this.rowContentElementMaps[row]
+                continue;
+            }
+            if (rowContentElementMap.expanded) continue;
+            const contentHeight = DOMHelper.calculateHeight(rowContentElementMap.contentElement);
+            const rowStyle = DOMHelper.getElementStyle(rowContentElementMap.rowElement);
+            const rowHeight = DOMHelper.sanitizeStyleValue(rowStyle.height);
+            const rowSuperflousHeight = DOMHelper.getElementSuperflousHeight(rowContentElementMap.rowElement, true);
+            const rowOffsetTopPlusHeight = rowContentElementMap.rowElement.offsetTop + rowHeight + rowSuperflousHeight;
+            rowContentElementMap.rowElement.style.height = (rowHeight + contentHeight) + "px";
+            rowContentElementMap.contentElement.style.top = rowOffsetTopPlusHeight + "px";
+            this.rowContentElementMaps[row].originalHeight = rowHeight;
+            this.rowContentElementMaps[row].expanded = true;
+        };
     }
 
 }

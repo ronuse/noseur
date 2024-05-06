@@ -32,3 +32,11 @@ export enum MessageSchemesIcons {
 	INFO = "fa fa-exclamation-circle",
 	RETRO_REVERSE = "fa fa-camera-retro",
 };
+
+export enum MessageSpinnerIcons {
+	GEAR = "fa fa-gear",
+	COG = "fa fa-cog fa-spin",
+	REFRESH = "fa fa-refresh",
+	SPINNER = "fa fa-spinner fa-spin",
+	NOTCH = "fa fa-circle-notch fa-spin",
+}

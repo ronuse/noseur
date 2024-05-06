@@ -112,32 +112,32 @@
 
 /* Layout */
 
-@mixin __noseur-fl-d-r() {
+@mixin n__noseur-fl-d-r() {
 	display: flex;
 	flex-wrap: wrap;
 	flex-direction: row;
 }
 
 .noseur-fl-d-r {
-	@include __noseur-fl-d-r();
+	@include n__noseur-fl-d-r();
 }
 
 .noseur-fl-d-r-r {
-	@include __noseur-fl-d-r();
+	@include n__noseur-fl-d-r();
 	flex-direction: row-reverse;
 }
 
-@mixin __noseur-fl-d-c() {
+@mixin n__noseur-fl-d-c() {
 	display: flex;
 	flex-direction: column;
 }
 
 .noseur-fl-d-c {
-	@include __noseur-fl-d-c();
+	@include n__noseur-fl-d-c();
 }
 
 .noseur-fl-d-c-r {
-	@include __noseur-fl-d-c();
+	@include n__noseur-fl-d-c();
 	flex-direction: column-reverse;
 }
 

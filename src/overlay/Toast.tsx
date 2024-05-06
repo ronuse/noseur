@@ -32,8 +32,8 @@ export interface ToastManageRef {
     remove: (key: string | string[]) => void;
     changePosition: (position: Alignment) => void;
     changeOrientation: (orientation: Orientation) => void;
-    show: (message: Partial<MessageProps> | Partial<MessageProps>[], key?: string | string[]) => void;
-    swap: (key: string | string[], message: Partial<MessageProps> | Partial<MessageProps>[], borrowLifetime?: boolean) => void;
+    show: (message: Partial<MessageProps> | Partial<MessageProps>[], key?: string | string[]) => string[];
+    update: (key: string | string[], message: Partial<MessageProps> | Partial<MessageProps>[], borrowLifetime?: boolean) => void;
 }
 
 export interface ToastProps extends ComponentBaseProps<HTMLDivElement, ToastManageRef, ToastAttributtesRelays> {
@@ -80,36 +80,36 @@ class ToastComponent extends React.Component<ToastProps, ToastState> {
         super(props);
 
         this.showMessage = this.showMessage.bind(this);
+        this.actOnMessage = this.actOnMessage.bind(this);
+        this.removeMessage = this.removeMessage.bind(this);
         this.clearMessages = this.clearMessages.bind(this);
+        this.updateMessage = this.updateMessage.bind(this);
         this.renderMessages = this.renderMessages.bind(this);
+        this.operateOnMessageByKeys = this.operateOnMessageByKeys.bind(this);
     }
 
     componentDidMount() {
         ObjectHelper.resolveManageRef(this, {
             show: this.showMessage,
             clear: this.clearMessages,
+            update: this.updateMessage,
+            remove: this.removeMessage,
             reverse: () => this.setState({ reverse: !this.state.reverse }),
             changePosition: (position: Alignment) => this.setState({ position }),
             changeLimit: (limit: number) => this.setState({ breadsLimit: limit }),
             changeOrientation: (orientation: Orientation) => this.setState({ orientation }),
-            remove: (key: string | string[]) => {
-                console.log("REMOVE - KEY---", key);
-            },
-            swap: (key: string | string[], message: Partial<MessageProps> | Partial<MessageProps>[], borrowLifetime?: boolean) => {
-                console.log("KEY---", key, message, borrowLifetime);
-            },
         });
     }
 
 
-    showMessage(message: Partial<MessageProps> | Partial<MessageProps>[], key?: string | string[], synchronizationKey_?: string) {
+    showMessage(message: Partial<MessageProps> | Partial<MessageProps>[], key?: string | string[], synchronizationKey_?: string): string[] {
 
         // start synchronization
         const synchronizerKeys = Object.keys(this.synchronizer);
         const synchronizationKey = `${synchronizationKey_ ?? this.synchronizationIndex++}`;
         if (!synchronizerKeys.includes(synchronizationKey) && synchronizerKeys.length) {
             this.synchronizer[synchronizationKey] = () => this.showMessage(message, key, synchronizationKey);
-            return;
+            return [];
         }
         // end synchronization
 
@@ -144,17 +144,57 @@ class ToastComponent extends React.Component<ToastProps, ToastState> {
             }
             this.renderMessages(position, this.state.breads[position]);
         });
+        return keys;
+    }
+
+    operateOnMessageByKeys(keys: string[], operation: (key: string, message: Partial<MessageProps>) => void) {
+        if (!keys.length) return;
+
+        const stateBreads = this.state.breads;
+        const positions = Object.keys(this.state.breads);
+        positions.forEach((position) => {
+            const positionalBreads = stateBreads[position];
+            const positionals = Object.keys(positionalBreads);
+            positionals.forEach((positional) => {
+                const message = positionalBreads[positional];
+                if (!message || !keys.includes(message.key as any)) return;
+                operation(message.key as any, message);
+            });
+        });
+    }
+
+    actOnMessage(key: string, message: { __manage_ref__: MessageManageRef; }, action: (manageRef: MessageManageRef) => void) {
+        if (!message.__manage_ref__) {
+            console.warn("noseur - toast/messages: gabbage collection failed, likely a memory leak, ", key);
+            return;
+        }
+        action(message.__manage_ref__);
+    }
+
+    removeMessage(key: string | string[]) {
+        let keys = (key && key instanceof Array) ? key : (key ? [key] : []);
+        this.operateOnMessageByKeys(keys, (key, message) => {
+            this.actOnMessage(key, message as any, (manageRef) => manageRef.close());
+        });
+    }
+
+    updateMessage(key: string | string[], message: Partial<MessageProps> | Partial<MessageProps>[], borrowLifetime: boolean = true) {
+        let keys = (key && key instanceof Array) ? key : (key ? [key] : []);
+        const breads = message instanceof Array ? message : (message ? [message] : []);
+        if (keys.length && keys.length != breads.length) {
+            throw new Error("The toast keys count must match the count of the messages");
+        }
+        this.operateOnMessageByKeys(keys, (key, message) => {
+            const index = keys.indexOf(key);
+            this.actOnMessage(key, message as any, (manageRef) => manageRef.update(breads[index], borrowLifetime));
+        });
     }
 
     clearMessages() {
         Object.keys(this.state.breads).forEach(key => {
             const positionBreads = this.state.breads[key];
             Object.keys(positionBreads).forEach(skey => {
-                if (!(positionBreads[skey] as any).__manage_ref__) {
-                    console.warn("noseur - toast/messages: gabbage collection failed, likely to leak memory, ", skey);
-                    return;
-                }
-                (positionBreads[skey] as any).__manage_ref__.close();
+                this.actOnMessage(skey, (positionBreads[skey] as any), (manageRef) => manageRef.close());
             });
         });
     }
@@ -258,8 +298,8 @@ class ToastComponent extends React.Component<ToastProps, ToastState> {
 
 interface ToasterInterfaceRelay {
     destroy: () => void;
-    init: (props: Partial<ToastProps>, ref?: any) => void;
-    toast: (message: Partial<MessageProps> | Partial<MessageProps>[], key?: string | string[]) => void;
+    init: (props: Partial<ToastProps>, ref?: any) => string[] | void;
+    toast: (message: Partial<MessageProps> | Partial<MessageProps>[], key?: string | string[]) => string[];
 };
 
 export type ToasterInterface = ToasterInterfaceRelay & ToastManageRef;
@@ -277,16 +317,17 @@ export const Messages = React.forwardRef<HTMLDivElement, Partial<MessagesProps>>
 
 let noseurInternalGlobalToasterRoot: ReactDOM.Root | null;
 let noseurInternalGlobalToasterManageRef: ToastManageRef | null;
-let noseurInternalGlobalToasterCallStack: (() => void)[] | null = [];
+let noseurInternalGlobalToasterCallStack: (() => any)[] | null = [];
 
 export const Toaster: ToasterInterface = {
     init: (props: Partial<ToastProps>, onMount?: () => void, ref?: any) => {
         if (noseurInternalGlobalToasterRoot) {
-            if (!noseurInternalGlobalToasterManageRef && onMount){
+            if (!noseurInternalGlobalToasterManageRef && onMount) {
                 (noseurInternalGlobalToasterCallStack as any).push(onMount);
             }
             return;
         }
+        let result: string[] | null = null;
         const ___noseur_toaster___ = React.createElement(ToastComponent, {
             ...(props as any),
             container: document.body,
@@ -296,7 +337,8 @@ export const Toaster: ToasterInterface = {
                 noseurInternalGlobalToasterManageRef = r;
                 onMount && onMount();
                 for (const fun of (noseurInternalGlobalToasterCallStack ?? [])) {
-                    fun();
+                    let sresult = fun();
+                    if (sresult) result = sresult;
                 }
                 noseurInternalGlobalToasterCallStack = null;
             },
@@ -305,14 +347,15 @@ export const Toaster: ToasterInterface = {
         DOMHelper.appendChild(wrapper, document.body);
         noseurInternalGlobalToasterRoot = ReactDOM.createRoot(wrapper)
         noseurInternalGlobalToasterRoot.render(___noseur_toaster___);
+        if (result) return result;
     },
     destroy: () => {
         if (!noseurInternalGlobalToasterRoot) return;
         noseurInternalGlobalToasterRoot.unmount();
         noseurInternalGlobalToasterRoot = null;
     },
-    toast: (message: Partial<MessageProps> | Partial<MessageProps>[], key?: string | string[]) => {
-        Toaster.show(message, key);
+    toast: (message: Partial<MessageProps> | Partial<MessageProps>[], key?: string | string[]): string[] => {
+        return Toaster.show(message, key);
     },
     clear: () => {
         if (!noseurInternalGlobalToasterRoot || !noseurInternalGlobalToasterManageRef) Toaster.init({});
@@ -326,7 +369,8 @@ export const Toaster: ToasterInterface = {
     },
     changeLimit: (limit: number) => {
         if (!noseurInternalGlobalToasterRoot || !noseurInternalGlobalToasterManageRef) {
-            return Toaster.init({}, Toaster.changeLimit(limit));
+            Toaster.init({}, Toaster.changeLimit(limit));
+            return;
         }
         noseurInternalGlobalToasterManageRef?.changeLimit(limit);
     },
@@ -346,17 +390,17 @@ export const Toaster: ToasterInterface = {
         }
         noseurInternalGlobalToasterManageRef?.changeOrientation(orientation);
     },
-    show: (message: Partial<MessageProps> | Partial<MessageProps>[], key?: string | string[]) => {
+    show: (message: Partial<MessageProps> | Partial<MessageProps>[], key?: string | string[]): string[] => {
         if (!noseurInternalGlobalToasterRoot || !noseurInternalGlobalToasterManageRef) {
-            return Toaster.init({}, () => Toaster.show(message, key));
+            return Toaster.init({}, () => Toaster.show(message, key)) as string[];
         }
-        noseurInternalGlobalToasterManageRef?.show(message);
+        return noseurInternalGlobalToasterManageRef?.show(message, key);
     },
-    swap: (key: string | string[], message: Partial<MessageProps> | Partial<MessageProps>[], borrowLifetime?: boolean) => {
+    update: (key: string | string[], message: Partial<MessageProps> | Partial<MessageProps>[], borrowLifetime?: boolean) => {
         if (!noseurInternalGlobalToasterRoot || !noseurInternalGlobalToasterManageRef) {
-            return Toaster.init({}, () => Toaster.swap(key, message, borrowLifetime));
+            return Toaster.init({}, () => Toaster.update(key, message, borrowLifetime));
         }
-        noseurInternalGlobalToasterManageRef?.swap(key, message, borrowLifetime);
+        noseurInternalGlobalToasterManageRef?.update(key, message, borrowLifetime);
     },
 };
 

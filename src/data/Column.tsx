@@ -1,6 +1,7 @@
 
 import "./Data.css";
 import React from 'react';
+import { RowControlOptions } from "./Data";
 import { Scheme } from "../constants/Scheme";
 import { Classname } from "../utils/Classname";
 import { TypeChecker } from "../utils/TypeChecker";
@@ -10,8 +11,8 @@ import { NoseurElement, NoseurObject, SortDirection, SortIcons } from '../consta
 import { ComponentBaseProps, extractMicroComponentBaseProps } from '../core/ComponentBaseProps';
 
 export type ColumnTemplateHandler = () => NoseurElement;
-export type ValuedColumnTemplateHandler = (value: any) => NoseurElement;
 export type ColumnOnSortHandler = (sortDirection: SortDirection) => void;
+export type ValuedColumnTemplateHandler = (value: any, rowControlOptions?: RowControlOptions) => NoseurElement;
 
 export interface ColumnManageRef {
     unSort: () => void;
@@ -26,6 +27,7 @@ export interface ColumnProps extends ComponentBaseProps<HTMLTableColElement, Col
     canUnsort: boolean;
     sortIcons: SortIcons;
     valueClassName: string;
+    rowControlOptions: RowControlOptions;
     valuedProps: NoseurObject<Partial<ComponentBaseProps<any>> | ((value: any) => Partial<ComponentBaseProps<any>>)>;
 
     onSort: ColumnOnSortHandler | undefined;
@@ -99,7 +101,7 @@ export class ColumnComponent extends React.Component<ColumnProps, ColumnState> {
 
     render() {
         let value = this.props.value;
-        if (this.props.template) value = this.props.template(value);
+        if (this.props.template) value = this.props.template(value, this.props.rowControlOptions);
         else if (TypeChecker.isDict(value) && this.props.element != "th") value = "";
 
         const sortIcon = this.renderSortIcon();

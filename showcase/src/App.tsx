@@ -6,7 +6,7 @@ import {
     MoneyInput, EmailInput, PasswordInput, alertDialog, DateTimeInput, Message,
     TextAreaInput, NumberInput, NoseurObject, ComposedPassword, YearPicker, MonthPicker, MessageSchemesIcons, RadioButton,
     Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator, FileInputManageRef, Messages, MessagesManageRef, ToastManageRef, Toast, Toaster, Transition, Panel, PanelManageRef, Accordion, AccordionTab, AccordionManageRef, TabPane, TabPanel, TabPaneManageRef,
-    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType, Position, ScrollPanel,
+    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType, Position, ScrollPanel, MessageSpinnerIcons,
 } from "@ronuse/noseur";
 
 function App() {
@@ -61,9 +61,189 @@ function App() {
         return (
             <div className="Apps" style={{ background: "white" }}>
                 <div style={{ margin: 30 }}>
+                    Data Manage Ref multiRowExpansion
+                    <br />
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-list-expansion-2"].expandContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(1)}/>
+                    <br />
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-list-expansion-2"].expandContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(2)}/>
+                    <br />
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-list-expansion-2"].expandContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(3)}/>
+                    <br /><br />
+                    <List multiRowExpansion manageRef={(m: any) => refs.current["dm-list-expansion-2"] = m} rowExpansionTemplate={(data) => {
+                        return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
+                    }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
+                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
+                    <br />
+                    <hr />
+                    <br />
+                    Data Manage Ref
+                    <br />
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-list-expansion"].toggleContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-list-expansion"].expandContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-list-expansion"].collapseContent(1)}/>
+                    <br />
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-list-expansion"].toggleContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-list-expansion"].expandContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-list-expansion"].collapseContent(2)}/>
+                    <br />
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-list-expansion"].toggleContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-list-expansion"].expandContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-list-expansion"].collapseContent(3)}/>
+                    <br /><br />
+                    <List manageRef={(m: any) => refs.current["dm-list-expansion"] = m} rowExpansionTemplate={(data) => {
+                        return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
+                    }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
+                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
+                    <br />
+                    <hr />
+                    <br />
+                    multiRowExpansion
+                    <List multiRowExpansion rowExpansionTemplate={(data) => {
+                        return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
+                    }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
+                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
+                    <br />
+                    <hr />
+                    <br />
+                    <List rowExpansionTemplate={(data) => {
+                        return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
+                    }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
+                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
+                    <br />
+                    <hr />
+                    <br />
+                    multiRowExpansion
+                    <List multiRowExpansion rowsContent={{
+                        1: "Hello One 1",
+                        2: <div style={{ height: 45 }}>Hello Two 22</div>,
+                        3: "Hello Three 333",
+                    }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
+                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
+                    <br />
+                    <hr />
+                    <br />
+                    <List rowsContent={{
+                        1: "Hello One 1",
+                        2: <div style={{ height: 45 }}>Hello Two 22</div>,
+                        3: "Hello Three 333",
+                    }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
+                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
+                </div>
+                <div style={{ margin: 30, marginTop: 100 }}>
+                    Data Manage Ref multiRowExpansion
+                    <br />
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-table-expansion-2"].expandContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(1)}/>
+                    <br />
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-table-expansion-2"].expandContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(2)}/>
+                    <br />
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-table-expansion-2"].expandContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(3)}/>
+                    <br /><br />
+                    <Table multiRowExpansion manageRef={(m: any) => refs.current["dm-table-expansion-2"] = m} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]} rowExpansionTemplate={(data) => {
+                        return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
+                    }}>
+                        <Column dataKey='one' header="One" />
+                        <Column dataKey='two' header="Two" />
+                    </Table>
+                    <br />
+                    <hr />
+                    <br />
+                    Data Manage Ref
+                    <br />
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-table-expansion"].toggleContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-table-expansion"].expandContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-table-expansion"].collapseContent(1)}/>
+                    <br />
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-table-expansion"].toggleContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-table-expansion"].expandContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-table-expansion"].collapseContent(2)}/>
+                    <br />
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-table-expansion"].toggleContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-table-expansion"].expandContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-table-expansion"].collapseContent(3)}/>
+                    <br /><br />
+                    <Table manageRef={(m: any) => refs.current["dm-table-expansion"] = m} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]} rowExpansionTemplate={(data) => {
+                        return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
+                    }}>
+                        <Column dataKey='one' header="One" />
+                        <Column dataKey='two' header="Two" />
+                    </Table>
+                    <br />
+                    <hr />
+                    <br />
+                    multiRowExpansion
+                    <Table multiRowExpansion data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]} rowExpansionTemplate={(data) => {
+                        return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
+                    }}>
+                        <Column template={(_, rowControlOptions) => <i style={{ cursor: "pointer" }} className="fa fa-angle-right" onClick={() => {
+                            rowControlOptions?.toggleContent();
+                        }} />} />
+                        <Column dataKey='one' header="One" />
+                        <Column dataKey='two' header="Two" />
+                    </Table>
+                    <br />
+                    <hr />
+                    <br />
+                    <Table data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]} rowExpansionTemplate={(data) => {
+                        return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
+                    }}>
+                        <Column template={(_, rowControlOptions) => <i style={{ cursor: "pointer" }} className="fa fa-angle-right" onClick={() => {
+                            rowControlOptions?.toggleContent();
+                        }} />} />
+                        <Column dataKey='one' header="One" />
+                        <Column dataKey='two' header="Two" />
+                    </Table>
+                    <br />
+                    <hr />
+                    <br />
+                    multiRowExpansion
+                    <Table multiRowExpansion rowsContent={{
+                        1: "Hello One 1",
+                        2: <div style={{ height: 45 }}>Hello Two 22</div>,
+                        3: "Hello Three 333",
+                    }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}>
+                        <Column template={(_, rowControlOptions) => <i style={{ cursor: "pointer" }} className="fa fa-angle-right" onClick={() => {
+                            rowControlOptions?.toggleContent();
+                        }} />} />
+                        <Column dataKey='one' header="One" />
+                        <Column dataKey='two' header="Two" />
+                    </Table>
+                    <br />
+                    <hr />
+                    <br />
+                    <Table rowsContent={{
+                        1: "Hello One 1",
+                        2: <div style={{ height: 45 }}>Hello Two 22</div>,
+                        3: "Hello Three 333",
+                    }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}>
+                        <Column template={(_, rowControlOptions) => <i style={{ cursor: "pointer" }} className="fa fa-angle-right" onClick={() => {
+                            rowControlOptions?.toggleContent();
+                        }} />} />
+                        <Column dataKey='one' header="One" />
+                        <Column dataKey='two' header="Two" />
+                    </Table>
+                </div>
+                <div style={{ margin: 30 }}>
                     {Object.keys(Scheme).map((scheme, index) => (
                         <ScrollPanel key={scheme} scroller={{ trackWidth: 5 }}
-                        scheme={schemes[index]} style={{ flex: 1, width: "400px", height: "300px", marginBottom: 30 }}>
+                            scheme={schemes[index]} style={{ flex: 1, width: "400px", height: "300px", marginBottom: 30 }}>
                             {scheme} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()} {basicText()}
                         </ScrollPanel>
                     ))}
@@ -465,6 +645,26 @@ function App() {
                 </div>
                 <div style={{ margin: 30, background: "grey", padding: 20 }}>
                     Toaster<br />
+                    <Button text="Create Single with Toaster" onClick={() => {
+                        Toaster.toast({
+                            transition,
+                            foreScheme: true,
+                            lifetime: 100000,
+                            showProgressbar: true,
+                            scheme: Scheme.WARNING,
+                            pauseDelayOnHover: true,
+                            content: "Loading Hello World",
+                            style: { background: "white" },
+                            icon: MessageSpinnerIcons.NOTCH,
+                        }, "toast-test-1");
+                    }} />
+                    <Button text="Update with Toaster" onClick={() => {
+                        Toaster.update("toast-test-1", {
+                            scheme: Scheme.SUCCESS,
+                            content: "Hello World",
+                            icon: MessageSchemesIcons.SUCCESS,
+                        });
+                    }} />
                     <Button text="Show Toast With Function Call" onClick={() => {
                         Toaster.toast({
                             transition,
@@ -525,12 +725,22 @@ function App() {
                             transition,
                             foreScheme: true,
                             lifetime: 100000,
-                            icon: "fa fa-circle",
                             showProgressbar: true,
-                            content: "Hello World",
-                            scheme: Scheme.SUCCESS,
+                            scheme: Scheme.WARNING,
                             pauseDelayOnHover: true,
-                            style: { background: "white" }
+                            content: "Loading Hello World",
+                            style: { background: "white" },
+                            icon: MessageSpinnerIcons.NOTCH,
+                        }, "toast-test-1");
+                    }} />
+                    <Button text="Remove Toast" onClick={() => {
+                        toastManageRef.current?.remove("toast-test-1");
+                    }} />
+                    <Button text="Update Toast" onClick={() => {
+                        toastManageRef.current?.update("toast-test-1", {
+                            scheme: Scheme.SUCCESS,
+                            content: "Hello World",
+                            icon: MessageSchemesIcons.SUCCESS,
                         });
                     }} />
                     <Button text="Show Multiple Toast" onClick={() => {
@@ -566,13 +776,22 @@ function App() {
                     <Button text="Show Message" onClick={() => {
                         messagesManageRef.current?.show({
                             transition,
-                            lifetime: 1000000,
+                            lifetime: 10000,
                             icon: "fa fa-circle",
                             showProgressbar: true,
                             content: "Hello World",
                             scheme: Scheme.SUCCESS,
                             pauseDelayOnHover: true,
-                        });
+                        }, "message-test-1");
+                    }} />
+                    <Button text="Remove Message" onClick={() => {
+                        messagesManageRef.current?.remove("message-test-1");
+                    }} />
+                    <Button text="Update Message" onClick={() => {
+                        messagesManageRef.current?.update("message-test-1", {
+                            scheme: Scheme.DANGER,
+                            icon: MessageSchemesIcons.DANGER,
+                        }, false);
                     }} />
                     <Button text="Show Multiple Message" onClick={() => {
                         messagesManageRef.current?.show(Object.keys(Scheme).map((scheme, index) => ({

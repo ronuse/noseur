@@ -6,6 +6,7 @@ export interface TimerCallbacks {
     onStart?: () => void;
     onPause?: () => void;
     onResume?: () => void;
+    onRestart?: () => void;
     action?: (...args: any[]) => void;
     onAction?: (percentage: number) => void;
 }
@@ -75,6 +76,17 @@ export class Timer {
     resume() {
         this.start(true);
         this.cbs?.onResume && this.cbs.onResume();
+    }
+
+    restart(timeout?: number) {
+        this.stop();
+        this.start();
+        if (timeout) {
+            this.totalTicks = this.elapseTicks = timeout / this.options["delay"];
+        } else {
+            this.elapseTicks = this.totalTicks;
+        }
+        this.cbs?.onRestart && this.cbs.onRestart();
     }
 
 }
