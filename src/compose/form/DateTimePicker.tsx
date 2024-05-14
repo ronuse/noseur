@@ -70,7 +70,7 @@ export enum DateTimePickerLayoutElement {
     DateElement = "DateElement",
     NextElement = "NextElement",
     HourElement = "HourElement",
-    PanelSeperatorElement = "|",
+    PanelSeparatorElement = "|",
     ColumnDividerElement = "[|]",
     SpaceLeftRightElement = "<>",
     OpenColumnGroupElement = "<",
@@ -83,7 +83,7 @@ export enum DateTimePickerLayoutElement {
     YearsElements = "YearsElements",
     HeaderElement = "HeaderElement",
     FooterElement = "FooterElement",
-    TimeSeperator = "TimeSeperator",
+    TimeSeparator = "TimeSeparator",
     YearToElement = "YearToElement",
     WeekDayElement = "WeekDayElement",
     MonthsElements = "MonthsElements",
@@ -132,12 +132,12 @@ export enum DateTimePickerLayout {
     DEFAULT_HEADER_LAYOUT = `${DateTimePickerLayoutElement.PreviousElement} <> ${DateTimePickerLayoutElement.MonthElement} ${DateTimePickerLayoutElement.YearElement} <> ${DateTimePickerLayoutElement.NextElement}`,
     DEFAULT_YEAR_MODE_HEADER_LAYOUT = `${DateTimePickerLayoutElement.PreviousElement} <> ${DateTimePickerLayoutElement.YearFromElement} [s] [d] [s] ${DateTimePickerLayoutElement.YearToElement} <> ${DateTimePickerLayoutElement.NextElement}`,
     DEFAULT_LAYOUT = `${DateTimePickerLayoutElement.TopPanelElement} [-] ${DateTimePickerLayoutElement.LeftPanelElement} [|] ${DateTimePickerLayoutElement.HeaderElement} ${DateTimePickerLayoutElement.WeekdaysElements} ${DateTimePickerLayoutElement.DaysElements} ${DateTimePickerLayoutElement.TimeElement} ${DateTimePickerLayoutElement.FooterElement} [|] ${DateTimePickerLayoutElement.RightPanelElement} [-] ${DateTimePickerLayoutElement.BottomPanelElement}`,
-    DEFAULT_TIME_LAYOUT = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MeridianElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
+    DEFAULT_TIME_LAYOUT = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MeridianElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
 
     FINE_LEFT_LAYOUT = `${DateTimePickerLayoutElement.TodayElement} ${DateTimePickerLayoutElement.YesterdayElement} ${DateTimePickerLayoutElement.LastSevenDaysElement} ${DateTimePickerLayoutElement.LastThirtyDaysElement} ${DateTimePickerLayoutElement.ThisMonthElement} ${DateTimePickerLayoutElement.LastMonthElement} ${DateTimePickerLayoutElement.ThisYearElement} ${DateTimePickerLayoutElement.LastYearElement}`,
-    TIME_LAYOUT_WITHOUT_MERIDIAN = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
-    TIME_LAYOUT_WITH_SECONDS_WITHOUT_MERIDIAN = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.SecondsElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
-    TIME_LAYOUT_WITH_SECONDS = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.SecondsElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MeridianElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
+    TIME_LAYOUT_WITHOUT_MERIDIAN = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
+    TIME_LAYOUT_WITH_SECONDS_WITHOUT_MERIDIAN = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.SecondsElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
+    TIME_LAYOUT_WITH_SECONDS = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.SecondsElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MeridianElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
 
 }
 
@@ -284,13 +284,13 @@ export interface DateTimePickerProps<T1 = NoseurDivElement, T2 = DateTimePickerM
     dontOverlapDate: boolean;
     enabledWeekdays: Weekday[];
     disabledWeekdays: Weekday[];
-    showDatesSeperator: boolean;
+    showDatesSeparator: boolean;
     modeDifferenceCount: number;
     yearModeHeaderLayout: string;
     yearModeFooterLayout: string;
     monthModeHeaderLayout: string;
     monthModeFooterLayout: string;
-    monthsSeperatorLayout: string;
+    monthsSeparatorLayout: string;
     makeOverlapSelectable: boolean;
     highlightDatesInRange: boolean;
     dontUnselectOnSameDate: boolean;
@@ -1032,7 +1032,7 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
             } else if (requiredLayoutElement === DateTimePickerLayoutElement.DaysElements) {
                 const daysElements: any[] = [];
                 const row = 7, column = 6, rowColumnSum = row * column;
-                const underline = this.props.showDatesSeperator && !this.props.showGridlines;
+                const underline = this.props.showDatesSeparator && !this.props.showGridlines;
                 const monthDays = DateHelper.getAllDaysInMonth(formattedDate.year, formattedDate.month);
                 const startWeekday = monthDays[0].getDay();
                 const previousMonthPadding = startWeekday;
@@ -1261,12 +1261,12 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
 
         switch (this.props.type) {
             case DateTimePickerType.MODAL:
-                return (<Dialog {...this.props.dialogProps} ref={ref} className={className} style={this.props.style} manageRef={(m) => this.dialogManageRef = m}
-                    visible={this.state.modalVisible} onHide={() => this.setState({ modalVisible: false })} notClosable>
+                return (<Dialog notClosable {...this.props.dialogProps} ref={ref} className={className} style={this.props.style} manageRef={(m) => this.dialogManageRef = m}
+                    visible={this.state.modalVisible} onHide={() => this.setState({ modalVisible: false })}>
                     {layoutPanel}
                 </Dialog>);
             case DateTimePickerType.POPOVER:
-                return (<Popover positional="left" outsideClickLogic={"positional"} {...this.props.popoverProps} ref={ref} className={className} style={this.props.style} manageRef={(m) => this.popoverManageRef = m}>
+                return (<Popover outsideClickLogic={"positional"} {...this.props.popoverProps} ref={ref} className={className} style={this.props.style} manageRef={(m) => this.popoverManageRef = m}>
                     {layoutPanel}
                 </Popover>);
             default:
@@ -1449,7 +1449,7 @@ export function dateTimePickerBuildLayoutElement(options: TimePickerLayoutElemen
         return (<div style={basicAttrs?.style} className={Classname.build("noseur-date-time-picker-dash", basicAttrs?.className)} key={key}>-</div>);
     } else if (layoutElement === DateTimePickerLayoutElement.SpaceElement) {
         return (<div style={basicAttrs?.style} className={Classname.build("noseur-date-time-picker-space", basicAttrs?.className)} key={key}> </div>);
-    } else if (layoutElement === DateTimePickerLayoutElement.TimeSeperator) {
+    } else if (layoutElement === DateTimePickerLayoutElement.TimeSeparator) {
         return (<span style={basicAttrs?.style} className={Classname.build("noseur-date-time-picker-time-seperator", basicAttrs?.className)} key={key}>:</span>);
     } else if (layoutElement === DateTimePickerLayoutElement.SpaceLeftRightElement) {
         return (<div style={basicAttrs?.style} className={Classname.build("noseur-date-time-picker-seperator", basicAttrs?.className)} key={key}></div>);
@@ -1457,8 +1457,11 @@ export function dateTimePickerBuildLayoutElement(options: TimePickerLayoutElemen
     return (<div className={Classname.build("noseur-date-time-picker-custom", basicAttrs?.className)}>{text ?? layoutElement}</div>);
 }
 
+// TODO position on click for popover
+// do not close if it range until twio date selected
+// do not close for multiple selection mode
 /*numberOfMonth
-monthsSeperatorLayout
+monthsSeparatorLayout
 
 https://reactjsexample.com/a-group-calendar-application-using-the-mern-stack-intended-to-bring-discord-communities-closer/
 https://reactjsexample.com/an-open-source-fullcalendar-scheduler-using-react/

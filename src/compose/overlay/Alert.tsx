@@ -24,7 +24,7 @@ export type AlertControl = {
 
 export interface AlertProps extends ComponentBaseProps<HTMLDivElement>, TransitionProps {
     visible: boolean;
-    componentProps: any;
+    componentProps: any; // TODO typed
     alignment: Alignment;
     alignFooter: Alignment;
     message: NoseurElement;

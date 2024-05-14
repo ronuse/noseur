@@ -6,7 +6,7 @@ import {
     MoneyInput, EmailInput, PasswordInput, alertDialog, DateTimeInput, Message,
     TextAreaInput, NumberInput, NoseurObject, ComposedPassword, YearPicker, MonthPicker, MessageSchemesIcons, RadioButton,
     Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator, FileInputManageRef, Messages, MessagesManageRef, ToastManageRef, Toast, Toaster, Transition, Panel, PanelManageRef, Accordion, AccordionTab, AccordionManageRef, TabPane, TabPanel, TabPaneManageRef,
-    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType, Position, ScrollPanel, MessageSpinnerIcons,
+    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType, Position, ScrollPanel, MessageSpinnerIcons, PaginatorProps,
 } from "@ronuse/noseur";
 
 function App() {
@@ -56,24 +56,35 @@ function App() {
     });
 
     // leftLayout="CustomElementer DaysElements"
-    // leftLayout='NowElement IncrementElement TimeSeperator DecrementElement HourElement TimeSeperator MinutesElement TimeSeperator SecondsElement TimeSeperator MeridianElement WeekdaysElements DaysElements TodaysDateElement SelectedDatesElements'
+    // leftLayout='NowElement IncrementElement TimeSeparator DecrementElement HourElement TimeSeparator MinutesElement TimeSeparator SecondsElement TimeSeparator MeridianElement WeekdaysElements DaysElements TodaysDateElement SelectedDatesElements'
     function render() {
         return (
             <div className="Apps" style={{ background: "white" }}>
                 <div style={{ margin: 30 }}>
+                    <Paginator totalRecords={100} template={{
+                        layout: "Showing SizeElement of TotalRecords", customElement: (layout: string, props?: PaginatorProps) => {
+                            if (layout !== "SizeElement") return ` ${layout} `;
+                            return (<TextInput defaultValue={props?.rowsPerPage}
+                                style={{ flex: "unset", width: 20, padding: 5, height: 25 }} />);
+                        }
+                    }} />
+                    <Paginator totalRecords={100} template={{ layout: "Showing SizeElement of TotalRecords" }} />
+                    <Paginator totalRecords={100} template={{ layout: "Showing RowPerPage of TotalRecords pagecount= PageCount and intp= InitialPage currentPage: CurrentPage visible = VisiblePageCount" }} />
+                </div>
+                <div style={{ margin: 30 }}>
                     Data Manage Ref multiRowExpansion
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-list-expansion-2"].expandContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-list-expansion-2"].expandContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(1)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-list-expansion-2"].expandContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-list-expansion-2"].expandContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(2)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-list-expansion-2"].expandContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-list-expansion-2"].expandContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(3)} />
                     <br /><br />
                     <List multiRowExpansion manageRef={(m: any) => refs.current["dm-list-expansion-2"] = m} rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
@@ -85,17 +96,17 @@ function App() {
                     <br />
                     Data Manage Ref
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-list-expansion"].toggleContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-list-expansion"].expandContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-list-expansion"].collapseContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-list-expansion"].toggleContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-list-expansion"].expandContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-list-expansion"].collapseContent(1)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-list-expansion"].toggleContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-list-expansion"].expandContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-list-expansion"].collapseContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-list-expansion"].toggleContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-list-expansion"].expandContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-list-expansion"].collapseContent(2)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-list-expansion"].toggleContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-list-expansion"].expandContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-list-expansion"].collapseContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-list-expansion"].toggleContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-list-expansion"].expandContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-list-expansion"].collapseContent(3)} />
                     <br /><br />
                     <List manageRef={(m: any) => refs.current["dm-list-expansion"] = m} rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
@@ -144,17 +155,17 @@ function App() {
                 <div style={{ margin: 30, marginTop: 100 }}>
                     Data Manage Ref multiRowExpansion
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-table-expansion-2"].expandContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-table-expansion-2"].expandContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(1)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-table-expansion-2"].expandContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-table-expansion-2"].expandContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(2)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-table-expansion-2"].expandContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-table-expansion-2"].expandContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(3)} />
                     <br /><br />
                     <Table multiRowExpansion manageRef={(m: any) => refs.current["dm-table-expansion-2"] = m} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]} rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
@@ -167,17 +178,17 @@ function App() {
                     <br />
                     Data Manage Ref
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-table-expansion"].toggleContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-table-expansion"].expandContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-table-expansion"].collapseContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-table-expansion"].toggleContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-table-expansion"].expandContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-table-expansion"].collapseContent(1)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-table-expansion"].toggleContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-table-expansion"].expandContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-table-expansion"].collapseContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-table-expansion"].toggleContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-table-expansion"].expandContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-table-expansion"].collapseContent(2)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-table-expansion"].toggleContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-table-expansion"].expandContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-table-expansion"].collapseContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-table-expansion"].toggleContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-table-expansion"].expandContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-table-expansion"].collapseContent(3)} />
                     <br /><br />
                     <Table manageRef={(m: any) => refs.current["dm-table-expansion"] = m} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]} rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
@@ -911,6 +922,17 @@ function App() {
                     <Button text="Popover Month" onClick={(e: any) => refs.current["popover-month1"].toggle(e)} />
                     <MonthPicker type={DateTimePickerType.POPOVER} manageRef={(e: any) => refs.current["popover-month1"] = e} />
                     <br /><br />
+                    <div style={{ display: "flex" }}>
+                        <i className="fa fa-calendar" ref={(r) => refs.current["fa-cal-2"] = r}
+                            onClick={(e: any) => refs.current["popover-date01"].toggle(e)} />
+                        <div style={{ flex: 1 }} />
+                        <i className="fa fa-calendar" ref={(r) => refs.current["fa-cal-1"] = r}
+                            onClick={(e: any) => refs.current["popover-date01"].toggle(e)} />
+                        <div style={{ flex: 1 }} />
+                        <i className="fa fa-calendar" ref={(r) => refs.current["fa-cal-3"] = r}
+                            onClick={(e: any) => refs.current["popover-date01"].toggle(e, refs.current["fa-cal-3"] as any)} />
+                    </div>
+                    <br /><br />
                     <Button text="Popover DatePicker" onClick={(e: any) => refs.current["popover-date2"].toggle(e)} />
                     <DatePicker type={DateTimePickerType.POPOVER} manageRef={(e: any) => refs.current["popover-date2"] = e} />
                     <br /><br />
@@ -945,7 +967,7 @@ function App() {
                     <TimePicker timeLayout={`{ ${DateTimePickerLayoutElement.PreviousElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.NextElement} }`} />
                     <TimePicker timeLayout={`{ ${DateTimePickerLayoutElement.PreviousElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.NextElement} }`} />
                     <br /><br />
-                    <TimePicker timeLayout={`< IncrementElement MinutesElement DecrementElement > TimeSeperator < IncrementElement SecondsElement DecrementElement >`} />
+                    <TimePicker timeLayout={`< IncrementElement MinutesElement DecrementElement > TimeSeparator < IncrementElement SecondsElement DecrementElement >`} />
                     <br /><br />
                     <TimePicker />
                     <br /><br />
@@ -978,7 +1000,7 @@ function App() {
                         disabledDates={[new Date(2023, 10, 24), new Date(2023, 10, 27), new Date(2023, 10, 29)]}
                         disableFromDate={new Date(2023, 10, 11)}
                         disableToDate={new Date(2023, 10, 16)} locale='en'
-                        showDatesSeperator scheme={Scheme.PRIMARY} maxMultipleModeDateSelection={5} />
+                        showDatesSeparator scheme={Scheme.PRIMARY} maxMultipleModeDateSelection={5} />
                 </div>
                 <div style={{ margin: 30 }}>
                     <br />
@@ -1724,6 +1746,7 @@ function App() {
                     <br />
                     <br />
                 </div>
+                <DateTimePicker type={DateTimePickerType.POPOVER} showTime manageRef={(e: any) => refs.current["popover-date01"] = e} />
 
             </div>
         );

@@ -70,7 +70,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
 
         return data.map((rowData: NoseurObject<any>, index: number) => {
             const row = index + 1;
-            let valuedRowProps = this.buildRowProps(data);;
+            let valuedRowProps = this.buildRowProps(data);
             const value = this.props.dataKey ? ObjectHelper.objectGetWithStringTemplate(rowData, this.props.dataKey) : rowData;
             return (<li key={index} role="row" data-n-group="row" {...valuedRowProps} ref={(r) => {
                 if (!r) return;
@@ -79,7 +79,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
                 this.rowContentElementMaps[row].rowElement = r;
             }}
                 onClick={this.props.onRowSelection
-                    ? () => this.props.onRowSelection(data) : undefined}>{this.props.template
+                    ? () => this.props.onRowSelection(data, index) : undefined}>{this.props.template
                         ? this.props.template(value, {
                             toggleContent: (() => {
                                 this.setState({ rowsContent: this.toggleRowContent(row, data) });

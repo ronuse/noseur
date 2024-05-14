@@ -25,7 +25,7 @@ export type ChartData = ChartJsData<any, any[], unknown> | ChartDataCustomTypesP
 
 export interface ChartManageRef {
     getChart: () => any;
-    update: (type: ChartTypeRegistry | string, data: ChartData, options: NoseurObject<any>) => void;
+    update: (type: ChartTypeRegistry | string, data?: ChartData, options?: NoseurObject<any>) => void;
 }
 
 export interface ChartProps extends ComponentBaseProps<HTMLDivElement, ChartManageRef> {
@@ -79,9 +79,9 @@ export class ChartComponent extends React.Component<ChartProps, ChartState> {
         ObjectHelper.resolveManageRef(this, null);
     }
 
-    renderChart(type: ChartTypeRegistry | string, data: ChartData, options: NoseurObject<any>) {
+    renderChart(type: ChartTypeRegistry | string, data?: ChartData, options?: NoseurObject<any>) {
         if (this.chart) this.chart.destroy();
-        this.chart = new ChartJs(this.canvasElement, { type, data, options, });
+        this.chart = new ChartJs(this.canvasElement, { type, data: data ?? this.props.data, options, });
     }
 
     render() {
@@ -89,7 +89,7 @@ export class ChartComponent extends React.Component<ChartProps, ChartState> {
         const canvasElement = (ref: HTMLCanvasElement) => {
             this.canvasElement = ref;
             ObjectHelper.resolveRef(this.props.canvasElement, ref);
-        }
+        };
 
         return (<div className={className} style={this.props.style}>
             <canvas id={this.state.id} style={this.props.canvasStyle} className={this.props.canvasClassName} ref={canvasElement} {...(this.props.canvasProps || {})}></canvas>

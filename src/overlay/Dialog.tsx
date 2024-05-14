@@ -74,9 +74,9 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
 
     state: DialogState = {
         visible: false,
-        maximized: false,
         modalVisible: false,
         id: DOMHelper.uniqueElementId(),
+        maximized: this.props.maximized,
     };
 
     internalModalElement: any;

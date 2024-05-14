@@ -168,7 +168,7 @@ export const DOMHelper = {
 	},
 
 	absolutePositionRelatively(element: any, target: any, horizontal: "left" | "right" = "right") {
-		if (!element || !target) return;
+		if (!element || !target || !target.getBoundingClientRect) return;
 		let elementDimensions = element.offsetParent ? { width: element.offsetWidth, height: element.offsetHeight } : this.getHiddenElementDimensions(element);
 		let targetOuterWidth = target.offsetWidth;
 		let targetOuterHeight = target.offsetHeight;

@@ -19,9 +19,9 @@ export interface RowControlOptions {
 }
 
 export type DataFixtureTemplateHandler = () => NoseurElement;
-export type DataRowSelectionHandler = (value: any) => boolean;
 export type DataRowValuedPropsHandler = (data?: any) => RowProps;
 export type DataRowExpansionTemplateHandler = (data: any) => NoseurElement;
+export type DataRowSelectionHandler = (value: any, rowNumber?: number) => boolean;
 export type DataSelectionElementTemplateHandler = (index: number) => NoseurElement;
 export type DataComparatorHandler = (sortDirection: SortDirection, dataKey: string, p: any, c: any) => number;
 
@@ -182,7 +182,12 @@ export class DataComponent<T, P extends DataProps<T>, S extends DataState> exten
         const rowsContents = this.state.rowsContent;
         return Object.keys(rowsContents).map((row: any) => {
             if (!(row in this.rowContentElementMaps)) this.rowContentElementMaps[row] = {};
-            return (<div key={row} ref={(r) => this.rowContentElementMaps[row].contentElement = r} className="noseur-data-row-content">{rowsContents[row]}</div>);
+            return (<div key={row} ref={(r) => {
+                if (!this.rowContentElementMaps[row]) {
+                    this.setState({ rowsContent: {} });
+                }
+                this.rowContentElementMaps[row].contentElement = r;
+            }} className="noseur-data-row-content">{rowsContents[row]}</div>);
         });
     }
 

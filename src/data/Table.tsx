@@ -134,7 +134,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
                 if (!(row in this.rowContentElementMaps)) this.rowContentElementMaps[row] = {};
                 this.rowContentElementMaps[row].rowElement = r;
             }}
-                onClick={this.props.onRowSelection ? () => this.props.onRowSelection(data) : undefined}>{columns}</tr>);
+                onClick={this.props.onRowSelection ? () => this.props.onRowSelection(data, index) : undefined}>{columns}</tr>);
         });
 
         return (<tbody key="body" className="noseur-tbody" data-n-group="body">

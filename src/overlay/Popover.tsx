@@ -136,7 +136,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
     }
 
     showPopover(event: Event, target?: HTMLElement) {
-        this.target = target || event.target || event.currentTarget;
+        this.target = target ?? event.target ?? event.currentTarget;
         if (this.state.visible) {
             this.resolvePopoverStyle();
             return;
@@ -222,6 +222,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
     rePosition(event?: Event, cb?: () => void) {
         if (!this.state.visible) return;
         this.target = event?.target ?? event?.currentTarget ?? this.target;
+        if (!this.target || !this.target.getBoundingClientRect) return;
         DOMHelper.absolutePositionRelatively(this.internalElement, this.target, this.props.positional);
         const targetOffset = DOMHelper.getElementOffset(this.target);
         const popoverOffset = DOMHelper.getElementOffset(this.internalElement);
@@ -241,7 +242,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
     }
 
     resolvePopoverStyle() {
-        if (!this.target || !this.target.getBoundingClientRect) return;
+        if (!this.target || !this.target?.getBoundingClientRect) return;
         if (this.props.matchTargetSize) {
             DOMHelper.matchStyles(this.target, [this.internalElement], ["width"], this.matchTargetSizeCb);
         }
