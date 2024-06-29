@@ -129,6 +129,7 @@ export const ObjectHelper = {
 
         }) {
         let value = "";
+        var chopped = "";
         let templateValue = "";
         let openedTemplate = false;
         let subValueMap = valueMap;
@@ -143,24 +144,31 @@ export const ObjectHelper = {
             }
             if (ch === prefix) {
                 openedTemplate = true;
+                if (index > 0 && unprocessed[index - 1] === options.chop) {
+                    chopped = chop;
+                }
                 continue;
             }
             if (openedTemplate && ch === seperator) {
                 if (!(templateValue in subValueMap)) {
-                    value += `${chop}${prefix}${templateValue}${seperator}`;
+                    value += `${chopped}${prefix}${templateValue}${seperator}`;
                     openedTemplate = false;
+                    templateValue = "";
+                    chopped = "";
                     continue;
                 }
                 subValueMap = subValueMap[templateValue];
                 templateValue = "";
+                chopped = "";
                 continue;
             }
             if (openedTemplate && ch === suffix) {
                 value += subValueMap[templateValue]
-                    || (options.relativeExpansion ? `${chop}${prefix}${templateValue}${suffix}` : "");
+                    || (options.relativeExpansion ? `${chopped}${prefix}${templateValue}${suffix}` : "");
                 subValueMap = valueMap;
                 openedTemplate = false;
                 templateValue = "";
+                chopped = "";
                 continue;
             };
             if (openedTemplate) {
@@ -170,7 +178,7 @@ export const ObjectHelper = {
             }
         }
         if (openedTemplate) {
-            value += `${chop}${prefix}${templateValue}`;
+            value += `${chopped}${prefix}${templateValue}`;
         } else {
             value += templateValue;
         }
