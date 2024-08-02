@@ -100,6 +100,7 @@ export interface FileInputManageRef extends BareInputManageRef<File> {
     select: (e?: Event) => void;
 }
 
+// TODO accept the file input type on the select function in manage ref
 export interface FileInputProps extends ComponentBaseProps<HTMLInputElement, FileInputManageRef, FileInputAttributtesRelays> {
     accepts: string;
     rounded: boolean;
@@ -216,12 +217,10 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
                 this.setState({ files: [] });
             },
             files: () => {
-                if (!this.internalInputElement) return [];
-                return ObjectHelper.fileListToFileArray(this.internalInputElement.files);
+                return this.state.files;
             },
             value: () => {
-                if (!this.internalInputElement) return null;
-                const files = ObjectHelper.fileListToFileArray(this.internalInputElement.files);
+                const files = this.state.files;
                 return files.length ? files[0] : null;
             },
         });

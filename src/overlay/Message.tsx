@@ -244,7 +244,7 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
             in={this.state.mount} unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExited={this.onExited}>
             <div ref={this.props.forwardRef} className={className} id={this.props.id} style={this.state.props.style}
                 onClick={this.onClick} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-                <div className="noseur-message-container container">
+                <div className="noseur-message-container">
                     {icon}
                     {content}
                     {closeIcon}
