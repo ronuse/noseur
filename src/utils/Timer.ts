@@ -19,6 +19,7 @@ export interface TimerOption {
     isInterval?: boolean;
 }
 
+// TODO update to be able to maintain states and data
 export class Timer {
 
     timer?: number;
@@ -34,7 +35,7 @@ export class Timer {
         this.options["args"] = args;
         this.isInterval = options.isInterval;
         this.options["timeout"] = options.timeout;
-        this.options["delay"] = options.delay || 1000;
+        this.options["delay"] = options.delay ?? 1000;
         this.totalTicks = this.elapseTicks = options.timeout / this.options["delay"];
     }
 

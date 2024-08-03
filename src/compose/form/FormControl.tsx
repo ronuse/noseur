@@ -38,6 +38,7 @@ export interface FormControlProps extends ComponentBaseProps<HTMLDivElement> {
 interface FormControlState {
 };
 
+// TODO implement manageRef to control contents, label, invalid, children, helpLabel, highlight, borderless
 class FormControlComponent extends React.Component<FormControlProps, FormControlState> {
 
     public static defaultProps: Partial<FormControlProps> = {
