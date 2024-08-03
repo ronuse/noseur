@@ -42,3 +42,8 @@ export enum SortDirection {
     FORWARD,
     BACKWARD,
 }
+
+export interface ToggleIcons {
+    show: NoseurElement;
+    hide: NoseurElement
+}

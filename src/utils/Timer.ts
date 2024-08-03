@@ -1,3 +1,4 @@
+
 import { NoseurObject } from "../constants/Types";
 
 export interface TimerCallbacks {
@@ -20,12 +21,12 @@ export interface TimerOption {
 
 export class Timer {
 
+    timer?: number;
     startTime?: number;
     cbs?: TimerCallbacks;
     isInterval?: boolean;
     totalTicks: number = 0;
     elapseTicks: number = 0;
-    timer?: NodeJS.Timeout | number;
     options: NoseurObject<any> = {};
 
     constructor(options: TimerOption, ...args: any[]) {

@@ -11,7 +11,7 @@ import { ComponentBaseProps } from "../core/ComponentBaseProps";
 import { FunctionStackManager } from "../utils/FunctionStackManager";
 import { FormControl, FormControlProps } from "../compose/form/FormControl";
 import { InputOnInputCompleteHandler, InputProps, TextInput } from "./Input";
-import { NoseurDivElement, NoseurElement, NoseurObject } from '../constants/Types';
+import { NoseurDivElement, NoseurElement, NoseurObject, ToggleIcons } from '../constants/Types';
 import { Alignment, Position } from "../constants/Alignment";
 
 export type DropdownEventHandler = () => void | undefined;
@@ -34,13 +34,13 @@ export interface DropdownManageRef {
 
 export interface DropdownProps extends ComponentBaseProps<NoseurDivElement, DropdownManageRef> {
     fill: boolean;
-    toggleIcon: any;
     editable: boolean;
     disabled: boolean;
     highlight: boolean;
     placeholder: string;
     cleareable: boolean;
     borderless: boolean;
+    toggleIcons: ToggleIcons;
     defaultInputValue: string;
     optionMap: DropdownOption;
     selectedOptionIndex: number;
@@ -93,8 +93,11 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
         scheme: Scheme.SECONDARY,
         iconPosition: Position.LEFT,
         togglePosition: Position.RIGHT,
-        toggleIcon: "fa fa-angle-down",
         optionGroupChildrenKey: "items",
+        toggleIcons: {
+            hide: 'fa fa-angle-up',
+            show: 'fa fa-angle-down',
+        },
     };
 
     state: DropdownState = {
@@ -329,7 +332,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
 
     renderPopover() {
         let listItems: any;
-        const popoverProps: NoseurObject<any> = this.props.popoverProps || {};
+        const popoverProps: NoseurObject<any> = this.props.popoverProps ?? {};
         popoverProps.matchTargetSize = !this.props.dontMatchTargetSize;
         popoverProps.className = Classname.build("noseur-dropdown-popover", popoverProps.className);
         if (this.state.options) {
@@ -360,9 +363,10 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
     }
 
     renderToggleIcon() {
-        return TypeChecker.isString(this.props.toggleIcon)
-            ? <i className={Classname.build(this.props.toggleIcon, (this.props.scheme ? `${this.props.scheme}-tx` : null))} />
-            : this.props.toggleIcon;
+        const toggleIcon = this.props.toggleIcons[this.state.popoverVisible ? "hide" : "show"];
+        return TypeChecker.isString(toggleIcon)
+            ? <i className={Classname.build(toggleIcon, (this.props.scheme ? `${this.props.scheme}-tx` : null))} />
+            : toggleIcon;
     }
 
     renderLeftContent(selectedOption: any, formControlProps: Partial<FormControlProps>) {

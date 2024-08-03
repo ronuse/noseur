@@ -1,4 +1,7 @@
 
+// core
+export * from "./core/ComponentBaseProps";
+
 // constants
 export * from "./constants/Types";
 export * from "./constants/Scheme";

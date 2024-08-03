@@ -8,18 +8,17 @@ import { ObjectHelper } from "../../utils/ObjectHelper";
 import { InputProps, TextInput } from "../../form/Input";
 import { FormControl, FormControlProps } from "./FormControl";
 import { ComponentBaseProps } from "../../core/ComponentBaseProps";
-import { NoseurElement, NumberRange } from "../../constants/Types";
+import { NoseurElement, NumberRange, ToggleIcons } from "../../constants/Types";
 import { ProgressBar, ProgressBarManageRef, ProgressBarProps } from "../../misc/ProgressBar";
 
 export type ComposedPasswordEventHandler = () => void;
 export type ComposedPasswordStrengthHandler = (value: string) => NumberRange<0, 100>;
-export type ComposedPasswordToggleIcons = { show: NoseurElement, hide: NoseurElement };
 
 export interface ComposedPasswordProps extends ComponentBaseProps<HTMLDivElement> {
     hidden: boolean;
     toggleMask: boolean;
+    toggleIcons: ToggleIcons;
     inputProps: Partial<InputProps>;
-    toggleIcons: ComposedPasswordToggleIcons;
     progressProps: Partial<ProgressBarProps>;
     strengthIndicator: boolean | NoseurElement;
     formControlProps: Partial<FormControlProps>;

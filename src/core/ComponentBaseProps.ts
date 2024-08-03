@@ -1,10 +1,10 @@
 
 import React from "react";
 import { Scheme } from "../constants/Scheme";
-import { ObjectHelper } from "../utils/ObjectHelper";
-import { NoseurInputValue, NoseurObject } from "../constants/Types";
 import { Classname } from "../utils/Classname";
 import { Transition } from "../constants/Transition";
+import { ObjectHelper } from "../utils/ObjectHelper";
+import { NoseurInputValue, NoseurObject } from "../constants/Types";
 
 export interface ComponentElementBasicAttributes {
     id?: string;
