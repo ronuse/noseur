@@ -17,9 +17,9 @@ export interface PopoverManageRef {
     hide: () => void;
     visible: () => boolean;
     sticky: (sticky: boolean) => void;
-    show: (event: Event, target?: HTMLElement) => void;
+    show: (event?: Event, target?: HTMLElement) => void;
     rePosition: (event?: Event, cb?: () => void) => void;
-    toggle: (event: Event, target?: HTMLElement) => void;
+    toggle: (event?: Event, target?: HTMLElement) => void;
 }
 
 export interface PopoverProps<T1 = NoseurDivElement, T2 = PopoverManageRef, T3 = {}> extends ComponentBaseProps<T1, T2, T3>, TransitionProps {
@@ -89,7 +89,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
             hide: () => {
                 if (this.state.visible) this.hidePopover();
             },
-            show: (event: Event, target?: HTMLElement) => {
+            show: (event?: Event, target?: HTMLElement) => {
                 if (this.state.visible) this.rePosition(event);
                 else this.showPopover(event, target);
             },
@@ -100,7 +100,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
         ObjectHelper.resolveManageRef(this, null);
     }
 
-    toggle(event: Event, target?: HTMLElement) {
+    toggle(event?: Event, target?: HTMLElement) {
         (!this.state.visible) ? this.showPopover(event, target) : this.hidePopover();
     }
 
@@ -135,8 +135,8 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
         if (this.props.onHide) this.props.onHide();
     }
 
-    showPopover(event: Event, target?: HTMLElement) {
-        this.target = target ?? event.target ?? event.currentTarget;
+    showPopover(event?: Event, target?: HTMLElement) {
+        this.target = target ?? event?.target ?? event?.currentTarget;
         if (this.state.visible) {
             this.resolvePopoverStyle();
             return;

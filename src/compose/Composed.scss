@@ -404,3 +404,31 @@ input.noseur-fctrl-cc {
 .noseur-date-time-input-date-time-picker {
     --componentMarginTopOrBottom: 3px !important;
 }
+
+/* ColorSlider */
+
+.noseur-color-slider {
+    content: "";
+    --accentColor: transparent !important;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAuSURBVHgBxYyxDQAwDMJIL+YT+DjtzFRliUfLcklqBCRT4eCTxbD6kdL2/LgYXqpvCbs3kBv/AAAAAElFTkSuQmCC) center repeat !important;
+}
+
+.noseur-color-slider-vertical {
+    width: 10px !important;
+}
+
+.noseur-color-slider-horizontal {
+    height: 10px !important;
+}
+
+.noseur-color-slider>.noseur-slider-handle {
+    --mainColor: rgba(1, 1, 1, 0.6) !important;
+}
+
+.noseur-color-slider-range-vertical {
+    height: 100%;
+}
+
+.noseur-color-slider-range-horizontal {
+    width: 100%;
+}

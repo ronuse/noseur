@@ -95,7 +95,7 @@ export const ObjectHelper = {
     },
 
     toTitleCase(value: string): string {
-        return (value && (value[0].toUpperCase() + value.substr(1).toLowerCase()));
+        return (value && (value[0].toUpperCase() + value.substring(1).toLowerCase()));
     },
 
     resolveManageRef<T1, T2>(component: React.Component<ComponentBaseProps<T1, T2>, any>, funsies: T2) {
@@ -315,5 +315,14 @@ export const ObjectHelper = {
         }
         return result;
     },
+
+    round(num: number) {
+        return Math.round((num + Number.EPSILON) * 100) / 100;
+    },
+
+    object(obj: any) {
+        if (!TypeChecker.isObject(obj)) return {};
+        return obj;
+    }
 
 }

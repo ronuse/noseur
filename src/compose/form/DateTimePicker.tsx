@@ -12,18 +12,14 @@ import { Dialog, DialogManageRef, DialogProps } from "../../overlay/Dialog";
 import { Popover, PopoverManageRef, PopoverProps } from "../../overlay/Popover";
 import { DateHelper, FormatedDate, Month, Time, Weekday } from "../../utils/DateHelper";
 import { NoseurDivElement, NoseurElement, NoseurLabel, NoseurObject } from "../../constants/Types";
-import { ComponentBaseProps, ComponentElementBasicAttributes, addClassesToComponentElementBasicAttributes } from "../../core/ComponentBaseProps";
+import { ComponentBaseProps, ComponentElementBasicAttributes, ComponentRenderType, addClassesToComponentElementBasicAttributes } from "../../core/ComponentBaseProps";
 
+// TODO multiple date multiple time
+// TODO date range, time range too
 export enum DateTimePickerMode {
     YEAR,
     MONTH,
     DATETIME,
-}
-
-export enum DateTimePickerType {
-    MODAL,
-    INLINE,
-    POPOVER,
 }
 
 export enum DateTimePickerSelectionMode {
@@ -185,6 +181,8 @@ export type DateTimePickerSelectionElementTemplateHandler = (selectedDates: Date
 export type DateTimePickerDayElementTemplateHandler = (date: number, options: DateTimePickerElementOptions, selected: boolean, dateObj?: Date, overlap?: boolean) => NoseurElement;
 
 export type DateTimePickerAttributtesRelays = {
+    dialog?: Partial<DialogProps>;
+    popover?: Partial<PopoverProps>
     rowGroup?: ComponentElementBasicAttributes;
     columnGroup?: ComponentElementBasicAttributes;
     selectedDate?: ComponentElementBasicAttributes;
@@ -279,7 +277,7 @@ export interface DateTimePickerProps<T1 = NoseurDivElement, T2 = DateTimePickerM
     showDateRanges: boolean;
     disabledYears: number[];
     hourFormat: "12" | "24";
-    type: DateTimePickerType;
+    type: ComponentRenderType;
     mode: DateTimePickerMode;
     dontOverlapDate: boolean;
     enabledWeekdays: Weekday[];
@@ -296,8 +294,6 @@ export interface DateTimePickerProps<T1 = NoseurDivElement, T2 = DateTimePickerM
     dontUnselectOnSameDate: boolean;
     labelsMap: NoseurObject<string>;
     reportOnSelectClickOnly: boolean;
-    dialogProps: Partial<DialogProps>;
-    popoverProps: Partial<PopoverProps>
     maxMultipleModeDateSelection: number;
     dateFormat: Intl.DateTimeFormatOptions;
     selectionMode: DateTimePickerSelectionMode;
@@ -353,9 +349,7 @@ export const DateTimePickerDefaultProps: Partial<DateTimePickerProps> = {
     attrsRelay: {},
     leftLayout: "",
     rightLayout: "",
-    dialogProps: {},
     bottomLayout: "",
-    popoverProps: {},
     date: new Date(),
     enabledYears: [],
     enabledDates: [],
@@ -374,7 +368,7 @@ export const DateTimePickerDefaultProps: Partial<DateTimePickerProps> = {
     yearModeFooterLayout: "",
     monthModeFooterLayout: "",
     idleScheme: Scheme.SECONDARY,
-    type: DateTimePickerType.INLINE,
+    type: ComponentRenderType.INLINE,
     maxMultipleModeDateSelection: 20,
     mode: DateTimePickerMode.DATETIME,
     layout: DateTimePickerLayout.DEFAULT_LAYOUT,
@@ -461,10 +455,10 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
 
     toggle(event: Event, target?: HTMLElement) {
         switch (this.props.type) {
-            case DateTimePickerType.MODAL:
+            case ComponentRenderType.MODAL:
                 this.setState({ modalVisible: !this.state.modalVisible });
                 break;
-            case DateTimePickerType.POPOVER:
+            case ComponentRenderType.POPOVER:
                 this.popoverManageRef!.toggle(event, target);
                 break;
         }
@@ -1248,9 +1242,9 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
         const layoutPanel = this.buildLayout(formattedDate, layoutElements, controlActionMap);
         const className = Classname.build("noseur-date-time-picker", {
             "noseur-date-time-picker-time-only": this.props.timeOnly,
-            "noseur-date-time-picker-modal": this.props.type === DateTimePickerType.MODAL,
-            "noseur-date-time-picker-inline": this.props.type === DateTimePickerType.INLINE,
-            "noseur-date-time-picker-popover": this.props.type === DateTimePickerType.POPOVER,
+            "noseur-date-time-picker-modal": this.props.type === ComponentRenderType.MODAL,
+            "noseur-date-time-picker-inline": this.props.type === ComponentRenderType.INLINE,
+            "noseur-date-time-picker-popover": this.props.type === ComponentRenderType.POPOVER,
         },
             this.props.scheme ? `${this.props.scheme}-vars` : null, this.props.className);
         const ref = (r: HTMLDivElement) => {
@@ -1260,13 +1254,13 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
         };
 
         switch (this.props.type) {
-            case DateTimePickerType.MODAL:
-                return (<Dialog notClosable {...this.props.dialogProps} ref={ref} className={className} style={this.props.style} manageRef={(m) => this.dialogManageRef = m}
+            case ComponentRenderType.MODAL:
+                return (<Dialog notClosable {...this.props.attrsRelay?.dialog} ref={ref} className={className} style={this.props.style} manageRef={(m) => this.dialogManageRef = m}
                     visible={this.state.modalVisible} onHide={() => this.setState({ modalVisible: false })}>
                     {layoutPanel}
                 </Dialog>);
-            case DateTimePickerType.POPOVER:
-                return (<Popover outsideClickLogic={"positional"} {...this.props.popoverProps} ref={ref} className={className} style={this.props.style} manageRef={(m) => this.popoverManageRef = m}>
+            case ComponentRenderType.POPOVER:
+                return (<Popover outsideClickLogic={"positional"} {...this.props.attrsRelay?.popover} ref={ref} className={className} style={this.props.style} manageRef={(m) => this.popoverManageRef = m}>
                     {layoutPanel}
                 </Popover>);
             default:
@@ -1296,7 +1290,7 @@ export const DatePicker = React.forwardRef<HTMLDivElement, Partial<DateTimePicke
 
 export const TimePicker = React.forwardRef<HTMLDivElement, Partial<DateTimePickerProps>>((props, ref) => (
     <DateTimePickerComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} showTime={true} timeOnly={true}
-        layout={DateTimePickerLayoutElement.TimeElement} popoverProps={{ ...(props.popoverProps ?? {}), pointingArrowClassName: "" }} />
+        layout={DateTimePickerLayoutElement.TimeElement} attrsRelay={{ ...props.attrsRelay, popover: { ...props.attrsRelay?.popover, pointingArrowClassName: "" } as any }} />
 ));
 
 export const DateTimePickerLayoutElementsValues = Object.values(DateTimePickerLayoutElement);

@@ -147,6 +147,7 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
             key: activeProps.key,
             type: this.props.type,
             style: activeProps.style,
+            draggable: this.props.draggable,
         };
         if (activeProps.rippleEffect) props.onClick = this.onClick;
 

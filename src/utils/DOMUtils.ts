@@ -1,7 +1,9 @@
 
+import { BoolHelper } from "./BoolHelper";
 import { NoseurObject } from "../constants/Types";
 import { Alignment } from "../constants/Alignment";
 import { Orientation } from "../constants/Orientation";
+import { Bound, Ceiling, Direction } from "../constants/Direction";
 
 let __noseurGlobal__Browser: NoseurObject<any>;
 let uniqueElementIdsCounter: NoseurObject<number> = {};
@@ -104,8 +106,8 @@ export const DOMHelper = {
 			y: rect.y,
 			width: rect.width,
 			height: rect.height,
-			top: rect.top + (window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0),
-			left: rect.left + (window.scrollX || document.documentElement.scrollLeft || document.body.scrollLeft || 0),
+			top: rect.top + (window.scrollY ?? document.documentElement.scrollTop ?? document.body.scrollTop ?? 0),
+			left: rect.left + (window.scrollX ?? document.documentElement.scrollLeft ?? document.body.scrollLeft ?? 0),
 		};
 
 	},
@@ -149,19 +151,25 @@ export const DOMHelper = {
 
 	getElementWidth(element: any, excludeMargin = false) {
 		const elementRect = element.getBoundingClientRect();
-		const style = element.currentStyle || window.getComputedStyle(element);
+		const style = element.currentStyle ?? window.getComputedStyle(element);
 		return elementRect.width + (excludeMargin ? 0 : (parseInt(style.marginLeft) + parseInt(style.marginRight))) + parseInt(style.paddingLeft) + parseInt(style.paddingRight);
 	},
 
+	getElementHeight(element: any, excludeMargin = false) {
+		const elementRect = element.getBoundingClientRect();
+		const style = element.currentStyle ?? window.getComputedStyle(element);
+		return elementRect.height + (excludeMargin ? 0 : (parseInt(style.marginTop) + parseInt(style.marginBottom))) + parseInt(style.paddingTop) + parseInt(style.paddingBottom);
+	},
+
 	getElementSuperflousWidth(element: any, withPadding?: boolean) {
-		const style = element.currentStyle || window.getComputedStyle(element);
+		const style = element.currentStyle ?? window.getComputedStyle(element);
 		let width = parseInt(style.marginLeft) + parseInt(style.marginRight);
 		if (withPadding) width += (parseInt(style.paddingLeft) + parseInt(style.paddingRight));
 		return width;
 	},
 
 	getElementSuperflousHeight(element: any, withPadding?: boolean) {
-		const style = element.currentStyle || window.getComputedStyle(element);
+		const style = element.currentStyle ?? window.getComputedStyle(element);
 		let height = parseInt(style.marginTop) + parseInt(style.marginBottom)
 		if (withPadding) height += (parseInt(style.paddingTop) + parseInt(style.paddingBottom));
 		return height;
@@ -316,44 +324,120 @@ export const DOMHelper = {
 
 	alignChildToParent(parent: any, child: any, alignment: Alignment) {
 		let left, top;
-        const labelRect = child.getBoundingClientRect();
-        const compoundRect = DOMHelper.getElementRectWithOffset(parent);
-        const labelSuperflousWidth = DOMHelper.getElementSuperflousWidth(child);
-        const labelSuperflousHeight = DOMHelper.getElementSuperflousHeight(child);
-        switch (alignment) {
-            case Alignment.TOP:
-            case Alignment.TOP_CENTER:
-                left = ((compoundRect.width / 2) - labelSuperflousWidth);
-                break;
-            case Alignment.TOP_RIGHT:
-                left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperflousWidth);
-                break;
-            case Alignment.BOTTOM:
-            case Alignment.BOTTOM_CENTER:
-                left = ((compoundRect.width / 2) - labelSuperflousWidth);
-                top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperflousHeight);
-                break;
-            case Alignment.BOTTOM_LEFT:
-                top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperflousHeight);
-                break;
-            case Alignment.BOTTOM_RIGHT:
-                left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperflousWidth);
-                top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperflousHeight);
-                break;
-            case Alignment.CENTER:
-                left = ((compoundRect.width / 2) - labelSuperflousWidth);
-                top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height + labelSuperflousHeight);
-                break;
-            case Alignment.CENTER_LEFT:
-                top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height - labelSuperflousHeight);
-                break;
-            case Alignment.CENTER_RIGHT:
-                left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperflousWidth);
-                top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height - labelSuperflousHeight);
-                break;
-        }
-        child.style.top = top ? `${top}px` : "inherit";
-        child.style.left = left ? `${left}px` : "inherit";
+		const labelRect = child.getBoundingClientRect();
+		const compoundRect = DOMHelper.getElementRectWithOffset(parent);
+		const labelSuperflousWidth = DOMHelper.getElementSuperflousWidth(child);
+		const labelSuperflousHeight = DOMHelper.getElementSuperflousHeight(child);
+		switch (alignment) {
+			case Alignment.TOP:
+			case Alignment.TOP_CENTER:
+				left = ((compoundRect.width / 2) - labelSuperflousWidth);
+				break;
+			case Alignment.TOP_RIGHT:
+				left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperflousWidth);
+				break;
+			case Alignment.BOTTOM:
+			case Alignment.BOTTOM_CENTER:
+				left = ((compoundRect.width / 2) - labelSuperflousWidth);
+				top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperflousHeight);
+				break;
+			case Alignment.BOTTOM_LEFT:
+				top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperflousHeight);
+				break;
+			case Alignment.BOTTOM_RIGHT:
+				left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperflousWidth);
+				top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperflousHeight);
+				break;
+			case Alignment.CENTER:
+				left = ((compoundRect.width / 2) - labelSuperflousWidth);
+				top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height + labelSuperflousHeight);
+				break;
+			case Alignment.CENTER_LEFT:
+				top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height - labelSuperflousHeight);
+				break;
+			case Alignment.CENTER_RIGHT:
+				left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperflousWidth);
+				top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height - labelSuperflousHeight);
+				break;
+		}
+		child.style.top = top ? `${top}px` : "inherit";
+		child.style.left = left ? `${left}px` : "inherit";
+	},
+
+	elementParent(el: HTMLElement) {
+		return el.parentNode;
+	},
+
+	elementRelativeAndAbsolutePositions(el: HTMLElement, evt: { clientX: number; clientY: number; }, boundToParent?: boolean | Bound, allowedOverflow: number = 0, direction: Direction = Direction.ALL, ceiling?: Ceiling) {
+		const parent = DOMHelper.elementParent(el);
+		const rect = DOMHelper.getElementRectWithOffset(el);
+		const parentRect = DOMHelper.getElementRectWithOffset(parent as any);
+
+		const scrollY = window.scrollY ?? document.documentElement.scrollTop ?? document.body.scrollTop ?? 0;
+		const scrollX = window.scrollX ?? document.documentElement.scrollLeft ?? document.body.scrollLeft ?? 0;
+		let x = (evt.clientX + scrollX) - parentRect.x;
+		let y = (evt.clientY + scrollY) - parentRect.y;
+		let clientTop = (evt.clientY + scrollY) - (rect.height / 2);
+		let clientLeft = (evt.clientX + scrollX) - (rect.width / 2);
+		let top = clientTop;
+		let left = clientLeft;
+		if (boundToParent) {
+			const bound = boundToParent === true || (boundToParent as any) === Bound.ALL;
+			if ((bound || boundToParent === Bound.LEFT) && x < 0) x = 0;
+			if ((bound || boundToParent === Bound.TOP) && y < 0) y = 0;
+			if ((bound || boundToParent === Bound.TOP) && top < 0) top = 0;
+			if ((bound || boundToParent === Bound.LEFT) && left < 0) left = 0;
+
+			if ((bound || boundToParent === Bound.RIGHT) && x > parentRect.width) x = parentRect.width;
+			if ((bound || boundToParent === Bound.BOTTOM) && y > parentRect.height) y = parentRect.height;
+			if ((bound || boundToParent === Bound.TOP) && top < (parentRect.top - allowedOverflow)) top = (parentRect.top - allowedOverflow);
+			if ((bound || boundToParent === Bound.LEFT) && left < (parentRect.left - allowedOverflow)) left = (parentRect.left - allowedOverflow);
+			if ((bound || boundToParent === Bound.BOTTOM) && top > (parentRect.height + parentRect.top - (rect.height - allowedOverflow))) top = ((parentRect.height + parentRect.top) - (rect.height - allowedOverflow));
+			if ((bound || boundToParent === Bound.RIGHT) && left > (parentRect.width + parentRect.left - (rect.width - allowedOverflow))) left = ((parentRect.width + parentRect.left) - (rect.width - allowedOverflow));
+		}
+		if (ceiling) {
+			if (ceiling.top && top < ceiling.top) top = ceiling.top;
+			if (ceiling.left && left < ceiling.left) left = ceiling.left;
+			if (ceiling.right && left > ceiling.right) left = ceiling.right;
+			if (ceiling.bottom && top > ceiling.bottom) top = ceiling.bottom;
+		}
+		if (BoolHelper.equalsAny(direction, [Direction.NORTH, Direction.SOUTH, Direction.NORTH_SOUTH])) {
+			x = rect.x;
+			left = rect.left;
+			if ((direction === Direction.NORTH && top > rect.top) || (direction === Direction.SOUTH && top < rect.top)) {
+				y = rect.y;
+				top = rect.top;
+			}
+		}
+		if (BoolHelper.equalsAny(direction, [Direction.EAST, Direction.WEST, Direction.EAST_WEST])) {
+			y = rect.y;
+			top = rect.top;
+			if ((direction === Direction.EAST && left < rect.left) || (direction === Direction.WEST && left > rect.left)) {
+				x = rect.x;
+				left = rect.left;
+			}
+		}
+		// Handle other cardinal point NW, SW, NE, SE - overkill?
+
+		return {
+			x,
+			y,
+			top,
+			left,
+			scrollY,
+			scrollX,
+			parentRect,
+			clientTop,
+			clientLeft,
+			clientX: evt.clientX,
+			clientY: evt.clientY,
+		}
+	},
+
+	positionElement(el: HTMLElement, position: { x: number; y: number;}) {
+		el.style.position = "absolute";
+		el.style.left = position.x + 'px';
+		el.style.top = position.y + 'px';
 	},
 
 };

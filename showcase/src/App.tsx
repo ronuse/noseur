@@ -6,7 +6,18 @@ import {
     MoneyInput, EmailInput, PasswordInput, alertDialog, DateTimeInput, Message,
     TextAreaInput, NumberInput, NoseurObject, ComposedPassword, YearPicker, MonthPicker, MessageSchemesIcons, RadioButton,
     Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator, FileInputManageRef, Messages, MessagesManageRef, ToastManageRef, Toast, Toaster, Transition, Panel, PanelManageRef, Accordion, AccordionTab, AccordionManageRef, TabPane, TabPanel, TabPaneManageRef,
-    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType, Position, ScrollPanel, MessageSpinnerIcons, PaginatorProps,
+    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, ComponentRenderType, Position, ScrollPanel, MessageSpinnerIcons, PaginatorProps,
+    ColorPalette,
+    ColorMap,
+    DragSensor,
+    DOMHelper,
+    DragSensorEvent,
+    Direction,
+    Bound,
+    Slider,
+    ColorSlider,
+    ColorSliderGradient,
+    ColorPicker,
 } from "@ronuse/noseur";
 
 function App() {
@@ -17,6 +28,7 @@ function App() {
     const chatSenderRef = React.useRef<any>();
     const [state, setState] = React.useState(false);
     const inputManageRef = React.useRef<any>(null);
+    const [states, setStates] = React.useState<any>({});
     const toastManageRef = React.useRef<ToastManageRef>(null);
     const panelManageRef = React.useRef<PanelManageRef>(null);
     const tabPaneManageRef = React.useRef<TabPaneManageRef>(null);
@@ -60,6 +72,267 @@ function App() {
     function render() {
         return (
             <div className="Apps" style={{ background: "white" }}>
+                <div style={{ margin: 30 }}>
+                    <ColorPicker />
+                </div>
+                <div style={{ margin: 30 }}>
+                    <ColorMap hex={states.csHex1} />
+                </div>
+                <div style={{ margin: 30 }}>
+                    <span>{states.csHex1 ?? "..."}</span>
+                    <ColorSlider id="tcs1" orientation={Orientation.HORIZONTAL} colorGradient={ColorSliderGradient.TRANSPARENT_HORIZONTAL} primaryColor={states.csHex1}/>
+                    <br />
+                    <ColorSlider colorGradient={ColorSliderGradient.TRANSPARENT} primaryColor={states.csHex1}/>
+                    <br />
+                    <div style={{ width: 50, height: 50, background: states.csHex1, border: "1px solid red" }} />
+                    <ColorSlider orientation={Orientation.HORIZONTAL} colorGradient={ColorSliderGradient.RAINBOW_HORIZONTAL} onSelectColor={async ({ color }) => {
+                        setStates({ ...states, csHex1: color.hex, });
+                    }}/>
+                    <br />
+                    <ColorSlider colorGradient={ColorSliderGradient.RAINBOW} onSelectColor={async ({ color }) => {
+                        setStates({ ...states, csHex1: color.hex });
+                    }}/>
+                    <br />
+                </div>
+                <div style={{ margin: 30 }}>
+                    <Slider scheme={Scheme.WARNING} orientation={Orientation.VERTICAL} attrsRelay={{ dragSensorProps: { allowedOverflow: 10 } }} range={<div style={{ height: "100%", width: 10 } as any}/>}/>
+                    <Slider scheme={Scheme.WARNING} attrsRelay={{ dragSensorProps: { allowedOverflow: 10 } }} range={<div style={{ width: "100%", "--mainColor": "red", height: 10 } as any}/>}/>
+                    <br/>
+                    <Slider scheme={Scheme.INFO} value={50} handle={<Button leftIcon="fab fa-google" scheme={Scheme.INFO}/>}/>
+                    <Slider scheme={Scheme.PRIMARY} orientation={Orientation.VERTICAL} handle={<Button scheme={Scheme.PRIMARY} leftIcon="fab fa-google"/>}/>
+                    Schemes
+                    <br/>
+                    {Object.keys(Scheme).map((_, index) => (<>
+                        <Slider key={index} scheme={schemes[index]} />
+                        <Slider orientation={Orientation.VERTICAL} key={index} scheme={schemes[index]} />
+                    </>))}
+                    <br/>
+                    <br/>
+                    
+                    <br />
+                    <Slider value={50}/>
+                    <br />
+                    <Slider  value={[20, 40, 60, 80]}/>
+                    <br />
+                    Inverse
+                    <Slider inverse value={[35, 70]} onChange={(e: any) => console.log("THE VALUES -- MULTIPLE -- INVERSE", e.values)}/>
+                    <br />
+                    <Slider  value={[35, 70]}/>
+                    <br />
+                    <Slider onChange={(e: any) => console.log("THE VALUE", e.values)}/>
+                    <br />
+                    Inverse <Slider orientation={Orientation.VERTICAL} inverse/>
+                    <br />
+                    Inverse <Slider inverse/>
+                    <br />
+                    <Slider value={81} orientation={Orientation.VERTICAL}/>
+                    <br />
+                    <Slider value={45} />
+                    <br />
+                    <Slider orientation={Orientation.VERTICAL}/>
+                    <br />
+                    <Slider />
+                </div>
+                <div style={{ margin: 30 }}>
+                    <div style={{ backgroundColor: "green", width: 200, height: 200 }}>
+                        Bouundless + drag
+                        <br />
+                        <DragSensor onDragEvent={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} singleton>
+                            <span draggable>hello world</span>
+                            <div draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10 }}/>
+                            yellow
+                        </DragSensor>
+                    </div>
+                    <br />
+                    <div style={{ display: "flex" }}>
+                        <div style={{ backgroundColor: "orange", width: 200, height: 200, marginRight: 20 }}>
+                            Ceiling
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} ceiling={{ top: 10, bottom: 100, right: 700, left: 3 }} />
+                        </div>
+                        <div style={{ backgroundColor: "orange", width: 200, height: 200, marginRight: 20 }}>
+                            Ceiling Left = 3
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} ceiling={{ left: 3 }} />
+                        </div>
+                        <div style={{ backgroundColor: "orange", width: 200, height: 200, marginRight: 20 }}>
+                            Ceiling Right = 700
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} ceiling={{ right: 700 }} />
+                        </div>
+                        <div style={{ backgroundColor: "orange", width: 200, height: 200, marginRight: 20 }}>
+                            Ceiling Bottom = 100
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} ceiling={{ bottom: 100 }} />
+                        </div>
+                        <div style={{ backgroundColor: "orange", width: 200, height: 200, marginRight: 20 }}>
+                            Ceiling Top = 10
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} ceiling={{ top: 10 }} />
+                        </div>
+                    </div>
+                    <br />
+                    <div style={{ display: "flex" }}>
+                        <div style={{ backgroundColor: "purple", width: 200, height: 200, marginRight: 20 }}>
+                            Bound to parent = Right
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} boundToParent={Bound.RIGHT} />
+                        </div>
+                        <div style={{ backgroundColor: "purple", width: 200, height: 200, marginRight: 20 }}>
+                            Bound to parent = Left
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} boundToParent={Bound.LEFT} />
+                        </div>
+                        <div style={{ backgroundColor: "purple", width: 200, height: 200, marginRight: 20 }}>
+                            Bound to parent = Bottom
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} boundToParent={Bound.BOTTOM} />
+                        </div>
+                        <div style={{ backgroundColor: "purple", width: 200, height: 200, marginRight: 20 }}>
+                            Bound to parent = Top
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} boundToParent={Bound.TOP} />
+                        </div>
+                        <div style={{ backgroundColor: "purple", width: 200, height: 200, marginRight: 20 }}>
+                            Bound to parent = True
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                (async () => {
+                                    DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                                })();
+                            }} boundToParent />
+                        </div>
+                    </div>
+                    <br />
+                    <div style={{ display: "flex" }}>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200, marginRight: 20 }}>
+                            North Direction Only
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} direction={Direction.NORTH} />
+                        </div>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200, marginRight: 20 }}>
+                            South Direction Only
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} direction={Direction.SOUTH} />
+                        </div>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200, marginRight: 20 }}>
+                            North + South (Vertical) Direction
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} direction={Direction.NORTH_SOUTH} />
+                        </div>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200, marginRight: 20 }}>
+                            East Direction Only
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} direction={Direction.EAST} />
+                        </div>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200, marginRight: 20 }}>
+                            West Direction Only
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} direction={Direction.WEST} />
+                        </div>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200, marginRight: 20 }}>
+                            East + West (Horizontal) Direction
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} direction={Direction.EAST_WEST} />
+                        </div>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200 }}>
+                            All direction
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} />
+                        </div>
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "yellow", width: 200, height: 200 }}>
+                        Bound to parent + allowedOverflow={10} + on drag
+                        <DragSensor draggable className="grabbable" allowedOverflow={10} boundToParent id="drag-dot-two" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} onDragEventEnd={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} allowOnDragReset />
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "yellow", width: 200, height: 200 }}>
+                        Bound to parent + allowedOverflow={10} + on drag over
+                        <DragSensor draggable className="grabbable" allowedOverflow={10} boundToParent id="drag-dot-two" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventDragOver={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} />
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "yellow", width: 200, height: 200 }}>
+                        Bound to parent + allowedOverflow={10}
+                        <DragSensor draggable allowedOverflow={10} boundToParent id="drag-dot-two" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventEnd={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} />
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "yellow", width: 200, height: 200 }}>
+                        Bound to parent
+                        <DragSensor draggable boundToParent id="drag-dot-two" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventEnd={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} />
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "green", width: 200, height: 200 }}>
+                        Bouundless + drag
+                        <DragSensor draggable id="drag-dot-one" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} />
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "green", width: 200, height: 200 }}>
+                        Bouundless + drag over
+                        <DragSensor draggable id="drag-dot-one" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventDragOver={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} />
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "green", width: 200, height: 200 }}>
+                        Bouundless
+                        <DragSensor draggable id="drag-dot-one" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventEnd={(evt?: DragSensorEvent) => {
+                            console.log("EVENT", evt);
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} />
+                    </div>
+                    <br />
+                    <div style={{ display: "flex" }}>
+                        <DragSensor style={{ border: "1px solid green", padding: 10, width: 120, height: 50 }} onDragEventDrop={(evt?: DragSensorEvent) => {
+                            (evt?.event.target as any).appendChild(document.getElementById("drag-element-span-1"));
+                        }}>
+                            <DragSensor id="drag-element-span-1" draggable> <span>hello world</span> </DragSensor>
+                        </DragSensor>
+                        <DragSensor ref={(e: any) => refs.current["drag-sensor-1"] = e} style={{ marginLeft: 30, border: "1px solid red", padding: 10, width: 120, height: 50 }} onDragEventDrop={(evt?: DragSensorEvent) => {
+                            (evt?.event.target as any).appendChild(document.getElementById("drag-element-span-1"));
+                        }}>
+                        </DragSensor>
+                    </div>
+                    <br />
+                </div>
+                <div style={{ margin: 30 }}>
+                    <ColorPalette grid={8} size={16} gap={3} palette={"Default"} attrsRelay={{ tile: { style: { borderRadius: 2 } } }} onSelectColor={(e) => console.log("THE EVENT", e.color)} />
+                    <br />
+                    <ColorPalette size={50} palette={"MicrosofVisualStudio"} onSelectColor={(e) => true} />
+                    <br />
+                    <ColorPalette gap={2} palette={"MicrosoftDynamicsCRM"} onSelectColor={(e) => console.log("TTHE EVENT", e)} />
+                    <br />
+                    <ColorPalette palette={"Microsoft"} onSelectColor={(e) => console.log("TTHE EVENT", e)} />
+                </div>
                 <div style={{ margin: 30 }}>
                     <Paginator totalRecords={100} template={{
                         layout: "Showing SizeElement of TotalRecords", customElement: (layout: string, props?: PaginatorProps) => {
@@ -898,29 +1171,29 @@ function App() {
                     <br /><br />
                     <br /><br />
                     <Button text="Modal TimePicker" onClick={(e: any) => refs.current["modal-date3"].toggle(e)} />
-                    <TimePicker type={DateTimePickerType.MODAL} manageRef={(e: any) => refs.current["modal-date3"] = e} />
+                    <TimePicker type={ComponentRenderType.MODAL} manageRef={(e: any) => refs.current["modal-date3"] = e} />
                     <br /><br />
                     <Button text="Modal YearPicker" onClick={(e: any) => refs.current["modal-year1"].toggle(e)} />
-                    <YearPicker type={DateTimePickerType.MODAL} manageRef={(e: any) => refs.current["modal-year1"] = e} />
+                    <YearPicker type={ComponentRenderType.MODAL} manageRef={(e: any) => refs.current["modal-year1"] = e} />
                     <br /><br />
                     <Button text="Modal MonthPicker" onClick={(e: any) => refs.current["modal-month1"].toggle(e)} />
-                    <MonthPicker type={DateTimePickerType.MODAL} manageRef={(e: any) => refs.current["modal-month1"] = e} />
+                    <MonthPicker type={ComponentRenderType.MODAL} manageRef={(e: any) => refs.current["modal-month1"] = e} />
                     <br /><br />
                     <Button text="Modal DatePicker" onClick={(e: any) => refs.current["modal-date2"].toggle(e)} />
-                    <DatePicker type={DateTimePickerType.MODAL} manageRef={(e: any) => refs.current["modal-date2"] = e} />
+                    <DatePicker type={ComponentRenderType.MODAL} manageRef={(e: any) => refs.current["modal-date2"] = e} />
                     <br /><br />
                     <Button text="Modal DateTimePicker" onClick={(e: any) => refs.current["modal-date1"].toggle(e)} />
-                    <DateTimePicker type={DateTimePickerType.MODAL} showTime manageRef={(e: any) => refs.current["modal-date1"] = e} />
+                    <DateTimePicker type={ComponentRenderType.MODAL} showTime manageRef={(e: any) => refs.current["modal-date1"] = e} />
                     <br /><br />
                     <br /><br />
                     <Button text="Popover TimePicker" onClick={(e: any) => refs.current["popover-date3"].toggle(e)} />
-                    <TimePicker type={DateTimePickerType.POPOVER} manageRef={(e: any) => refs.current["popover-date3"] = e} />
+                    <TimePicker type={ComponentRenderType.POPOVER} manageRef={(e: any) => refs.current["popover-date3"] = e} />
                     <br /><br />
                     <Button text="Popover Year" onClick={(e: any) => refs.current["popover-year1"].toggle(e)} />
-                    <YearPicker type={DateTimePickerType.POPOVER} manageRef={(e: any) => refs.current["popover-year1"] = e} />
+                    <YearPicker type={ComponentRenderType.POPOVER} manageRef={(e: any) => refs.current["popover-year1"] = e} />
                     <br /><br />
                     <Button text="Popover Month" onClick={(e: any) => refs.current["popover-month1"].toggle(e)} />
-                    <MonthPicker type={DateTimePickerType.POPOVER} manageRef={(e: any) => refs.current["popover-month1"] = e} />
+                    <MonthPicker type={ComponentRenderType.POPOVER} manageRef={(e: any) => refs.current["popover-month1"] = e} />
                     <br /><br />
                     <div style={{ display: "flex" }}>
                         <i className="fa fa-calendar" ref={(r) => refs.current["fa-cal-2"] = r}
@@ -934,13 +1207,13 @@ function App() {
                     </div>
                     <br /><br />
                     <Button text="Popover DatePicker" onClick={(e: any) => refs.current["popover-date2"].toggle(e)} />
-                    <DatePicker type={DateTimePickerType.POPOVER} manageRef={(e: any) => refs.current["popover-date2"] = e} />
+                    <DatePicker type={ComponentRenderType.POPOVER} manageRef={(e: any) => refs.current["popover-date2"] = e} />
                     <br /><br />
                     <Button text="Popover DateTimePicker" onClick={(e: any) => refs.current["popover-date1"].toggle(e)} />
-                    <DateTimePicker type={DateTimePickerType.POPOVER} showTime manageRef={(e: any) => refs.current["popover-date1"] = e} />
+                    <DateTimePicker type={ComponentRenderType.POPOVER} showTime manageRef={(e: any) => refs.current["popover-date1"] = e} />
                     <br /><br />
                     <Button text="Popover ISW DateTimePicker" onClick={(e: any) => refs.current["popover-isw-date"].toggle(e)} />
-                    <DateTimePicker type={DateTimePickerType.POPOVER} className='isw-dp' disableToDate={new Date(2023, 10, 14)} manageRef={(e: any) => refs.current["popover-isw-date"] = e} footerLayout='' dontOverlapDate />
+                    <DateTimePicker type={ComponentRenderType.POPOVER} className='isw-dp' disableToDate={new Date(2023, 10, 14)} manageRef={(e: any) => refs.current["popover-isw-date"] = e} footerLayout='' dontOverlapDate />
                     <br /><br />
                     <br /><br />
                     <DateTimePicker scheme={Scheme.DANGER} mode={DateTimePickerMode.MONTH} />
@@ -1746,7 +2019,7 @@ function App() {
                     <br />
                     <br />
                 </div>
-                <DateTimePicker type={DateTimePickerType.POPOVER} showTime manageRef={(e: any) => refs.current["popover-date01"] = e} />
+                <DateTimePicker type={ComponentRenderType.POPOVER} showTime manageRef={(e: any) => refs.current["popover-date01"] = e} />
 
             </div>
         );

@@ -47,3 +47,20 @@ export interface ToggleIcons {
     show: NoseurElement;
     hide: NoseurElement
 }
+
+export interface Color {
+    hex: string;
+    alpha: number;
+    rgb: { r: number; g: number; b: number; };
+    hsb: { h: number; s: number; b: number; };
+    //hsl: { h: number; s: number; l: number; };
+    //hsv: { h: number; s: number; v: number; };
+    cmyk: { c: number; m: number; y: number; k: number; };
+}
+
+export interface ColorEvent {
+    color: Color;
+    previousColor?: Color;
+}
+
+export type ColorEventHandler = (event: ColorEvent) => void | true | Promise<void | true>;

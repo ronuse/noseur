@@ -19,10 +19,10 @@ export type DropdownOnDeSelectHandler = (event: any) => void;
 export type DropdownPanelsHandler = () => NoseurElement | undefined;
 export type DropdownOption = { label?: string, value?: any, icon?: any };
 export type DropdownEmptyTemplateHandler = () => NoseurElement | undefined;
-export type DropdownOnSelectHandler = (option: any, event: any) => boolean;
 export type DropdownLoadingTemplateHandler = () => NoseurElement | undefined;
 export type DropdownTemplateHandler = (option: any) => NoseurElement | undefined;
 export type DropdownSelectedIndex = { primaryIndex: number, secondaryIndex: number };
+export type DropdownOnSelectHandler = (option: any, event: any) => boolean | undefined;
 export type DropdownOnSearchHandler = (value: any, dropdownManageRef?: DropdownManageRef) => NoseurObject<any>[] | undefined | null;
 
 export interface DropdownManageRef {
@@ -182,7 +182,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
         if (selectedOptionIndex.primaryIndex === -1) {
             if (this.props.onDeSelectOption) this.props.onDeSelectOption(e);
         };
-        if (selectedOptionIndex.primaryIndex === -1 || (!this.props.onSelectOption || this.props.onSelectOption(option, e))) {
+        if (selectedOptionIndex.primaryIndex === -1 || (!this.props.onSelectOption || !this.props.onSelectOption(option, e))) {
             this.setState({ selectedOptionIndex: selectedOptionIndex });
             const optionLabel = option ? this.resolveOptionLabel(option) : (this.props.renderOptionAsPlaceholder ? this.props.placeholder : "");
             if (this.props.renderOptionAsPlaceholder) this.internalTextInputElement!.placeholder = optionLabel;

@@ -2,7 +2,7 @@
 import "../Composed.css";
 import React from 'react';
 import { BareInputManageRef, InputProps, TextInput } from "../../form/Input";
-import { DateTimePicker, DateTimePickerDefaultProps, DateTimePickerEvent, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerManageRef, DateTimePickerMode, DateTimePickerProps, DateTimePickerSelectionMode, DateTimePickerType } from "./DateTimePicker";
+import { DateTimePicker, DateTimePickerDefaultProps, DateTimePickerEvent, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerManageRef, DateTimePickerMode, DateTimePickerProps, DateTimePickerSelectionMode, ComponentRenderType } from "./DateTimePicker";
 import { FormControl, FormControlProps } from "./FormControl";
 import { Classname } from "../../utils/Classname";
 import { ObjectHelper } from "../../utils/ObjectHelper";
@@ -152,7 +152,7 @@ class DateTimeInputComponent extends React.Component<DateTimeInputProps, DateTim
             cahcedOnDecrease && cahcedOnDecrease(activeDate, layoutElement);
         }
 
-        return (<DateTimePicker {...this.props as any} manageRef={(m) => this.dateTimePickerManageRef = m} type={DateTimePickerType.POPOVER} className={className} onClear={onClear} onIncrease={onIncrease}
+        return (<DateTimePicker {...this.props as any} manageRef={(m) => this.dateTimePickerManageRef = m} type={ComponentRenderType.POPOVER} className={className} onClear={onClear} onIncrease={onIncrease}
             onDecrease={onDecrease} onSelectDate={onSelectDate} selectedDates={this.state.selectedDates} id={this.props.dateTimePickerProps?.id} style={this.props.dateTimePickerProps?.style} popoverProps={{ pointingArrowClassName: "" }} />)
     }
 

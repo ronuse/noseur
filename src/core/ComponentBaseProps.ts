@@ -26,6 +26,7 @@ export interface MicroComponentBaseProps<T1 = {}> {
     noStyle: boolean;
     className: string;
     disabled: boolean;
+    draggable: boolean;
     key: NoseurInputValue;
     style: React.CSSProperties | undefined;
 }
@@ -38,6 +39,12 @@ export interface TransitionProps {
     transition: Transition;
     transitionOptions: NoseurObject<any>;
     transitionTimeout: NoseurObject<any> | number;
+}
+
+export enum ComponentRenderType {
+    MODAL,
+    INLINE,
+    POPOVER,
 }
 
 const MicroComponentBasePropskeys = ["id", "name", "style", "scheme", "noStyle", "className", "disabled", "key"];
