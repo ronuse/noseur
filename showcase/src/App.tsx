@@ -73,63 +73,173 @@ function App() {
         return (
             <div className="Apps" style={{ background: "white" }}>
                 <div style={{ margin: 30 }}>
-                    <ColorPicker />
+                    <h5>As Button Icons</h5>
+                    <Button scheme={Scheme.PRIMARY} text="Messages" leftIcon={<span className="norseu-badge norseu-secondary norseu-no-border">9</span>} />
+                    <Button scheme={Scheme.INFO} text="Emails" rightIcon={<span className="norseu-badge norseu-secondary norseu-no-border">9</span>} />
+                    <Button scheme={Scheme.WARNING} text="Type" leftIcon={<span className="norseu-tag norseu-warning">warning</span>} outlined />
+                    <Button scheme={Scheme.DANGER} text="Error" rightIcon={<span className="norseu-pill norseu-danger">danger</span>} outlined rounded />
+                    <Button text="Tags" rightIcon={(<div style={{ marginTop: "6px" }}>
+                        {/* <Tag scheme={Scheme.INFO} icon="fa fa-square" text="Info" outlined />
+                        <Tag scheme={Scheme.PRIMARY} icon="fa fa-square" text="Primary" outlined />
+                        <Tag scheme={Scheme.DANGER} icon="fa fa-square" text="Danger" outlined /> */}
+                    </div>)} scheme={Scheme.SECONDARY} outlined />
+
+                    <h5>Positioned</h5>
+                    <div className="noseur-flex">
+                        <div className="noseur-badge-overlay">
+                            <span className="noseur-badge noseur-primary noseur-no-border">1</span>
+                            <Button leftIcon="fa fa-bell" scheme={Scheme.PRIMARY} outlined textOnly rounded />
+                        </div>
+                        <div className="noseur-badge-overlay">
+                            <span className="noseur-badge noseur-warning noseur-no-border" style={{ bottom: "0" }}>2</span>
+                            <Button leftIcon="fa fa-bell" scheme={Scheme.WARNING} outlined textOnly rounded />
+                        </div>
+                        <div className="noseur-badge-overlay">
+                            <span className="noseur-badge noseur-info noseur-no-border" style={{ right: "0", top: "0" }}>3</span>
+                            <Button leftIcon="fa fa-bell" scheme={Scheme.INFO} outlined textOnly rounded />
+                        </div>
+                        <div className="noseur-badge-overlay">
+                            <span className="noseur-badge noseur-danger noseur-no-border" style={{ right: "0", bottom: "0" }}>4</span>
+                            <Button leftIcon="fa fa-bell" scheme={Scheme.DANGER} outlined textOnly rounded />
+                        </div>
+                    </div>
+                </div>
+                <div style={{ margin: 30 }}>
+                    <h5>Pills with Scheme</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-pill">Default</span>
+                        <span className="noseur-pill noseur-primary">primary</span>
+                        <span className="noseur-pill noseur-secondary">secondary</span>
+                        <span className="noseur-pill noseur-success">success</span>
+                        <span className="noseur-pill noseur-warning">warning</span>
+                        <span className="noseur-pill noseur-info">info</span>
+                        <span className="noseur-pill noseur-danger">danger</span>
+                    </div>
+
+                    <h5>Outlined Pills</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-pill noseur-skeleton">primary</span>
+                        <span className="noseur-pill noseur-primary-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>primary</span>
+                        <span className="noseur-pill noseur-secondary-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>secondary</span>
+                        <span className="noseur-pill noseur-success-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>success</span>
+                        <span className="noseur-pill noseur-warning-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>warning</span>
+                        <span className="noseur-pill noseur-info-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>info</span>
+                        <span className="noseur-pill noseur-danger-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>danger</span>
+                    </div>
+                </div>
+                <div style={{ margin: 30 }}>
+                    <h5>Tags with Scheme</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-tag">Default</span>
+                        <span className="noseur-tag noseur-primary">primary</span>
+                        <span className="noseur-tag noseur-secondary">secondary</span>
+                        <span className="noseur-tag noseur-success">success</span>
+                        <span className="noseur-tag noseur-warning">warning</span>
+                        <span className="noseur-tag noseur-info">info</span>
+                        <span className="noseur-tag noseur-danger">danger</span>
+                    </div>
+
+                    <h5>Outlined Tags</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-tag noseur-skeleton">primary</span>
+                        <span className="noseur-tag noseur-primary-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>primary</span>
+                        <span className="noseur-tag noseur-secondary-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>secondary</span>
+                        <span className="noseur-tag noseur-success-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>success</span>
+                        <span className="noseur-tag noseur-warning-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>warning</span>
+                        <span className="noseur-tag noseur-info-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>info</span>
+                        <span className="noseur-tag noseur-danger-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>danger</span>
+                    </div>
+                </div>
+                <div style={{ margin: 30 }}>
+                    <h5>Badges with Scheme</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-badge">1</span>
+                        <span className="noseur-badge noseur-primary">9</span>
+                        <span className="noseur-badge noseur-secondary">4</span>
+                        <span className="noseur-badge noseur-success">99+</span>
+                        <span className="noseur-badge noseur-warning">20</span>
+                        <span className="noseur-badge noseur-info">5</span>
+                        <span className="noseur-badge noseur-danger">3</span>
+                    </div>
+
+                    <h5>Outlined Badges</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-badge noseur-skeleton">3</span>
+                        <span className="noseur-badge noseur-primary-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>9</span>
+                        <span className="noseur-badge noseur-secondary-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>4</span>
+                        <span className="noseur-badge noseur-success-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>99+</span>
+                        <span className="noseur-badge noseur-warning-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>20</span>
+                        <span className="noseur-badge noseur-info-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>5</span>
+                        <span className="noseur-badge noseur-danger-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>3</span>
+                    </div>
+
+                    <h5>Sizes</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-badge noseur-warning noseur-size-s">20</span>
+                        <span className="noseur-badge noseur-info noseur-size-m">99+</span>
+                        <span className="noseur-badge noseur-danger noseur-size-l">33</span>
+                        <span className="noseur-badge noseur-primary noseur-size-lx">69</span>
+                        <span className="noseur-badge noseur-success noseur-size-lxx">41</span>
+                    </div>
+                </div>
+                <div style={{ margin: 30 }}>
+                    {/* <ColorPicker /> */}
                 </div>
                 <div style={{ margin: 30 }}>
                     <ColorMap hex={states.csHex1} />
                 </div>
                 <div style={{ margin: 30 }}>
                     <span>{states.csHex1 ?? "..."}</span>
-                    <ColorSlider id="tcs1" orientation={Orientation.HORIZONTAL} colorGradient={ColorSliderGradient.TRANSPARENT_HORIZONTAL} primaryColor={states.csHex1}/>
+                    <ColorSlider id="tcs1" orientation={Orientation.HORIZONTAL} colorGradient={ColorSliderGradient.TRANSPARENT_HORIZONTAL} primaryColor={states.csHex1} />
                     <br />
-                    <ColorSlider colorGradient={ColorSliderGradient.TRANSPARENT} primaryColor={states.csHex1}/>
+                    <ColorSlider colorGradient={ColorSliderGradient.TRANSPARENT} primaryColor={states.csHex1} />
                     <br />
                     <div style={{ width: 50, height: 50, background: states.csHex1, border: "1px solid red" }} />
                     <ColorSlider orientation={Orientation.HORIZONTAL} colorGradient={ColorSliderGradient.RAINBOW_HORIZONTAL} onSelectColor={async ({ color }) => {
                         setStates({ ...states, csHex1: color.hex, });
-                    }}/>
+                    }} />
                     <br />
                     <ColorSlider colorGradient={ColorSliderGradient.RAINBOW} onSelectColor={async ({ color }) => {
                         setStates({ ...states, csHex1: color.hex });
-                    }}/>
+                    }} />
                     <br />
                 </div>
                 <div style={{ margin: 30 }}>
-                    <Slider scheme={Scheme.WARNING} orientation={Orientation.VERTICAL} attrsRelay={{ dragSensorProps: { allowedOverflow: 10 } }} range={<div style={{ height: "100%", width: 10 } as any}/>}/>
-                    <Slider scheme={Scheme.WARNING} attrsRelay={{ dragSensorProps: { allowedOverflow: 10 } }} range={<div style={{ width: "100%", "--mainColor": "red", height: 10 } as any}/>}/>
-                    <br/>
-                    <Slider scheme={Scheme.INFO} value={50} handle={<Button leftIcon="fab fa-google" scheme={Scheme.INFO}/>}/>
-                    <Slider scheme={Scheme.PRIMARY} orientation={Orientation.VERTICAL} handle={<Button scheme={Scheme.PRIMARY} leftIcon="fab fa-google"/>}/>
+                    <Slider scheme={Scheme.WARNING} orientation={Orientation.VERTICAL} attrsRelay={{ dragSensorProps: { allowedOverflow: 10 } }} range={<div style={{ height: "100%", width: 10 } as any} />} />
+                    <Slider scheme={Scheme.WARNING} attrsRelay={{ dragSensorProps: { allowedOverflow: 10 } }} range={<div style={{ width: "100%", "--mainColor": "red", height: 10 } as any} />} />
+                    <br />
+                    <Slider scheme={Scheme.INFO} value={50} handle={<Button leftIcon="fab fa-google" scheme={Scheme.INFO} />} />
+                    <Slider scheme={Scheme.PRIMARY} orientation={Orientation.VERTICAL} handle={<Button scheme={Scheme.PRIMARY} leftIcon="fab fa-google" />} />
                     Schemes
-                    <br/>
+                    <br />
                     {Object.keys(Scheme).map((_, index) => (<>
                         <Slider key={index} scheme={schemes[index]} />
                         <Slider orientation={Orientation.VERTICAL} key={index} scheme={schemes[index]} />
                     </>))}
-                    <br/>
-                    <br/>
-                    
                     <br />
-                    <Slider value={50}/>
                     <br />
-                    <Slider  value={[20, 40, 60, 80]}/>
+
+                    <br />
+                    <Slider value={50} />
+                    <br />
+                    <Slider value={[20, 40, 60, 80]} />
                     <br />
                     Inverse
-                    <Slider inverse value={[35, 70]} onChange={(e: any) => console.log("THE VALUES -- MULTIPLE -- INVERSE", e.values)}/>
+                    <Slider inverse value={[35, 70]} onChange={(e: any) => console.log("THE VALUES -- MULTIPLE -- INVERSE", e.values)} />
                     <br />
-                    <Slider  value={[35, 70]}/>
+                    <Slider value={[35, 70]} />
                     <br />
-                    <Slider onChange={(e: any) => console.log("THE VALUE", e.values)}/>
+                    <Slider onChange={(e: any) => console.log("THE VALUE", e.values)} />
                     <br />
-                    Inverse <Slider orientation={Orientation.VERTICAL} inverse/>
+                    Inverse <Slider orientation={Orientation.VERTICAL} inverse />
                     <br />
-                    Inverse <Slider inverse/>
+                    Inverse <Slider inverse />
                     <br />
-                    <Slider value={81} orientation={Orientation.VERTICAL}/>
+                    <Slider value={81} orientation={Orientation.VERTICAL} />
                     <br />
                     <Slider value={45} />
                     <br />
-                    <Slider orientation={Orientation.VERTICAL}/>
+                    <Slider orientation={Orientation.VERTICAL} />
                     <br />
                     <Slider />
                 </div>
@@ -141,7 +251,7 @@ function App() {
                             DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
                         }} singleton>
                             <span draggable>hello world</span>
-                            <div draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10 }}/>
+                            <div draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10 }} />
                             yellow
                         </DragSensor>
                     </div>

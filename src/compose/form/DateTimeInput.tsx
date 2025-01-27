@@ -2,12 +2,13 @@
 import "../Composed.css";
 import React from 'react';
 import { BareInputManageRef, InputProps, TextInput } from "../../form/Input";
-import { DateTimePicker, DateTimePickerDefaultProps, DateTimePickerEvent, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerManageRef, DateTimePickerMode, DateTimePickerProps, DateTimePickerSelectionMode, ComponentRenderType } from "./DateTimePicker";
+import { DateTimePicker, DateTimePickerDefaultProps, DateTimePickerEvent, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerManageRef, DateTimePickerMode, DateTimePickerProps, DateTimePickerSelectionMode } from "./DateTimePicker";
 import { FormControl, FormControlProps } from "./FormControl";
 import { Classname } from "../../utils/Classname";
 import { ObjectHelper } from "../../utils/ObjectHelper";
 import { NoseurObject } from "../../constants/Types";
 import { BoolHelper } from "../../utils/BoolHelper";
+import { ComponentRenderType } from "../../core/ComponentBaseProps";
 
 export interface DateTimeInputManageRef extends BareInputManageRef<string> {
 }
@@ -196,5 +197,7 @@ export const TimeInput = React.forwardRef<HTMLInputElement, Partial<DateTimeInpu
     const dateFormat: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: hourFormat12 };
     const timeLayout = props.timeLayout || hourFormat12 ? props.timeLayout : DateTimePickerLayout.TIME_LAYOUT_WITHOUT_MERIDIAN;
     return (<DateTimeInputComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLInputElement>} showTime={true} timeOnly={true} timeLayout={timeLayout}
-        dateFormat={dateFormat} layout={DateTimePickerLayoutElement.TimeElement} popoverProps={{ ...(props.popoverProps ?? {}), pointingArrowClassName: "" }} />);
+        dateFormat={dateFormat} layout={DateTimePickerLayoutElement.TimeElement} attrsRelay={{
+            popover: { pointingArrowClassName: "", ...(props?.attrsRelay?.popover ?? {}) }
+        }}/>);
 });

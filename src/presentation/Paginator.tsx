@@ -15,8 +15,8 @@ function buildTemplate(_: PaginatorState, props: PaginatorProps): PaginatorTempl
         .replace(/\s+/g, " ");
     const paginationElementBuilder = (direction: PaginatorDirection) => {
         return (option: PaginatorPageElementOption) => {
-            const key = (option.label ?? (option.className ?? direction));
             const outlined = !option.active && option.scheme != Scheme.SKELETON;
+            const key = (option.key ?? option.label ?? (option.className ?? direction));
             return (<Button key={key} text={option.label} scheme={option.scheme} disabled={option.disabled}
                 className={Classname.build(option.className, direction)} style={{ marginLeft: 10 }}
                 onClick={option.onClick} outlined={outlined} iconOnly fillOnHover borderless />);
@@ -24,7 +24,7 @@ function buildTemplate(_: PaginatorState, props: PaginatorProps): PaginatorTempl
     }
     const paginationPropsLabelBuilder = () => {
         return (option: PaginatorPageElementOption) => {
-            const key = (option.label ?? (option.className));
+            const key = (option.key ?? option.label ?? (option.className));
             return (<span key={key} className={option.className}>{option.label}</span>);
         };
     }
@@ -37,7 +37,7 @@ function buildTemplate(_: PaginatorState, props: PaginatorProps): PaginatorTempl
     const hiddenPagesElement = customTemplate?.hiddenPagesElement ?? paginationElementBuilder(PaginatorDirection._HIDDEN_PAGES);
     const activePageLabel = customTemplate?.activePageLabel ?? ((option: PaginatorPageChangeOption) => {
         const label = ObjectHelper.resolveStringTemplate("({currentPage} of {pageCount})", option);
-        return (<span key={label} className={`noseur-paginator-label ${option.scheme || ""}`}>{label}</span>);
+        return (<span key={option.key ?? label} className={`noseur-paginator-label ${option.scheme || ""}`}>{label}</span>);
     });
 
     return {
@@ -70,8 +70,9 @@ export interface PaginatorPageElementOption {
     active?: boolean;
     disabled?: boolean;
     className?: string;
-    style?: NoseurObject<any>;
+    key?: string | number;
     label?: number | string;
+    style?: NoseurObject<any>;
     direction?: PaginatorDirection;
     onClick?: (...args: any[]) => any;
 };
@@ -83,6 +84,7 @@ export interface PaginatorPageChangeOption {
     scheme?: Scheme;
     pageCount: number;
     currentPage: number;
+    key?: string | number;
 };
 
 export type PaginatorTemplateLabelEventHandler = (option: PaginatorPageChangeOption) => NoseurElement;
@@ -126,11 +128,11 @@ export interface PaginatorProps extends ComponentBaseProps<NoseurElement> {
     visiblePageCount: number;
     rowsPerPageOptions: number[];
     overlayContainer: NoseurElement;
-    leftContent: React.ReactElement;
     resetPageOnCountChange: boolean;
-    rightContent: React.ReactElement;
     template: PaginatorTemplateOptions;
     expandOnHiddenPagesButtonClicked: boolean;
+    leftContent: React.ReactElement<any, any>;
+    rightContent: React.ReactElement<any, any>;
 
     onPageChange?: (event: PaginatorPageChangeOption) => void;
 };

@@ -213,7 +213,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
             id: this.props.id,
             ...this.props.internalElementProps,
         };
-        if (!(this.props.children as any)?.length) return null;
+        if (!(this.props.children as any)) return null;
         const tableBody = this.renderTableBody();
         const tableFooter = this.renderTableFooter();
         const tableHeader = this.props.hideHeaders ? null : this.renderTableHeader();
@@ -234,6 +234,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
     render() {
         const props: NoseurObject<any> = {
             key: this.props.key,
+            id: this.props.dataId,
             style: this.props.style,
         };
         const emptyState = this.renderEmptyState();

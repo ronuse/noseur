@@ -110,6 +110,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
     render() {
         const props: NoseurObject<any> = {
             key: this.props.key,
+            id: this.props.dataId,
             style: this.props.style,
         };
         const emptyState = this.renderEmptyState();

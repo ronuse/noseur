@@ -513,7 +513,9 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
         if (!this.props.label) return;
         const onClick = (e: any) => this.onControlClick(ControlType.SELECT, e);
         const className = Classname.build("noseur-file-input-label", this.props.attrsRelay.label?.className);
-        return (<div ref={(r) => this.internalLabelElement = r} onClick={onClick} className={className} style={this.props.attrsRelay.label?.style} id={this.props.attrsRelay.label?.id}>{this.props.label}</div>);
+        return (<div ref={(r) => {
+            this.internalLabelElement = r
+        }} onClick={onClick} className={className} style={this.props.attrsRelay.label?.style} id={this.props.attrsRelay.label?.id}>{this.props.label}</div>);
     }
 
     render() {

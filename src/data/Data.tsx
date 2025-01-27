@@ -42,6 +42,7 @@ export interface DataInternalElementProps {
 }
 
 export interface DataProps<T> extends ComponentBaseProps<T, DataManageRef> {
+    dataId: string;
     paginate: boolean;
     rowProps: RowProps;
     noDivider: boolean;

@@ -110,6 +110,14 @@ p {
   color: white;
 }
 
+.noseur-flex {
+  display: flex;
+}
+
+.noseur-showcase-badges > * {
+  margin-right: 10px;
+}
+
 .grabbable {
   cursor: move; /* fallback if grab cursor is unsupported */
   cursor: grab;

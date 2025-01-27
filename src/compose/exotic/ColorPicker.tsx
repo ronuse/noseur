@@ -1,12 +1,10 @@
 
 import "../Composed.css";
 import React from "react";
-import { Classname } from "../../utils/Classname";
-import { Color, ColorEventHandler, NoseurElement, NoseurObject } from "../../constants/Types";
+import { ColorEventHandler } from "../../constants/Types";
 import { ComponentBaseProps, ComponentRenderType } from "../../core/ComponentBaseProps";
-import { Dialog, DialogManageRef } from "../../overlay/Dialog";
-import { Popover, PopoverManageRef } from "../../overlay/Popover";
-import { ObjectHelper } from "../../utils/ObjectHelper";
+import { DialogManageRef, DialogProps } from "../../overlay/Dialog";
+import { PopoverManageRef, PopoverProps } from "../../overlay/Popover";
 
 export enum ColorPickerLayoutElement {
     DashElement = "[d]",
@@ -124,7 +122,7 @@ class ColorPickerComponent extends React.Component<ColorPickerProps, ColorPicker
         
     }
 
-    buildLayoutElements(controlActionMap: NoseurObject<(e?: any) => void>) {
+    /*buildLayoutElements(controlActionMap: NoseurObject<(e?: any) => void>) {
         const layoutElements: NoseurObject<NoseurElement> = {};
         const requiredLayoutElements = new Set<DateTimePickerLayoutElement>();
         this.props.layout.split(" ").forEach(l => requiredLayoutElements.add(l as any));
@@ -456,7 +454,7 @@ class ColorPickerComponent extends React.Component<ColorPickerProps, ColorPicker
                     {layoutPanel}
                 </div>);
         }
-    };
+    };*/
 
 }
 

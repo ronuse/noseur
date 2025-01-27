@@ -1,3 +1,6 @@
+
+@use "sass:list";
+@use "sass:color";
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css");
 
 .noseur-reset-styles {
@@ -270,7 +273,7 @@ span.noseur-skeleton {
 /* End The loading Class */
 
 @function toRgba($color, $a: 1) {
-    @return "rgba(" + red($color) + ", " + green($color) + ", " + blue($color)+ "," $a + ")";
+    @return "rgba(" + color.channel($color, "red", $space: rgb) + ", " + color.channel($color, "green", $space: rgb) + ", " + color.channel($color, "blue", $space: rgb) + "," $a + ")";
 }
 
 /* Scheme */
@@ -356,9 +359,9 @@ $schemes: (
 @each $name,
 $palette in $schemes {
 
-	$main: nth($palette, 1);
-	$accent: nth($palette, 2);
-	$secondary-accent: nth($palette, 3);
+	$main: list.nth($palette, 1);
+	$accent: list.nth($palette, 2);
+	$secondary-accent: list.nth($palette, 3);
 
 	.noseur-#{$name} {
 		@include noseur-scheme($main, $accent);
