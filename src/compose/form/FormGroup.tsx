@@ -77,9 +77,9 @@ class FormGroupComponent extends React.Component<FormGroupProps, FormGroupState>
 
 }
 
-export const FormGroup = React.forwardRef<HTMLFormElement, Partial<FormGroupProps>>((props, ref) => (
-    <FormGroupComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLFormElement>} />
-));
+export const FormGroup  = ({ ref, ...props }: Partial<FormGroupProps>) => (
+    <FormGroupComponent {...props} forwardRef={ref} />
+);
 
 export const Form = FormGroup;
 

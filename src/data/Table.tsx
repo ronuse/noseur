@@ -262,7 +262,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
 
 }
 
-export const Table = React.forwardRef<HTMLTableElement, Partial<TableProps>>((props, ref) => (
-    <TableComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLTableElement>} />
-));
+export const Table  = ({ ref, ...props }: Partial<TableProps>) => (
+    <TableComponent {...props} forwardRef={ref} />
+);
 

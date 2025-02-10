@@ -337,10 +337,10 @@ class TabPaneComponent extends React.Component<TabPaneProps, TabPaneState> {
 
 }
 
-export const TabPanel = React.forwardRef<HTMLDivElement, Partial<TabPanelProps>>((props, ref) => (
-    <TabPanelComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const TabPanel  = ({ ref, ...props }: Partial<TabPanelProps>) => (
+    <TabPanelComponent {...props} forwardRef={ref} />
+);
 
-export const TabPane = React.forwardRef<HTMLDivElement, Partial<TabPaneProps>>((props, ref) => (
-    <TabPaneComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const TabPane  = ({ ref, ...props }: Partial<TabPaneProps>) => (
+    <TabPaneComponent {...props} forwardRef={ref} />
+);

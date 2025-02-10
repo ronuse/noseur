@@ -14,6 +14,7 @@ export interface ComponentElementBasicAttributes {
 }
 
 export interface ComponentBaseProps<T1, T2 = {}, T3 = {}> extends MicroComponentBaseProps<T3>, React.DOMAttributes<T1> {
+    ref?: React.Ref<T1>;
     manageRef: React.ForwardedRef<T2>;
     forwardRef: React.ForwardedRef<T1>;
 }
@@ -62,3 +63,22 @@ export function addClassesToComponentElementBasicAttributes(attrs?: ComponentEle
     attrs.className = Classname.build(attrs.className, className);
     return attrs;
 }
+
+
+//* GLOBALS *//
+
+export class NoseurGlobals {
+
+    private static __noseurGlobals: NoseurObject<any> = {};
+    public static KEYS = {
+        LAF: {
+            THEME: "NOSEUR.LAF.THEME"
+        },
+    };
+
+    static put = (key: string, value: any) => NoseurGlobals.__noseurGlobals[key] = value;
+    static get = (key: string, fallback?: any) => NoseurGlobals.__noseurGlobals[key] ?? fallback;
+
+}
+
+//* END GLOBALS *//

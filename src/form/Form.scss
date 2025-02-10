@@ -1,5 +1,5 @@
 .noseur-form-bd-cl {
-	border-color: var(--formBorderColor, #dfdfdf);
+	border-color: var(--noseurFormBorderColor, #dfdfdf);
 }
 
 /* Button */
@@ -32,7 +32,6 @@
 .noseur-input {
 	flex: 1;
 	outline: none;
-	color: #3e3f41;
 	padding: 0.7rem;
 	font-size: 15px;
 	border-radius: 6px;
@@ -41,6 +40,7 @@
 	border: 1px solid #dfdfdf;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
+	color: var(--noseurInputColor, #3e3f41);
 }
 
 .noseur-input-filled {
@@ -51,7 +51,7 @@
 	border: none;
 	border-radius: 0px;
 	padding: 0.7rem 0px 0.7rem 0px;
-	border-bottom: 1px solid #dfdfdf;
+	border-bottom: 1px solid var(--noseurInputFlushedBorderColor, #dfdfdf);
 }
 
 textarea.noseur-input {
@@ -137,10 +137,10 @@ textarea.noseur-input {
 
 .noseur-dropdown-popover {
 	min-width: 190px;
-	background-color: white;
 	border-radius: 0px 0px 3px 3px;
 	--componentMarginTopOrBottom: 3px;
-	box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%) !important;
+	background-color: var(--noseurDropdownPopoverBgColor, white);
+	box-shadow: 0 2px 12px 0 var(--noseurDropdownPopoverBoxShadowColor, rgb(0 0 0 / 10%)) !important;
 }
 
 .noseur-dropdown-popover-list {
@@ -201,26 +201,39 @@ textarea.noseur-input {
 	width: fit-content;
 }
 
+.noseur-file-input-control {
+	display: flex;
+	padding: 7px 10px;
+	position: absolute;
+	width: fit-content;
+	flex-direction: row;
+}
+
+.noseur-file-input-control > *:not(:last-child) {
+	margin-right: 5px;
+}
+
 .noseur-file-input-label {
 	margin: 5px;
-	color: #fff;
 	cursor: pointer;
 	font-weight: 700;
 	padding: 7px 10px;
-	position: absolute;
 	border-radius: 5px;
 	width: fit-content;
 	width: -moz-fit-content;
 	width: -webkit-fit-content;
-	background: hsla(0, 1.4%, 59%, .5);
+	color: var(--noseurFileInputLabelColor, #fff);
+	background: var(--noseurFileInputLabelBgColor, hsla(0, 1.4%, 59%, .5));
 }
 
 .noseur-file-input>div>.noseur-file-input-preview {
 	display: flex;
+    width: inherit;
+	height: inherit;
 	position: relative;
 	align-items: center;
 	border-radius: inherit;
-	color: var(--mainColor, #ededed);
+	color: var(--noseurSchemeMainColor, #ededed);
 }
 
 .noseur-file-input>.noseur-file-input-previews,
@@ -239,11 +252,11 @@ textarea.noseur-input {
 .noseur-file-input>div>.noseur-file-input-preview-empty,
 .noseur-file-input>div>.noseur-file-input-preview>.noseur-file-input-preview-image,
 .noseur-file-input>div>.noseur-file-input-preview>.noseur-file-input-preview-video {
-	width: 125px;
-	height: 120px;
+	width: inherit;
+	height: inherit;
 	font-size: 30px;
 	justify-content: center;
-	border: 1px solid var(--mainColor01Percent, rgba(237, 237, 237, 0.5));
+	border: 1px solid var(--noseurSchemeMainColor01Percent, rgba(237, 237, 237, 0.5));
 }
 
 .noseur-file-input>div>.noseur-file-input-preview-empty {
@@ -253,7 +266,7 @@ textarea.noseur-input {
 .noseur-file-input>div>.noseur-file-input-preview-empty>i {
 	padding: 20px;
 	border-radius: 100%;
-	background: var(--mainColor01Percent, rgba(237, 237, 237, 0.5));
+	background: var(--noseurSchemeMainColor01Percent, rgba(237, 237, 237, 0.5));
 }
 
 .noseur-file-input>div>.noseur-file-input-preview>.noseur-file-input-preview-binary {
@@ -282,18 +295,23 @@ textarea.noseur-input {
 	width: auto;
 	border-radius: 7px;
 	flex-direction: column;
-	border: 1px solid var(--mainColor, rgba(237, 237, 237, 0.2));
+	border: 1px solid var(--noseurSchemeMainColor, rgba(237, 237, 237, 0.2));
 }
 
 .noseur-file-input.noseur-file-input-controlled>.noseur-file-input-fixture {
 	padding: 15px;
 	display: flex;
-	background-color: var(--stripColor, rgba(237, 237, 237, 0.5));
-	border-bottom: 1px solid var(--mainColor, rgba(237, 237, 237, 0.5));
+	background-color: var(--noseurSchemeStripColor, rgba(237, 237, 237, 0.5));
+	border-bottom: 1px solid var(--noseurSchemeMainColor, rgba(237, 237, 237, 0.5));
 }
 
 .noseur-file-input.noseur-file-input-controlled>.noseur-file-input-fixture>button:not(.noseur-file-input-fixture>button:first-child) {
 	margin-left: 10px;
+}
+
+.noseur-file-input>.noseur-file-input-previews {
+    width: inherit;
+	height: inherit;
 }
 
 .noseur-file-input.noseur-file-input-controlled>.noseur-file-input-previews {
@@ -332,14 +350,14 @@ textarea.noseur-input {
 	display: inline-flex;
 	vertical-align: bottom;
 	justify-content: center;
-	border-color: var(--mainColor, var(--formBorderColor, #dfdfdf));
+	border-color: var(--noseurSchemeMainColor, var(--noseurFormBorderColor, #dfdfdf));
 }
 
 .noseur-radiobutton-box>.noseur-icon {
 	font-size: 12px;
 	border-radius: 100%;
-	color: var(--mainColor, var(--formBorderColor, #dfdfdf));
-	background-color: var(--mainColor, var(--formBorderColor, #dfdfdf));
+	color: var(--noseurSchemeMainColor, var(--noseurFormBorderColor, #dfdfdf));
+	background-color: var(--noseurSchemeMainColor, var(--noseurFormBorderColor, #dfdfdf));
 }
 
 /* Color palette */
@@ -384,7 +402,7 @@ textarea.noseur-input {
 	position: relative;
 	border-radius: 7px;
 	align-items: center;
-	background: var(--mainColor01Percent, #e5e7eb);
+	background: var(--noseurSchemeMainColor01Percent, #e5e7eb);
 }
 
 .noseur-slider-vertical {
@@ -408,7 +426,7 @@ textarea.noseur-input {
 
 .noseur-slider-range {
 	border-radius: 7px;
-	background: var(--mainColor, #7199be);
+	background: var(--noseurSchemeMainColor, #7199be);
 }
 
 .noseur-slider-vertical>.noseur-slider-range {
@@ -432,8 +450,8 @@ textarea.noseur-input {
 	width: 0.7rem;
 	height: 0.7rem;
 	border-radius: 100%;
-	background: var(--accentColor, white);
-	border: 2px solid var(--mainColor, #7199be);
+	background: var(--noseurSchemeAccentColor, white);
+	border: 2px solid var(--noseurSchemeMainColor, #7199be);
 }
 
 .noseur-slider-handle:active {

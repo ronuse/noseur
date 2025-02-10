@@ -8,7 +8,7 @@ import { Alignment } from "../constants/Alignment";
 import { ObjectHelper } from "../utils/ObjectHelper";
 import { CSSTransition } from 'react-transition-group';
 import { BaseZIndex, DOMHelper, ZIndexHandler } from "../utils/DOMUtils";
-import { ComponentBaseProps, TransitionProps } from "../core/ComponentBaseProps";
+import { ComponentBaseProps, NoseurGlobals, TransitionProps } from "../core/ComponentBaseProps";
 import { NoseurElement, NoseurObject, NoseurRawElement } from "../constants/Types";
 import { Transition } from "../constants/Transition";
 
@@ -291,7 +291,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         const id = this.props.id || this.state.id;
         const className = Classname.build('noseur-dialog', this.props.className, {
             'noseur-dialog-maximized': this.state.maximized
-        });
+        }, NoseurGlobals.get(NoseurGlobals.KEYS.LAF.THEME));
         let alignment = this.props.alignment;
         if (alignment === Alignment.TOP_CENTER) alignment = Alignment.TOP;
         if (alignment === Alignment.BOTTOM_CENTER) alignment = Alignment.BOTTOM;
@@ -328,7 +328,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
             });
         }}>
             <CSSTransition classNames={transition} timeout={transition === Transition.NONE ? 0 : transitionTimeout} in={this.state.visible}
-                options={this.props.transitionOptions} unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExited={this.onExited}>
+                options={this.props.transitionOptions} unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExited={this.onExited} nodeRef={elementRef}>
                 <div ref={elementRef} id={id} className={className} style={this.props.style}
                     role="dialog" aria-labelledby={id + '-header'} aria-describedby={id + '-content'} aria-modal={this.props.dismissableModal}>
                     {header}
@@ -347,7 +347,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
 
 }
 
-export const Dialog = React.forwardRef<HTMLDivElement, Partial<DialogProps>>((props, ref) => (
-    <DialogComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const Dialog  = ({ ref, ...props }: Partial<DialogProps>) => (
+    <DialogComponent {...props} forwardRef={ref} />
+);
 

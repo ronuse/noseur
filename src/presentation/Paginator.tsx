@@ -408,7 +408,7 @@ class PaginatorComponent extends React.Component<PaginatorProps, PaginatorState>
 
 }
 
-export const Paginator = React.forwardRef<HTMLDivElement, Partial<PaginatorProps>>((props, ref) => (
-    <PaginatorComponent {...props} forwardRef={ref as React.ForwardedRef<NoseurElement>} />
-));
+export const Paginator  = ({ ref, ...props }: Partial<PaginatorProps>) => (
+    <PaginatorComponent {...props} forwardRef={ref} />
+);
 

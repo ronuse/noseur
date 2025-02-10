@@ -307,13 +307,13 @@ export type ToasterInterface = ToasterInterfaceRelay & ToastManageRef;
 export type MessagesProps = ToastProps;
 export type MessagesManageRef = ToastManageRef;
 
-export const Toast = React.forwardRef<HTMLDivElement, Partial<ToastProps>>((props, ref) => (
-    <ToastComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} __type__={ToastType.TOAST} container={document.body} />
-));
+export const Toast  = ({ ref, ...props }: Partial<ToastProps>) => (
+    <ToastComponent {...props} forwardRef={ref} __type__={ToastType.TOAST} container={document.body} />
+);
 
-export const Messages = React.forwardRef<HTMLDivElement, Partial<MessagesProps>>((props, ref) => (
-    <ToastComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} __type__={ToastType.MESSAGES} />
-));
+export const Messages  = ({ ref, ...props }: Partial<ToastProps>) => (
+    <ToastComponent {...props} forwardRef={ref} __type__={ToastType.MESSAGES} />
+);
 
 let noseurInternalGlobalToasterRoot: ReactDOM.Root | null;
 let noseurInternalGlobalToasterManageRef: ToastManageRef | null;
@@ -332,7 +332,7 @@ export const Toaster: ToasterInterface = {
             ...(props as any),
             container: document.body,
             __type__: ToastType.TOASTER,
-            forwardRef: ref ?? props.forwardRef,
+            forwardRef: ref ?? props.ref,
             manageRef: (r) => {
                 noseurInternalGlobalToasterManageRef = r;
                 onMount && onMount();

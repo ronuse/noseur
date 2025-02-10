@@ -115,7 +115,7 @@ class ProgressBarComponent extends React.Component<ProgressBarProps, ProgressBar
 
 }
 
-export const ProgressBar = React.memo(React.forwardRef<HTMLElement, Partial<ProgressBarProps>>((props, ref) => (
-    <ProgressBarComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-)));
+export const ProgressBar  = ({ ref, ...props }: Partial<ProgressBarProps>) => (
+    <ProgressBarComponent {...props} forwardRef={ref} />
+);
 

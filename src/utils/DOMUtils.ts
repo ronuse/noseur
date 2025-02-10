@@ -161,14 +161,14 @@ export const DOMHelper = {
 		return elementRect.height + (excludeMargin ? 0 : (parseInt(style.marginTop) + parseInt(style.marginBottom))) + parseInt(style.paddingTop) + parseInt(style.paddingBottom);
 	},
 
-	getElementSuperflousWidth(element: any, withPadding?: boolean) {
+	getElementSuperfluousWidth(element: any, withPadding?: boolean) {
 		const style = element.currentStyle ?? window.getComputedStyle(element);
 		let width = parseInt(style.marginLeft) + parseInt(style.marginRight);
 		if (withPadding) width += (parseInt(style.paddingLeft) + parseInt(style.paddingRight));
 		return width;
 	},
 
-	getElementSuperflousHeight(element: any, withPadding?: boolean) {
+	getElementSuperfluousHeight(element: any, withPadding?: boolean) {
 		const style = element.currentStyle ?? window.getComputedStyle(element);
 		let height = parseInt(style.marginTop) + parseInt(style.marginBottom)
 		if (withPadding) height += (parseInt(style.paddingTop) + parseInt(style.paddingBottom));
@@ -322,44 +322,61 @@ export const DOMHelper = {
 		return inViewportVertically && inViewportHorizontally;
 	},
 
+	getElementParents(element: Node, parents: any[] = []): Node[] {
+		return (element.parentNode) ? this.getElementParents(element.parentNode, parents.concat([element.parentNode])) : parents;
+	},
+
+	findParentElement(child: any, cond: (node: any) => boolean): Node {
+		const elementParent = child.parentNode;
+		if (cond(elementParent) || elementParent.tagName === "BODY" || elementParent.nodeType === 9) return elementParent;
+		return DOMHelper.findParentElement(elementParent, cond);
+	},
+
 	alignChildToParent(parent: any, child: any, alignment: Alignment) {
 		let left, top;
 		const labelRect = child.getBoundingClientRect();
 		const compoundRect = DOMHelper.getElementRectWithOffset(parent);
-		const labelSuperflousWidth = DOMHelper.getElementSuperflousWidth(child);
-		const labelSuperflousHeight = DOMHelper.getElementSuperflousHeight(child);
+		const labelSuperfluousWidth = DOMHelper.getElementSuperfluousWidth(child);
+		const labelSuperfluousHeight = DOMHelper.getElementSuperfluousHeight(child);
+		const compoundParentElement = DOMHelper.findParentElement(parent, (el: Element) => {
+			let style = (window.getComputedStyle) ? window.getComputedStyle(el) : (el as any).currentStyle;
+			return style.position === "relative";
+		}) as Element;
+		const compoundParentRect = DOMHelper.getElementRectWithOffset(compoundParentElement);
 		switch (alignment) {
 			case Alignment.TOP:
 			case Alignment.TOP_CENTER:
-				left = ((compoundRect.width / 2) - labelSuperflousWidth);
+				left = ((compoundRect.width / 2) - labelSuperfluousWidth);
 				break;
 			case Alignment.TOP_RIGHT:
-				left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperflousWidth);
+				left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperfluousWidth);
 				break;
 			case Alignment.BOTTOM:
 			case Alignment.BOTTOM_CENTER:
-				left = ((compoundRect.width / 2) - labelSuperflousWidth);
-				top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperflousHeight);
+				left = ((compoundRect.width / 2) - labelSuperfluousWidth);
+				top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperfluousHeight);
 				break;
 			case Alignment.BOTTOM_LEFT:
-				top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperflousHeight);
+				top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperfluousHeight);
 				break;
 			case Alignment.BOTTOM_RIGHT:
-				left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperflousWidth);
-				top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperflousHeight);
+				left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperfluousWidth);
+				top = ((compoundRect.top + compoundRect.height) - labelRect.height - labelSuperfluousHeight);
 				break;
 			case Alignment.CENTER:
-				left = ((compoundRect.width / 2) - labelSuperflousWidth);
-				top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height + labelSuperflousHeight);
+				left = ((compoundRect.width / 2) - labelSuperfluousWidth);
+				top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height + labelSuperfluousHeight);
 				break;
 			case Alignment.CENTER_LEFT:
-				top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height - labelSuperflousHeight);
+				top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height - labelSuperfluousHeight);
 				break;
 			case Alignment.CENTER_RIGHT:
-				left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperflousWidth);
-				top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height - labelSuperflousHeight);
+				left = ((compoundRect.width - labelRect.width) + compoundRect.x - labelSuperfluousWidth);
+				top = ((compoundRect.top + (compoundRect.width / 2)) - labelRect.height - labelSuperfluousHeight);
 				break;
 		}
+		if (top && compoundParentElement.tagName !== "BODY") top -= compoundParentRect.top;
+		if (left && compoundParentElement.tagName !== "BODY") left -= compoundParentRect.left;
 		child.style.top = top ? `${top}px` : "inherit";
 		child.style.left = left ? `${left}px` : "inherit";
 	},
@@ -434,7 +451,7 @@ export const DOMHelper = {
 		}
 	},
 
-	positionElement(el: HTMLElement, position: { x: number; y: number;}) {
+	positionElement(el: HTMLElement, position: { x: number; y: number; }) {
 		el.style.position = "absolute";
 		el.style.left = position.x + 'px';
 		el.style.top = position.y + 'px';
@@ -449,17 +466,13 @@ export const ScrollHandler = {
 		return element.querySelector(selector);
 	},
 
-	getElementParents(element: Node, parents: any[] = []): Node[] {
-		return (element.parentNode) ? this.getElementParents(element.parentNode, parents.concat([element.parentNode])) : parents;
-	},
-
 	getScrollableParents(element: Node, nuclearParentOnly: boolean = false): Node[] {
 		let scrollableParents: any[] = [];
 		if (!element) return scrollableParents;
 
-		let elementParents = this.getElementParents(element);
+		let elementParents = DOMHelper.getElementParents(element);
 		const scrollRegex = /(auto|scroll|visible)/;
-		const checkIfScrolable = (node: Element) => {
+		const checkIfScrollable = (node: Element) => {
 			let cssStyleDeclaration = window['getComputedStyle'](node, null);
 			return scrollRegex.test(cssStyleDeclaration.getPropertyValue('overflow')) ||
 				scrollRegex.test(cssStyleDeclaration.getPropertyValue('overflowX')) ||
@@ -471,10 +484,10 @@ export const ScrollHandler = {
 				let selectors = scrollSelectors.split(',');
 				for (let selector of selectors) {
 					let el = this.querySelector(elementParent as Element, selector);
-					if (el && checkIfScrolable(el)) scrollableParents.push(el);
+					if (el && checkIfScrollable(el)) scrollableParents.push(el);
 				}
 			}
-			if (elementParent.nodeType !== 9 && checkIfScrolable(elementParent as Element)) {
+			if (elementParent.nodeType !== 9 && checkIfScrollable(elementParent as Element)) {
 				scrollableParents.push(elementParent);
 			} else if (elementParent.nodeType === 9) {
 				scrollableParents.push(window);
@@ -550,3 +563,62 @@ export const ZIndexHandler = {
 	},
 
 };
+
+export type NoseurObservationType = "resize";
+export type NoseurObservationEventHandler = (...args: any) => any;
+
+export class ObserverHandler {
+
+	private static __OBSERVERS: NoseurObject<NoseurObject<ResizeObserver>> = {};
+	private static __OBSERVERS_EVENT_HANDLERS: NoseurObject<NoseurObject<NoseurObservationEventHandler[]>> = {};
+
+	public static observe(type: NoseurObservationType, eventHandler: NoseurObservationEventHandler, target: any = document.body, options?: any) {
+		ObserverHandler.registerObserver(type, target, options);
+		if (ObserverHandler.__OBSERVERS_EVENT_HANDLERS?.[type]?.[target]?.includes(eventHandler)) return;
+		if (!(type in ObserverHandler.__OBSERVERS_EVENT_HANDLERS)) ObserverHandler.__OBSERVERS_EVENT_HANDLERS[type] = {};
+		if (!(target in ObserverHandler.__OBSERVERS_EVENT_HANDLERS?.[type])) {
+			ObserverHandler.__OBSERVERS_EVENT_HANDLERS[type][target] = [];
+		}
+		ObserverHandler.__OBSERVERS_EVENT_HANDLERS[type][target].push(eventHandler);
+	}
+
+	public static unobserve(type: NoseurObservationType, eventHandler: NoseurObservationEventHandler, target: any = document.body) {
+		const targetObserver = ObserverHandler.__OBSERVERS?.[type]?.[target];
+		const eventHandlerIndex = ObserverHandler.__OBSERVERS_EVENT_HANDLERS?.[type]?.[target]?.indexOf(eventHandler);
+		if (eventHandlerIndex < 0) return;
+		ObserverHandler.__OBSERVERS_EVENT_HANDLERS?.[type]?.[target]?.splice(eventHandlerIndex, 1);
+		if (!ObserverHandler.__OBSERVERS_EVENT_HANDLERS?.[type]?.[target]?.length) {
+			delete ObserverHandler.__OBSERVERS_EVENT_HANDLERS?.[type]?.[target];
+			if (!Object.keys(ObserverHandler.__OBSERVERS_EVENT_HANDLERS?.[type]).length) {
+				delete ObserverHandler.__OBSERVERS_EVENT_HANDLERS?.[type];
+				if (targetObserver) {
+					targetObserver.unobserve(target);
+					delete ObserverHandler.__OBSERVERS?.[type]?.[target];
+					if (!Object.keys(ObserverHandler.__OBSERVERS?.[type]).length) {
+						delete ObserverHandler.__OBSERVERS?.[type];
+					}
+				}
+			}
+		}
+	}
+
+	private static registerObserver(type: NoseurObservationType, target: any, options?: any) {
+		if ((type in ObserverHandler.__OBSERVERS) && (target in ObserverHandler.__OBSERVERS?.[type])) {
+			return;
+		}
+		let observer;
+		if (type === "resize") {
+			observer = new ResizeObserver((entries) => {
+				if (!(type in ObserverHandler.__OBSERVERS_EVENT_HANDLERS)) return;
+				ObserverHandler.__OBSERVERS_EVENT_HANDLERS[type][target].forEach((e) => e(entries));
+			});
+		}
+		if (!observer) throw new Error("NoseurError: observer not initialized, likely an invalid observation type");
+		observer.observe(target, options);
+		if (!(type in ObserverHandler.__OBSERVERS)) ObserverHandler.__OBSERVERS[type] = {};
+		if (!(target in ObserverHandler.__OBSERVERS[type])) {
+			ObserverHandler.__OBSERVERS[type][target] = observer;
+		}
+	}
+
+}

@@ -185,6 +185,6 @@ class CheckboxComponent extends React.Component<CheckboxProps, CheckboxState> {
 
 }
 
-export const Checkbox = React.forwardRef<HTMLElement, Partial<CheckboxProps>>((props, ref) => (
-    <CheckboxComponent {...props} forwardRef={ref as React.ForwardedRef<NoseurFormElement | HTMLLabelElement>} />
-));
+export const Checkbox  = ({ ref, ...props }: Partial<CheckboxProps>) => (
+    <CheckboxComponent {...props} forwardRef={ref} />
+);

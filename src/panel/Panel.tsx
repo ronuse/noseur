@@ -189,6 +189,6 @@ class PanelComponent extends React.Component<PanelProps, PanelState> {
 
 }
 
-export const Panel = React.forwardRef<HTMLDivElement, Partial<PanelProps>>((props, ref) => (
-    <PanelComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const Panel  = ({ ref, ...props }: Partial<PanelProps>) => (
+    <PanelComponent {...props} forwardRef={ref} />
+);

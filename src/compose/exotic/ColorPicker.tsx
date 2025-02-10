@@ -458,6 +458,6 @@ class ColorPickerComponent extends React.Component<ColorPickerProps, ColorPicker
 
 }
 
-export const ColorPicker = React.forwardRef<HTMLDivElement, Partial<ColorPickerProps>>((props, ref) => (
-    <ColorPickerComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const ColorPicker  = ({ ref, ...props }: Partial<ColorPickerProps>) => (
+    <ColorPickerComponent {...props} forwardRef={ref} />
+);

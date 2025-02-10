@@ -238,11 +238,15 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
             "noseur-wd-100-pct": this.state.props.fill
         }, scheme, (this.state.props.scheme ? `${this.state.props.scheme}-bd-rd ${this.state.props.scheme}-vars` : null),
             (this.state.props.closeOnClick ? "noseur-cursor-pointer" : null), this.state.props.className);
+        const ref = (el: HTMLDivElement) => {
+            if (!el) return;
+            ObjectHelper.resolveRef(this.props.forwardRef, el);
+        };
 
         const children = (<CSSTransition classNames={transition} options={this.state.props.transitionOptions}
-            timeout={transition === Transition.NONE ? 0 : this.state.props.transitionTimeout}
+            timeout={transition === Transition.NONE ? 0 : this.state.props.transitionTimeout} nodeRef={ref}
             in={this.state.mount} unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExited={this.onExited}>
-            <div ref={this.props.forwardRef} className={className} id={this.props.id} style={this.state.props.style}
+            <div ref={ref} className={className} id={this.props.id} style={this.state.props.style}
                 onClick={this.onClick} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <div className="noseur-message-container">
                     {icon}
@@ -257,7 +261,7 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
 
 }
 
-export const Message = React.forwardRef<HTMLDivElement, Partial<MessageProps>>((props, ref) => (
-    <MessageComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const Message = ({ ref, ...props }: Partial<MessageProps>) => (
+    <MessageComponent {...props} forwardRef={ref} />
+);
 

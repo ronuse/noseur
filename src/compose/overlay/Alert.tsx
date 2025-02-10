@@ -135,7 +135,7 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
             const cachedOnClick = control.props?.onClick;
             const text = control.label || control.props?.text;
             const icon = control.icon || control.props?.leftIcon;
-            const ref = control.ref || control.props?.forwardRef;
+            const ref = control.ref || control.props?.ref;
             const scheme = control.scheme || control.props?.scheme;
             const onClick = (e: any) => {
                 if (cachedOnClick) cachedOnClick(e);
@@ -307,19 +307,19 @@ export function loadingAlert<T>(props: Partial<LoadingAlertDialog<T>>, params?: 
 	return alert;
 };
 
-export const AlertDialog = React.forwardRef<HTMLDivElement, Partial<AlertProps>>((props, ref) => (
-    <AlertComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const AlertDialog  = ({ ref, ...props }: Partial<AlertProps>) => (
+    <AlertComponent {...props} forwardRef={ref} />
+);
 
-export const AlertPopover = React.forwardRef<HTMLDivElement, Partial<AlertProps>>((props, ref) => (
-    <AlertComponent {...props} component={Popover} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const AlertPopover  = ({ ref, ...props }: Partial<AlertProps>) => (
+    <AlertComponent {...props} component={Popover} forwardRef={ref} />
+);
 
 export const Alert = AlertDialog;
 
-export const alertDialog = (props: Partial<AlertProps>) => alert({ ...props });
-export const alertPopover = (props: Partial<AlertProps>) => alert({ ...props, component: Popover });
-export const loadingAlertDialog = <T,>(props: Partial<LoadingAlertDialog<T>>, params?: T) => loadingAlert({ ...props }, params);
-export const loadingAlertPopover = <T,>(props: Partial<LoadingAlertDialog<T>>, params?: T) => loadingAlert({ ...props, component: Popover }, params);
+export const alertDialog  = ({ ref, ...props }: Partial<AlertProps>) => alert({ ...props, forwardRef: ref });
+export const alertPopover  = ({ ref, ...props }: Partial<AlertProps>) => alert({ ...props, forwardRef: ref, component: Popover });
+export const loadingAlertDialog = <T,>({ ref, ...props }: Partial<LoadingAlertDialog<T>>, params?: T) => loadingAlert({ ...props, forwardRef: ref }, params);
+export const loadingAlertPopover = <T,>({ ref, ...props }: Partial<LoadingAlertDialog<T>>, params?: T) => loadingAlert({ ...props, forwardRef: ref, component: Popover }, params);
 
 

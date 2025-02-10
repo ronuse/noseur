@@ -12,10 +12,12 @@ export * from "./constants/Orientation";
 
 // utils
 export * from "./utils/Timer";
+export * from "./utils/Debugger";
 export * from "./utils/DOMUtils";
 export * from "./utils/Classname";
 export * from "./utils/BoolHelper";
 export * from "./utils/DateHelper";
+export * from "./utils/Subscriber";
 export * from "./utils/InputHelper";
 export * from "./utils/ColorHelper";
 export * from "./utils/TypeChecker";

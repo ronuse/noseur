@@ -53,7 +53,12 @@ function Schemer() {
         const secondaryAccentColor = secondaryAccentColorRef.current?.value;
 
 
-        console.log(">>>>>", `${hexToRgbA(mainColor, 0.7)}`);
+        console.log(">>>>>1", name);
+        console.log(">>>>>1", mainColor);
+        console.log(">>>>>1", accentColor);
+        console.log(">>>>>1", secondaryAccentColor);
+        //console.log(">>>>>", `${hexToRgbA(mainColor, 0.7)}`);
+        return;
         const schemeCss = `
 .${name} {
     color: ${accentColor};
@@ -61,10 +66,10 @@ function Schemer() {
     background-color: ${mainColor};
 }
 .${name}-vars {
-    --fixtureColor: ${accentColor};
-	--fixtureBackgroundColor: ${mainColor};
-	--dataBorderColor: ${secondaryAccentColor};
-	--stripColor: ${hexToRgbA(mainColor, 0.07)};
+    --noseurSchemeFixtureColor: ${accentColor};
+	--noseurSchemeFixtureBackgroundColor: ${mainColor};
+	--noseurSchemeDataBorderColor: ${secondaryAccentColor};
+	--noseurSchemeStripColor: ${hexToRgbA(mainColor, 0.07)};
 }
 .${name}-tx,
 .${name}-tx-hv:hover {
@@ -105,7 +110,7 @@ function Schemer() {
 `;
 
         if (outputRef.current) {
-            outputRef.current.value = schemeCss;
+            //outputRef.current.value = schemeCss;
         }
         document.head.insertAdjacentHTML("beforeend", `<style>${schemeCss}</style>`);
         setScheme(name);

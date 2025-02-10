@@ -103,7 +103,7 @@ class ColorSliderComponent extends React.Component<ColorSliderProps, ColorSlider
         const className = Classname.build("noseur-color-slider", `noseur-color-slider-${this.props.orientation}`, this.props.className, this.props.attrsRelay?.sliderProps?.className);
         const style: any = {
             ...(this.props.style ?? {}),
-            "--mainColor": this.props.colorGradient,
+            "--noseurSchemeMainColor": this.props.colorGradient,
             "--primaryColor": this.state.primaryColor,
             ...(this.props.attrsRelay?.sliderProps?.style ?? {}),
         };
@@ -134,6 +134,6 @@ class ColorSliderComponent extends React.Component<ColorSliderProps, ColorSlider
 
 }
 
-export const ColorSlider = React.forwardRef<HTMLDivElement, Partial<ColorSliderProps>>((props, ref) => (
-    <ColorSliderComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const ColorSlider  = ({ ref, ...props }: Partial<ColorSliderProps>) => (
+    <ColorSliderComponent {...props} forwardRef={ref} />
+);

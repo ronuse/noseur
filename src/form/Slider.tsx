@@ -203,6 +203,6 @@ class SliderComponent extends React.Component<SliderProps, SliderState> {
 
 }
 
-export const Slider = React.forwardRef<HTMLDivElement, Partial<SliderProps>>((props, ref) => (
-    <SliderComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const Slider  = ({ ref, ...props }: Partial<SliderProps>) => (
+    <SliderComponent {...props} forwardRef={ref} />
+);

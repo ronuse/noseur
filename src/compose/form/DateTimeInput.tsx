@@ -175,29 +175,29 @@ class DateTimeInputComponent extends React.Component<DateTimeInputProps, DateTim
 
 }
 
-export const DateTimeInput = React.forwardRef<HTMLInputElement, Partial<DateTimeInputProps>>((props, ref) => (
+export const DateTimeInput  = ({ ref, ...props }: Partial<DateTimeInputProps>) => (
     <DateTimeInputComponent {...props} dateFormat={{ day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: !props.hourFormat || props.hourFormat === "12" }}
-        showTime={true} forwardRef={ref as React.ForwardedRef<HTMLInputElement>} />
-));
+        showTime={true} forwardRef={ref} />
+);
 
-export const YearInput = React.forwardRef<HTMLInputElement, Partial<DateTimeInputProps>>((props, ref) => (
-    <DateTimeInputComponent dateFormat={{ year: 'numeric' }} {...props} forwardRef={ref as React.ForwardedRef<HTMLInputElement>} showTime={false} mode={DateTimePickerMode.YEAR} />
-));
+export const YearInput  = ({ ref, ...props }: Partial<DateTimeInputProps>) => (
+    <DateTimeInputComponent forwardRef={ref} dateFormat={{ year: 'numeric' }} {...props} showTime={false} mode={DateTimePickerMode.YEAR} />
+);
 
-export const MonthInput = React.forwardRef<HTMLInputElement, Partial<DateTimeInputProps>>((props, ref) => (
-    <DateTimeInputComponent dateFormat={{ month: 'long' }} {...props} forwardRef={ref as React.ForwardedRef<HTMLInputElement>} showTime={false} mode={DateTimePickerMode.MONTH} />
-));
+export const MonthInput  = ({ ref, ...props }: Partial<DateTimeInputProps>) => (
+    <DateTimeInputComponent forwardRef={ref} dateFormat={{ month: 'long' }} {...props} showTime={false} mode={DateTimePickerMode.MONTH} />
+);
 
-export const DateInput = React.forwardRef<HTMLInputElement, Partial<DateTimeInputProps>>((props, ref) => (
-    <DateTimeInputComponent dateFormat={{ day: '2-digit', month: '2-digit', year: 'numeric' }} {...props} forwardRef={ref as React.ForwardedRef<HTMLInputElement>} showTime={false} />
-));
+export const DateInput  = ({ ref, ...props }: Partial<DateTimeInputProps>) => (
+    <DateTimeInputComponent forwardRef={ref} dateFormat={{ day: '2-digit', month: '2-digit', year: 'numeric' }} {...props} showTime={false} />
+);
 
-export const TimeInput = React.forwardRef<HTMLInputElement, Partial<DateTimeInputProps>>((props, ref) => {
+export const TimeInput  = ({ ref, ...props }: Partial<DateTimeInputProps>) => {
     const hourFormat12 = !props.hourFormat || props.hourFormat === "12";
     const dateFormat: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: hourFormat12 };
     const timeLayout = props.timeLayout || hourFormat12 ? props.timeLayout : DateTimePickerLayout.TIME_LAYOUT_WITHOUT_MERIDIAN;
-    return (<DateTimeInputComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLInputElement>} showTime={true} timeOnly={true} timeLayout={timeLayout}
+    return (<DateTimeInputComponent {...props} forwardRef={ref} showTime={true} timeOnly={true} timeLayout={timeLayout}
         dateFormat={dateFormat} layout={DateTimePickerLayoutElement.TimeElement} attrsRelay={{
             popover: { pointingArrowClassName: "", ...(props?.attrsRelay?.popover ?? {}) }
         }}/>);
-});
+};

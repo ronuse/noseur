@@ -269,17 +269,16 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
             key: this.props.key,
             style: this.props.style,
         };
-        const forwardRef = this.props.forwardRef as React.ForwardedRef<NoseurDivElement>;
         const ref = (el: NoseurDivElement) => {
             if (!el) return;
             this.internalElement = el;
-            ObjectHelper.resolveRef(forwardRef, el);
+            ObjectHelper.resolveRef(this.props.forwardRef, el);
             if (!this.hostRectBeforeRerendering.width) this.hostRectBeforeRerendering = this.internalElement.getBoundingClientRect();
         };
 
         return (
             <CSSTransition classNames={transition} timeout={this.props.transitionTimeout} in={this.state.visible} options={this.props.transitionOptions}
-                unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExit={this.onExit} onExited={this.onExited}>
+                unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExit={this.onExit} onExited={this.onExited} nodeRef={ref}>
                 <div ref={ref} {...props}>
                     {this.props.children}
                 </div>
@@ -294,6 +293,6 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
 
 }
 
-export const Popover = React.forwardRef<NoseurDivElement, Partial<PopoverProps>>((props, ref) => (
-    <PopoverComponent {...props} forwardRef={ref as React.ForwardedRef<NoseurDivElement>} />
-));
+export const Popover  = ({ ref, ...props }: Partial<PopoverProps>) => (
+    <PopoverComponent {...props} forwardRef={ref} />
+);

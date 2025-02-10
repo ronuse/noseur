@@ -7,7 +7,7 @@
 }
 
 .noseur-panel-bordered {
-    border: var(--borderWidth, 1px) solid var(--borderColor, #E5E7EB);
+    border: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #E5E7EB);
 }
 
 .noseur-panel-header {
@@ -16,8 +16,8 @@
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     justify-content: space-between;
-    color: var(--accentColor, inherit);
-    background-color: var(--fixtureBackgroundColor, #f5f8fa);
+    color: var(--noseurSchemeAccentColor, inherit);
+    background-color: var(--noseurSchemeFixtureBackgroundColor, #f5f8fa);
 }
 
 .noseur-panel-header:hover {
@@ -25,7 +25,7 @@
 }
 
 .noseur-panel-header-bordered {
-    border-bottom: var(--borderWidth, 1px) solid var(--borderColor, #E5E7EB);
+    border-bottom: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #E5E7EB);
 }
 
 .noseur-panel-header-only {
@@ -37,12 +37,12 @@
     padding: 10px 15px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    color: var(--accentColor, inherit);
-    background-color: var(--fixtureBackgroundColor, #f5f8fa);
+    color: var(--noseurSchemeAccentColor, inherit);
+    background-color: var(--noseurSchemeFixtureBackgroundColor, #f5f8fa);
 }
 
 .noseur-panel-footer-bordered {
-    border-top: var(--borderWidth, 1px) solid var(--borderColor, #E5E7EB);
+    border-top: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #E5E7EB);
 }
 
 .noseur-panel-footer-only {
@@ -103,7 +103,7 @@
 }
 
 .noseur-accordion-bordered {
-    border: var(--borderWidth, 1px) solid var(--borderColor, #E5E7EB);
+    border: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #E5E7EB);
 
     &>.noseur-panel-bordered {
         border-left: none;
@@ -207,20 +207,20 @@
         &.noseur-tabpane-navigator-bottom-center {
 
             &>.noseur-tabpane-headers {
-                border-top: var(--borderWidth, 1px) solid var(--borderColor, #EEF0F8);
+                border-top: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #EEF0F8);
             }
 
             &>.noseur-tabpane-control {
-                border-bottom: var(--borderWidth, 1px) solid var(--borderColor, #EEF0F8);
+                border-bottom: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #EEF0F8);
             }
         }
 
         &.noseur-tabpane-navigator-left>.noseur-tabpane-headers {
-            border-right: var(--borderWidth, 1px) solid var(--borderColor, #EEF0F8);
+            border-right: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #EEF0F8);
         }
 
         &.noseur-tabpane-navigator-right>.noseur-tabpane-headers {
-            border-left: var(--borderWidth, 1px) solid var(--borderColor, #EEF0F8);
+            border-left: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #EEF0F8);
         }
 
     }
@@ -230,7 +230,7 @@
     &.noseur-tabpane-navigator-top-center {
 
         &>.noseur-tabpane-control {
-            border-top: var(--borderWidth, 1px) solid var(--borderColor, #EEF0F8);
+            border-top: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #EEF0F8);
         }
     }
 
@@ -253,15 +253,15 @@
 
             &.noseur-tabpane-control-l {
                 border-right: unset;
-                border-left: var(--borderWidth, 1px) solid var(--borderColor, #EEF0F8);
-                border-bottom: var(--borderWidth, 1px) solid var(--borderColor, #EEF0F8);
+                border-left: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #EEF0F8);
+                border-bottom: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #EEF0F8);
             }
 
             &.noseur-tabpane-control-r {
                 left: 0;
                 bottom: 0;
                 top: unset;
-                border-top: var(--borderWidth, 1px) solid var(--borderColor, #EEF0F8);
+                border-top: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #EEF0F8);
             }
         }
 
@@ -271,7 +271,7 @@
 
         &>.noseur-tabpane-control-l,
         &>.noseur-tabpane-control-r {
-            border-left: var(--borderWidth, 1px) solid var(--borderColor, #EEF0F8);
+            border-left: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #EEF0F8);
         }
 
     }
@@ -282,7 +282,7 @@
         &>.noseur-tabpane-control-r {
             width: calc(100% - 2px);
             border-left: unset !important;
-            border-right: var(--borderWidth, 1px) solid var(--borderColor, #EEF0F8) !important;
+            border-right: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #EEF0F8) !important;
         }
 
     }
@@ -302,12 +302,12 @@
     background-color: var(--tabpaneNavigatorBackgroundColor, inherit);
 
     &.noseur-tabpane-control-l {
-        border-right: var(--borderWidth, 1px) solid var(--borderColor, #EEF0F8);
+        border-right: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #EEF0F8);
     }
 
     &.noseur-tabpane-control-r {
         right: 0;
-        border-left: var(--borderWidth, 1px) solid var(--borderColor, #EEF0F8);
+        border-left: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #EEF0F8);
     }
 }
 
@@ -321,7 +321,7 @@
     overflow: auto;
     scroll-behavior: smooth;
     overscroll-behavior: contain auto;
-    border-bottom: var(--borderWidth, 1px) solid var(--borderColor, #EEF0F8);
+    border-bottom: var(--borderWidth, 1px) solid var(--noseurSchemeBorderColor, #EEF0F8);
 
 }
 
@@ -336,7 +336,7 @@
 
     &.noseur-active,
     &:not(.noseur-active):not(.noseur-tabpanel-noline):hover {
-        border-bottom: 2px solid var(--mainColor, #EEF0F8);
+        border-bottom: 2px solid var(--noseurSchemeMainColor, #EEF0F8);
     }
 
     &.noseur-skeleton {
@@ -372,7 +372,7 @@
 .noseur-scrollpanel::-webkit-scrollbar-thumb {
 	cursor: pointer;
 	border-radius: var(--scrollThumbBorderRadius, 10px);
-	background-color: var(--scrollThumbBg, var(--mainColor, rgb(193, 193, 193)));
+	background-color: var(--scrollThumbBg, var(--noseurSchemeMainColor, rgb(193, 193, 193)));
 }
 
 .noseur-scrollpanel::-webkit-scrollbar-corner {

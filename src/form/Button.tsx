@@ -158,9 +158,9 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
 
 }
 
-export const Button = React.forwardRef<HTMLButtonElement, Partial<ButtonProps>>((props, ref) => (
-    <ButtonComponent {...props} forwardRef={ref as React.ForwardedRef<NoseurButtonElement>} />
-));
+export const Button  = ({ ref, ...props }: Partial<ButtonProps>) => (
+    <ButtonComponent {...props} forwardRef={ref} />
+);
 
 export function buildButtonControl(control: Partial<ButtonProps> | NoseurElement, customNonOverridingProps: Partial<ButtonProps>, cb?: (e: any) => void, className?: string) {
     if (!control || React.isValidElement(control)) return control as any;

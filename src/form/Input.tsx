@@ -99,7 +99,7 @@ class Input extends React.Component<InputProps, InputState> {
         const valueParts = value.split("");
         const maskParts = new Set(this.props.maskSlot);
         const resolvedValue = this.props.mask.split("");
-        const [ from, to ] = [ element.selectionStart, element.selectionEnd ];
+        const [from, to] = [element.selectionStart, element.selectionEnd];
         console.log("SELECTEION", from, to);
         /*for (let index = 0, valueIndex = 0; index < resolvedValue.length && (!!valueParts[valueIndex] && valueIndex < resolvedValue.length); index++) {
             console.log("PLACEHOLDER INDEX", valueParts[valueIndex], index);
@@ -109,7 +109,7 @@ class Input extends React.Component<InputProps, InputState> {
         for (let index = from, sindex = 0; index < resolvedValue.length && sindex < valueParts.length; index++) {
             console.log("PLACEHOLDER INDEX", from, index, resolvedValue[index]);
             if (maskParts.has(resolvedValue[index])) {
-                maskSlotIndexes[""+index] = sindex;
+                maskSlotIndexes["" + index] = sindex;
                 sindex++;
             }
         }
@@ -168,7 +168,7 @@ class Input extends React.Component<InputProps, InputState> {
     }
 
     render() {
-        const eventProps = ObjectHelper.extractEventProps(this.props, [ "onInputEmpty", "onFirstInput", "onInputComplete" ]);
+        const eventProps = ObjectHelper.extractEventProps(this.props, ["onInputEmpty", "onFirstInput", "onInputComplete"]);
         const className = Classname.build(
             (!this.props.noStyle && this.props.highlight) ? `${this.props.scheme}-bd-cl` : null,
             (!this.props.noStyle && this.props.scheme && !this.props.flushed) ? `${this.props.scheme}-bd-3px-bx-sw-fc` : null,
@@ -215,26 +215,26 @@ class Input extends React.Component<InputProps, InputState> {
 
 }
 
-export const TextInput = React.forwardRef<HTMLInputElement, Partial<InputProps>>((props, ref) => (
-    <Input {...props} forwardRef={ref as React.ForwardedRef<NoseurFormElement>} />
-));
+export const TextInput = ({ ref, ...props }: Partial<InputProps>) => {
+    return (<Input {...props} forwardRef={ref} />);
+};
 
-export const EmailInput = React.forwardRef<HTMLInputElement, Partial<InputProps>>((props, ref) => (
-    <Input {...props} type="email" forwardRef={ref as React.ForwardedRef<NoseurFormElement>} />
-));
+export const EmailInput  = ({ ref, ...props }: Partial<InputProps>) => (
+    <Input {...props} forwardRef={ref} type="email" />
+);
 
-export const NumberInput = React.forwardRef<HTMLInputElement, Partial<InputProps>>((props, ref) => (
-    <Input {...props} type="number" forwardRef={ref as React.ForwardedRef<NoseurFormElement>} />
-));
+export const NumberInput  = ({ ref, ...props }: Partial<InputProps>) => (
+    <Input {...props} forwardRef={ref} type="number" />
+);
 
-export const TextAreaInput = React.forwardRef<HTMLInputElement, Partial<InputProps>>((props, ref) => (
-    <Input {...props} type="textarea" forwardRef={ref as React.ForwardedRef<NoseurFormElement>} />
-));
+export const TextAreaInput  = ({ ref, ...props }: Partial<InputProps>) => (
+    <Input {...props} forwardRef={ref} type="textarea" />
+);
 
-export const PasswordInput = React.forwardRef<HTMLInputElement, Partial<InputProps>>((props, ref) => (
-    <Input {...props} type="password" forwardRef={ref as React.ForwardedRef<NoseurFormElement>} />
-));
+export const PasswordInput  = ({ ref, ...props }: Partial<InputProps>) => (
+    <Input {...props} forwardRef={ref} type="password" />
+);
 
-export const MoneyInput = React.forwardRef<HTMLInputElement, Partial<InputProps>>((props, ref) => (
-    <Input {...props} inputFilter={InputFilter.MONEY} forwardRef={ref as React.ForwardedRef<NoseurFormElement>} />
-));
+export const MoneyInput  = ({ ref, ...props }: Partial<InputProps>) => (
+    <Input {...props} forwardRef={ref} inputFilter={InputFilter.MONEY} />
+);

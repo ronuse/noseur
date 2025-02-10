@@ -203,6 +203,6 @@ class RadioButtonComponent extends React.Component<RadioButtonProps, RadioButton
 
 }
 
-export const RadioButton = React.forwardRef<HTMLElement, Partial<RadioButtonProps>>((props, ref) => (
-    <RadioButtonComponent {...props} forwardRef={ref as React.ForwardedRef<NoseurFormElement | HTMLLabelElement>} />
-));
+export const RadioButton  = ({ ref, ...props }: Partial<RadioButtonProps>) => (
+    <RadioButtonComponent {...props} forwardRef={ref} />
+);

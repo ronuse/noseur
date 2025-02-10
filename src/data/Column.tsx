@@ -133,6 +133,6 @@ export class ColumnComponent extends React.Component<ColumnProps, ColumnState> {
 
 }
 
-export const Column = React.forwardRef<HTMLTableColElement, Partial<ColumnProps>>((props, _) => (
-    <ColumnComponent {...props} />
-));
+export const Column  = ({ ref, ...props }: Partial<ColumnProps>) => (
+    <ColumnComponent {...props} forwardRef={ref} />
+);

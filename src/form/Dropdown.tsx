@@ -7,12 +7,12 @@ import { BoolHelper } from "../utils/BoolHelper";
 import { TypeChecker } from "../utils/TypeChecker";
 import { ObjectHelper } from "../utils/ObjectHelper";
 import { Popover, PopoverProps } from "../overlay/Popover";
+import { Alignment, Position } from "../constants/Alignment";
 import { ComponentBaseProps } from "../core/ComponentBaseProps";
 import { FunctionStackManager } from "../utils/FunctionStackManager";
 import { FormControl, FormControlProps } from "../compose/form/FormControl";
 import { InputOnInputCompleteHandler, InputProps, TextInput } from "./Input";
 import { NoseurDivElement, NoseurElement, NoseurObject, ToggleIcons } from '../constants/Types';
-import { Alignment, Position } from "../constants/Alignment";
 
 export type DropdownEventHandler = () => void | undefined;
 export type DropdownOnDeSelectHandler = (event: any) => void;
@@ -22,7 +22,8 @@ export type DropdownEmptyTemplateHandler = () => NoseurElement | undefined;
 export type DropdownLoadingTemplateHandler = () => NoseurElement | undefined;
 export type DropdownTemplateHandler = (option: any) => NoseurElement | undefined;
 export type DropdownSelectedIndex = { primaryIndex: number, secondaryIndex: number };
-export type DropdownOnSelectHandler = (option: any, event: any) => boolean | undefined;
+export type DropdownOnSelectHandler = (option: any, event: any) => boolean | undefined | void;
+export type DropdownTranslateLabelEventHandler = (label: string, option: NoseurObject<any>) => any;
 export type DropdownOnSearchHandler = (value: any, dropdownManageRef?: DropdownManageRef) => NoseurObject<any>[] | undefined | null;
 
 export interface DropdownManageRef {
@@ -37,9 +38,12 @@ export interface DropdownProps extends ComponentBaseProps<NoseurDivElement, Drop
     editable: boolean;
     disabled: boolean;
     highlight: boolean;
+    clearable: boolean;
     placeholder: string;
-    cleareable: boolean;
     borderless: boolean;
+    noToggleIcons: boolean;
+    optionsClassName: string;
+    noSelectionIcon: boolean;
     toggleIcons: ToggleIcons;
     defaultInputValue: string;
     optionMap: DropdownOption;
@@ -70,6 +74,7 @@ export interface DropdownProps extends ComponentBaseProps<NoseurDivElement, Drop
     loadingTemplate: DropdownLoadingTemplateHandler;
     selectedOptionTemplate?: DropdownTemplateHandler;
     onInputComplete: InputOnInputCompleteHandler | undefined;
+    translateSelectionLabel: DropdownTranslateLabelEventHandler
 
 }
 
@@ -117,8 +122,8 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
     constructor(props: DropdownProps) {
         super(props);
 
-        this.optionTemplate = this.props.optionTemplate || this.buildSingleOption;
-        this.optionGroupTemplate = this.props.optionGroupTemplate || this.buildSingleOption;
+        this.optionTemplate = this.props.optionTemplate ?? this.buildSingleOption;
+        this.optionGroupTemplate = this.props.optionGroupTemplate ?? this.buildSingleOption;
 
         this.togglePopover = this.togglePopover.bind(this);
         this.onDropdownShow = this.onDropdownShow.bind(this);
@@ -277,7 +282,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
                 (this.props.scheme && !this.props.disabled ? `${this.props.scheme}-bg-hv` : null), {
                 'default-style': !this.props.scheme,
                 'noseur-disabled': (option as any).not_selectable,
-            }, "noseur-dropdown-popover-li-item", option.className);
+            }, "noseur-dropdown-popover-li-item", this.props.optionsClassName, option.className);
             listItems.push(this.buildListItem(option, false, groupIndex, index, isSelected, className));
         });
         return listItems;
@@ -285,7 +290,8 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
 
     buildSelectedOption(selectedOption: any): any {
         if (selectedOption && this.props.selectedOptionTemplate) return this.props.selectedOptionTemplate(selectedOption);
-        const selectedOptionLabel = this.resolveOptionLabel(selectedOption);
+        let selectedOptionLabel = this.resolveOptionLabel(selectedOption);
+        if (this.props.translateSelectionLabel) selectedOptionLabel = this.props.translateSelectionLabel(selectedOptionLabel, selectedOption);
         let defaultValue = selectedOptionLabel;
         if (defaultValue && this.props.renderOptionAsPlaceholder) defaultValue = null;
         if (!defaultValue) defaultValue = this.props.textInputProps.defaultValue;
@@ -327,7 +333,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
             }
         }
 
-        return (<TextInput {...inputProps} onClick={(e) => this.togglePopover(e, false)} />)
+        return (<TextInput {...inputProps} onClick={(e: any) => this.togglePopover(e, false)} />)
     }
 
     renderPopover() {
@@ -363,6 +369,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
     }
 
     renderToggleIcon() {
+        if (this.props.noToggleIcons) return null;
         const toggleIcon = this.props.toggleIcons[this.state.popoverVisible ? "hide" : "show"];
         return TypeChecker.isString(toggleIcon)
             ? <i className={Classname.build(toggleIcon, (this.props.scheme ? `${this.props.scheme}-tx` : null))} />
@@ -370,23 +377,25 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
     }
 
     renderLeftContent(selectedOption: any, formControlProps: Partial<FormControlProps>) {
-        const icon = this.props.iconPosition === Position.LEFT ? this.resolveOptionIcon(selectedOption) : null;
+        const icon = this.props.iconPosition === Position.LEFT && !this.props.noSelectionIcon ? this.resolveOptionIcon(selectedOption) : null;
         const leftContent = this.props.selectedOptionTemplate ? null : icon ?? formControlProps.leftContent;
         const toggleIcon = this.props.togglePosition === Position.LEFT ? this.renderToggleIcon() : null;
+        if (!toggleIcon && !leftContent) return null;
         return (<div className={"noseur-dropdown-left-content"}>{toggleIcon}{leftContent}</div>)
     }
 
     renderRightContent(selectedOption: any, optionIsSelected: boolean) {
         let closeIconClassname;
-        if (this.props.cleareable && optionIsSelected) {
+        if (this.props.clearable && optionIsSelected) {
             closeIconClassname = (<i className={Classname.build("fa fa-close", `${Scheme.DANGER}-tx-hv`)} onClick={(e: any) => {
                 e.stopPropagation();
                 this.selectOption(e, { primaryIndex: -1, secondaryIndex: -1 });
                 if (this.internalTextInputElement && this.props.renderOptionAsPlaceholder) this.internalTextInputElement.placeholder = this.props.placeholder;
             }} />);
         }
-        const icon = this.props.iconPosition === Position.RIGHT ? this.resolveOptionIcon(selectedOption) : null;
+        const icon = this.props.iconPosition === Position.RIGHT && !this.props.noSelectionIcon ? this.resolveOptionIcon(selectedOption) : null;
         const toggleIcon = this.props.togglePosition === Position.RIGHT ? this.renderToggleIcon() : null;
+        if (!closeIconClassname && !toggleIcon && !icon) return null;
         return (<div className={"noseur-dropdown-right-content"}>{closeIconClassname}{icon}{toggleIcon}</div>)
     }
 
@@ -412,7 +421,8 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
 
 }
 
-export const Dropdown = React.forwardRef<NoseurDivElement, Partial<DropdownProps>>((props, ref) => (
-    <DropdownComponent {...props} forwardRef={ref as React.ForwardedRef<NoseurDivElement>} />
-));
+export const Dropdown  = ({ ref, ...props }: Partial<DropdownProps>) => (
+    <DropdownComponent {...props} forwardRef={ref} />
+);
 
+// TODO adapt size of selected label to input width

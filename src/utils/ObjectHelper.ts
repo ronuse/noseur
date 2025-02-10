@@ -109,13 +109,13 @@ export const ObjectHelper = {
         }
     },
 
-    resolveRef<T>(ref: React.ForwardedRef<T>, value: T, always: boolean = false) {
-        if ((!value && !always) || !ref) return;
+    resolveRef<T>(ref: React.ForwardedRef<T>, value?: T, always: boolean = false) {
+        if (!ref || (!value && !always) || !ref) return;
 
         if (ref instanceof Function) {
-            ref(value);
+            ref(value ?? null);
         } else {
-            ref.current = value;
+            ref.current = value ?? null;
         }
     },
 

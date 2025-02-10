@@ -211,6 +211,6 @@ class DragSensorComponent extends React.Component<DragSensorProps, DragSensorSta
 
 }
 
-export const DragSensor = React.forwardRef<HTMLDivElement, Partial<DragSensorProps>>((props, ref) => (
-    <DragSensorComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const DragSensor  = ({ ref, ...props }: Partial<DragSensorProps>) => (
+    <DragSensorComponent {...props} forwardRef={ref} />
+);

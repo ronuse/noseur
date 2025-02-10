@@ -23,9 +23,9 @@ import {
 function App() {
     let progress = React.useRef(0);
     const schemes = Object.values(Scheme);
-    const onOpenRef = React.useRef<any>();
-    const onCloseRef = React.useRef<any>();
-    const chatSenderRef = React.useRef<any>();
+    const onOpenRef = React.useRef<any>(null);
+    const onCloseRef = React.useRef<any>(null);
+    const chatSenderRef = React.useRef<any>(null);
     const [state, setState] = React.useState(false);
     const inputManageRef = React.useRef<any>(null);
     const [states, setStates] = React.useState<any>({});
@@ -206,7 +206,7 @@ function App() {
                 </div>
                 <div style={{ margin: 30 }}>
                     <Slider scheme={Scheme.WARNING} orientation={Orientation.VERTICAL} attrsRelay={{ dragSensorProps: { allowedOverflow: 10 } }} range={<div style={{ height: "100%", width: 10 } as any} />} />
-                    <Slider scheme={Scheme.WARNING} attrsRelay={{ dragSensorProps: { allowedOverflow: 10 } }} range={<div style={{ width: "100%", "--mainColor": "red", height: 10 } as any} />} />
+                    <Slider scheme={Scheme.WARNING} attrsRelay={{ dragSensorProps: { allowedOverflow: 10 } }} range={<div style={{ width: "100%", "--noseurSchemeMainColor": "red", height: 10 } as any} />} />
                     <br />
                     <Slider scheme={Scheme.INFO} value={50} handle={<Button leftIcon="fab fa-google" scheme={Scheme.INFO} />} />
                     <Slider scheme={Scheme.PRIMARY} orientation={Orientation.VERTICAL} handle={<Button scheme={Scheme.PRIMARY} leftIcon="fab fa-google" />} />
@@ -1306,13 +1306,13 @@ function App() {
                     <MonthPicker type={ComponentRenderType.POPOVER} manageRef={(e: any) => refs.current["popover-month1"] = e} />
                     <br /><br />
                     <div style={{ display: "flex" }}>
-                        <i className="fa fa-calendar" ref={(r) => refs.current["fa-cal-2"] = r}
+                        <i className="fa fa-calendar" ref={(r) => { refs.current["fa-cal-2"] = r; }}
                             onClick={(e: any) => refs.current["popover-date01"].toggle(e)} />
                         <div style={{ flex: 1 }} />
-                        <i className="fa fa-calendar" ref={(r) => refs.current["fa-cal-1"] = r}
+                        <i className="fa fa-calendar" ref={(r) => { refs.current["fa-cal-1"] = r; }}
                             onClick={(e: any) => refs.current["popover-date01"].toggle(e)} />
                         <div style={{ flex: 1 }} />
-                        <i className="fa fa-calendar" ref={(r) => refs.current["fa-cal-3"] = r}
+                        <i className="fa fa-calendar" ref={(r) => { refs.current["fa-cal-3"] = r; }}
                             onClick={(e: any) => refs.current["popover-date01"].toggle(e, refs.current["fa-cal-3"] as any)} />
                     </div>
                     <br /><br />
@@ -1419,9 +1419,9 @@ function App() {
                     <br />
                     <FileInput clickToChange rounded mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} multiple />
                     <br />
-                    <FileInput label="Select" mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} multiple />
+                    <FileInput control="Select" mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} multiple />
                     <br />
-                    <FileInput stickyPreview rounded label={<i className='fa fa-pen' />} attrsRelay={{ label: { style: { borderRadius: "50%" }, alignment: Alignment.BOTTOM_RIGHT } }} mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} />
+                    <FileInput stickyPreview rounded control={<i className='fa fa-pen' />} attrsRelay={{ control: { style: { borderRadius: "50%" }, alignment: Alignment.BOTTOM_RIGHT } }} mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} />
                     <br />
                     <FileInput mode={FileInputMode.PREVIEW} scheme={Scheme.PRIMARY} orientation={Orientation.HORIZONTAL} maxFileSize={2000000}
                         itemTemplate={(options) => (<div key={options.index} style={{ position: "relative", width: 200, height: 200 }}>
@@ -1475,7 +1475,7 @@ function App() {
                 <div style={{ margin: 30 }}>
                     <div id="con2" style={{ marginTop: 30, height: 200, width: 200, overflow: "auto" }}>
                         <div style={{ background: "yellow", height: 500 }}></div>
-                        <ViewportSensor ref={(r) => refs.current["vpsensor"] = r} id="vs2" style={{ width: "100%", background: "red", height: 40 }} onEnterViewport={() => {
+                        <ViewportSensor ref={(r) => { refs.current["vpsensor"] = r; }} id="vs2" style={{ width: "100%", background: "red", height: 40 }} onEnterViewport={() => {
                             console.log("Enter view port");
                             return true;
                         }} onExitViewport={() => {
@@ -1539,7 +1539,7 @@ function App() {
                         icon: "{user.profile.data.logo}"
                     }}
                         selectedOptionIndex={1}
-                        cleareable formControlProps={{ leftContent: (<i className="fa fa-search" style={{ marginLeft: 10 }} />), style: { background: "rgba(217, 217, 217, 0.2)" } }}
+                        clearable formControlProps={{ leftContent: (<i className="fa fa-search" style={{ marginLeft: 10 }} />), style: { background: "rgba(217, 217, 217, 0.2)" } }}
                         borderless style={{ width: 400 }} placeholder="Hello" scheme={Scheme.PRIMARY} renderOptionAsPlaceholder onInputComplete={(v: string) => console.log("DONE", v)} />
 
                     <br />
@@ -1572,7 +1572,7 @@ function App() {
                         icon: "{user.profile.data.logo}"
                     }}
                         selectedOptionIndex={1}
-                        cleareable formControlProps={{ leftContent: (<i className="fa fa-search" style={{ marginLeft: 10 }} />), style: { background: "rgba(217, 217, 217, 0.2)" } }}
+                        clearable formControlProps={{ leftContent: (<i className="fa fa-search" style={{ marginLeft: 10 }} />), style: { background: "rgba(217, 217, 217, 0.2)" } }}
                         borderless style={{ width: 400 }} placeholder="Hello" scheme={Scheme.PRIMARY} renderOptionAsPlaceholder onInputComplete={(v: string) => console.log("DONE", v)} />
 
                     <br />
@@ -1605,7 +1605,7 @@ function App() {
                         icon: "{user.profile.data.logo}"
                     }}
                         selectedOptionIndex={1}
-                        cleareable formControlProps={{ style: { background: "rgba(217, 217, 217, 0.2)" } }}
+                        clearable formControlProps={{ style: { background: "rgba(217, 217, 217, 0.2)" } }}
                         borderless style={{ width: 400 }} placeholder="Hello" scheme={Scheme.PRIMARY} renderOptionAsPlaceholder onInputComplete={(v: string) => console.log("DONE", v)} />
 
                     <br />
@@ -1638,7 +1638,7 @@ function App() {
                         icon: "{user.profile.data.logo}"
                     }}
                         selectedOptionIndex={1}
-                        cleareable formControlProps={{ style: { background: "rgba(217, 217, 217, 0.2)" } }}
+                        clearable formControlProps={{ style: { background: "rgba(217, 217, 217, 0.2)" } }}
                         borderless style={{ width: 400 }} placeholder="Hello" scheme={Scheme.PRIMARY} renderOptionAsPlaceholder onInputComplete={(v: string) => console.log("DONE", v)} />
 
                     <br />
@@ -1831,7 +1831,7 @@ function App() {
                         <TextInput ref={onOpenRef} scheme={Scheme.PRIMARY} fill /><br />
                         <br />
                     </Dialog>
-                    <div ref={(e) => refs.current["dialogDiv1"] = e} style={{ background: "red", height: 500, overflow: "auto" }}>
+                    <div ref={(e) => { refs.current["dialogDiv1"] = e; }} style={{ background: "red", height: 500, overflow: "auto" }}>
                         <div style={{ height: 900, background: "green", width: 300 }}></div>
                     </div>
                 </div>
@@ -1857,7 +1857,7 @@ function App() {
                                     ]
                                 },
                             ]}
-                            cleareable
+                            clearable
                             /*highlight editable*/
                             scheme={Scheme.SUCCESS}
                             placeholder='Select a country'
@@ -1903,7 +1903,7 @@ function App() {
                     <TextInput ref={onCloseRef} scheme={Scheme.DANGER} fill /><br />
                 </div>
                 <div style={{ margin: 30 }}>
-                    <div ref={(e) => refs.current["portaldiv1"] = e} style={{ background: "red" }}></div>
+                    <div ref={(e) => { refs.current["portaldiv1"] = e; }} style={{ background: "red" }}></div>
                     <Portal visible={true}>
                         <span>Hello World</span>
                     </Portal>

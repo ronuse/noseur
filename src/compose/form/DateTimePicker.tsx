@@ -1272,26 +1272,26 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
 
 }
 
-export const DateTimePicker = React.forwardRef<HTMLDivElement, Partial<DateTimePickerProps>>((props, ref) => (
-    <DateTimePickerComponent showTime={true} {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const DateTimePicker  = ({ ref, ...props }: Partial<DateTimePickerProps>) => (
+    <DateTimePickerComponent {...props} forwardRef={ref} showTime={true} />
+);
 
-export const YearPicker = React.forwardRef<HTMLDivElement, Partial<DateTimePickerProps>>((props, ref) => (
-    <DateTimePickerComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} showTime={false} mode={DateTimePickerMode.YEAR} />
-));
+export const YearPicker  = ({ ref, ...props }: Partial<DateTimePickerProps>) => (
+    <DateTimePickerComponent {...props} forwardRef={ref} showTime={false} mode={DateTimePickerMode.YEAR} />
+);
 
-export const MonthPicker = React.forwardRef<HTMLDivElement, Partial<DateTimePickerProps>>((props, ref) => (
-    <DateTimePickerComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} showTime={false} mode={DateTimePickerMode.MONTH} />
-));
+export const MonthPicker  = ({ ref, ...props }: Partial<DateTimePickerProps>) => (
+    <DateTimePickerComponent {...props} forwardRef={ref} showTime={false} mode={DateTimePickerMode.MONTH} />
+);
 
-export const DatePicker = React.forwardRef<HTMLDivElement, Partial<DateTimePickerProps>>((props, ref) => (
-    <DateTimePickerComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} showTime={false} />
-));
+export const DatePicker  = ({ ref, ...props }: Partial<DateTimePickerProps>) => (
+    <DateTimePickerComponent {...props} forwardRef={ref} showTime={false} />
+);
 
-export const TimePicker = React.forwardRef<HTMLDivElement, Partial<DateTimePickerProps>>((props, ref) => (
-    <DateTimePickerComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} showTime={true} timeOnly={true}
-        layout={DateTimePickerLayoutElement.TimeElement} attrsRelay={{ ...props.attrsRelay, popover: { ...props.attrsRelay?.popover, pointingArrowClassName: "" } as any }} />
-));
+export const TimePicker  = ({ ref, ...props }: Partial<DateTimePickerProps>) => (
+    <DateTimePickerComponent {...props} forwardRef={ref} showTime={true} timeOnly={true}
+    layout={DateTimePickerLayoutElement.TimeElement} attrsRelay={{ ...props.attrsRelay, popover: { ...props.attrsRelay?.popover, pointingArrowClassName: "" } as any }}/>
+);
 
 export const DateTimePickerLayoutElementsValues = Object.values(DateTimePickerLayoutElement);
 

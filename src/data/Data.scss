@@ -3,9 +3,9 @@
 .noseur-data-compound {
     overflow: auto;
     position: relative;
-    --stripColor: #f9f9f9;
-    --dataBorderColor: rgb(222, 226, 230);
-    --fixtureBackgroundColor: #f6f6f6;
+    --noseurSchemeStripColor: #f9f9f9;
+    --noseurSchemeDataBorderColor: rgb(222, 226, 230);
+    --noseurSchemeFixtureBackgroundColor: #f6f6f6;
 }
 
 .noseur-data-empty-state,.noseur-data-loading-state {
@@ -19,15 +19,15 @@
 }
 
 .noseur-data-compound.noseur-data-grid>.noseur-data-empty-state,.noseur-data-compound.noseur-data-grid>.noseur-data-loading-state {
-    border: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
+    border: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
     border-top: none;
 }
 
 .noseur-data-compound.noseur-data-grid>.noseur-data-header,
 .noseur-data-compound.noseur-data-grid>.noseur-data-footer,
 .noseur-data-compound.noseur-data-grid>.noseur-data-container {
-    border-left: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
-    border-right: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
+    border-left: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
+    border-right: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
 }
 
 .noseur-data-compound>.noseur-paginator {
@@ -35,11 +35,11 @@
 }
 
 .noseur-data-compound.noseur-data-grid>.noseur-paginator {
-    border-bottom: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
+    border-bottom: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
 }
 
 .noseur-data-compound.noseur-data-grid>.noseur-paginator {
-    border: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
+    border: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
     border-bottom: none;
 }
 
@@ -48,7 +48,7 @@
 }
 
 .noseur-data-compound.noseur-data-grid>.noseur-paginator.noseur-data-grid-f {
-    border-bottom: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
+    border-bottom: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
 }
 
 .noseur-data-compound.noseur-data-no-divider>.noseur-paginator {
@@ -61,13 +61,13 @@
 }
 
 .noseur-data-header {
-    border-top: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
-    border-bottom: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
+    border-top: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
+    border-bottom: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
 }
 
 .noseur-data-footer {
-    border-top: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
-    border-bottom: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
+    border-top: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
+    border-bottom: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
 }
 
 .noseur-data-row-content {
@@ -106,19 +106,19 @@
 }
 
 .noseur-table.noseur-data-grid-h {
-    border-top: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
+    border-top: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
 }
 
 .noseur-table.noseur-data-grid-f {
-    border-bottom: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
+    border-bottom: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
 }
 
 .noseur-data-header,
 .noseur-data-footer,
 .noseur-table>.noseur-thead,
 .noseur-table>.noseur-tfoot {
-    color: var(--fixtureColor);
-    background-color: var(--fixtureBackgroundColor, #f6f6f6);
+    color: var(--noseurSchemeFixtureColor);
+    background-color: var(--noseurSchemeFixtureBackgroundColor, #f6f6f6);
 }
 
 .noseur-table>.noseur-thead>tr,
@@ -133,7 +133,7 @@
     padding: 10px;
     border-style: solid;
     border-width: 0px 0px 1px;
-    border-color: var(--dataBorderColor, rgb(222, 226, 230));
+    border-color: var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
 }
 
 .noseur-table>.noseur-tfoot>tr>th {
@@ -141,7 +141,7 @@
 }
 
 .noseur-table.noseur-data-striped>.noseur-tbody>tr:nth-child(even) {
-    background-color: var(--stripColor, #f9f9f9);
+    background-color: var(--noseurSchemeStripColor, #f9f9f9);
 }
 
 .noseur-data-compound.noseur-data-grid>.noseur-table>.noseur-thead>tr>th,
@@ -181,11 +181,11 @@
 }
 
 .noseur-list.noseur-data-grid-h {
-    border-top: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
+    border-top: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
 }
 
 .noseur-list.noseur-data-grid-f {
-    border-bottom: 1px solid var(--dataBorderColor, rgb(222, 226, 230));
+    border-bottom: 1px solid var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
 }
 
 .noseur-data-compound.noseur-data-grid>.noseur-list>li {
@@ -195,7 +195,7 @@
     border-left-width: 0px;
     border-right-width: 0px;
     border-bottom-width: 1px;
-    border-color: var(--dataBorderColor, rgb(222, 226, 230));
+    border-color: var(--noseurSchemeDataBorderColor, rgb(222, 226, 230));
 }
 
 .noseur-data-compound.noseur-data-grid>.noseur-list>li:last-child {
@@ -213,5 +213,5 @@
 }
 
 .noseur-list.noseur-data-striped>li:nth-child(even) {
-    background-color: var(--stripColor, #f9f9f9);
+    background-color: var(--noseurSchemeStripColor, #f9f9f9);
 }

@@ -207,8 +207,8 @@ export class DataComponent<T, P extends DataProps<T>, S extends DataState> exten
             const contentHeight = DOMHelper.calculateHeight(rowContentElementMap.contentElement);
             const rowStyle = DOMHelper.getElementStyle(rowContentElementMap.rowElement);
             const rowHeight = DOMHelper.sanitizeStyleValue(rowStyle.height);
-            const rowSuperflousHeight = DOMHelper.getElementSuperflousHeight(rowContentElementMap.rowElement, true);
-            const rowOffsetTopPlusHeight = rowContentElementMap.rowElement.offsetTop + rowHeight + rowSuperflousHeight;
+            const rowSuperfluousHeight = DOMHelper.getElementSuperfluousHeight(rowContentElementMap.rowElement, true);
+            const rowOffsetTopPlusHeight = rowContentElementMap.rowElement.offsetTop + rowHeight + rowSuperfluousHeight;
             rowContentElementMap.rowElement.style.height = (rowHeight + contentHeight) + "px";
             rowContentElementMap.contentElement.style.top = rowOffsetTopPlusHeight + "px";
             this.rowContentElementMaps[row].originalHeight = rowHeight;

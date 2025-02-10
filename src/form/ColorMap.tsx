@@ -84,6 +84,6 @@ class ColorMapComponent extends React.Component<ColorMapProps, ColorMapState> {
 
 }
 
-export const ColorMap = React.forwardRef<HTMLDivElement, Partial<ColorMapProps>>((props, ref) => (
-    <ColorMapComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const ColorMap  = ({ ref, ...props }: Partial<ColorMapProps>) => (
+    <ColorMapComponent {...props} forwardRef={ref} />
+);

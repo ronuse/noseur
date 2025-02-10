@@ -98,8 +98,7 @@ export class ChartComponent extends React.Component<ChartProps, ChartState> {
 
 }
 
-export const Chart = React.forwardRef<HTMLDivElement, Partial<ChartProps>>((props, _) => (
-    <ChartComponent {...props} />
-));
-
+export const Chart  = ({ ref, ...props }: Partial<ChartProps>) => (
+    <ChartComponent {...props} forwardRef={ref} />
+);
 

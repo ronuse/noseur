@@ -138,7 +138,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
 
 }
 
-export const List = React.forwardRef<HTMLUListElement, Partial<ListProps>>((props, ref) => (
-    <ListComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLUListElement>} />
-));
+export const List  = ({ ref, ...props }: Partial<ListProps>) => (
+    <ListComponent {...props} forwardRef={ref} />
+);
 

@@ -18,7 +18,7 @@
 	border-right: 5px solid transparent;
 	top: calc(0px - var(--componentMarginTopOrBottom, 5px));
 	left: calc(var(--popoverArrowLeftOffset, 0px) + 1.25rem);
-	border-bottom: var(--componentMarginTopOrBottom, 5px) solid #f2f2f2;
+	border-bottom: var(--componentMarginTopOrBottom, 5px) solid var(--noseurArrowColor, #f2f2f2);
 }
 
 .noseur-popover-arrow-flipped:before {
@@ -26,6 +26,49 @@
 	border-bottom: 0px;
 	border-top: 5px solid #f2f2f2;
 }
+
+.noseur-popover-b {
+	display: flex;
+	overflow: auto;
+	max-height: 70%;
+	min-width: 150px;
+	padding: 10px 0px;
+	border-radius: 5px;
+	flex-direction: column;
+	--componentMarginTopOrBottom: 8px;
+	background-color: var(--noseurPopoverBgColor, #FFFFFF);
+	border: 1px solid var(--noseurPopoverBorderColor, #F0F0F0);
+	box-shadow: 0px 0px 21px var(--noseurPopoverBoxShadowColor, rgba(0, 0, 0, 0.1));
+  }
+  
+  .noseur-popover-b>* {
+	display: flex;
+	font-size: 14px;
+	cursor: pointer;
+	padding: 15px 40px;
+	padding-right: 80px;
+	font-weight: normal;
+	align-items: center;
+	justify-content: space-between;
+  }
+  
+  .noseur-popover-b>*:hover,
+  .noseur-popover-b>*:active,
+  .noseur-popover-b>*.active {
+	background-color: var(--noseurPopoverItemHighlight, rgb(235, 235, 235));
+  }
+  
+  .noseur-popover-b>a {
+	font-weight: 400;
+  }
+  
+  .noseur-popover-b>*.danger {
+	color: #FF0000;
+  }
+  
+  .noseur-popover-b>*.menu-item {
+	display: none;
+  }
 
 /* Dialog */
 
@@ -88,7 +131,7 @@
 	margin: 0px;
 	padding: 1rem;
 	overflow: auto;
-	background-color: white;
+	background-color: var(--noseurDialogContentBgColor, white);
 }
 
 .noseur-dialog-content-bd-t {
@@ -237,6 +280,7 @@
 
 .noseur-toast>div,
 .noseur-messages>div {
+	z-index: 1005;
 	display: flex;
 	flex-direction: column;
 }

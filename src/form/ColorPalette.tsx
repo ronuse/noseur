@@ -104,9 +104,9 @@ export class ColorPaletteRegistry {
 
 }
 
-export const ColorPalette = React.forwardRef<HTMLDivElement, Partial<ColorPaletteProps>>((props, ref) => (
-    <ColorPaletteComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const ColorPalette  = ({ ref, ...props }: Partial<ColorPaletteProps>) => (
+    <ColorPaletteComponent {...props} forwardRef={ref} />
+);
 
 let _defaultPaletteAlreadyRegistered = false;
 if (!_defaultPaletteAlreadyRegistered) {

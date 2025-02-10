@@ -293,67 +293,67 @@ $schemes: (
 );
 
 @mixin noseur-scheme-tx($main: #293742) {
-	color: $main;
+	color: var(--noseurSchemeMainColor, $main)
 }
 
 @mixin noseur-scheme($main: #f5f8fa, $accent: #293742) {
-	color: $accent;
-	border-color: $main;
-	background-color: $main;
+	color: var(--noseurSchemeAccentColor, $accent);
+	border-color: var(--noseurSchemeMainColor, $main);
+	background-color: var(--noseurSchemeMainColor, $main);
 }
 
 @mixin noseur-scheme-bd-cl($main: #293742) {
-	border-color: $main;
+	border-color: var(--noseurSchemeMainColor, $main)
 }
 
 @mixin noseur-scheme-bg-hv($main: #f5f8fa, $accent: #293742) {
-	color: $accent;
-	background-color: $main;
+	color: var(--noseurSchemeAccentColor, $accent);
+	background-color: var(--noseurSchemeMainColor, $main)
 }
 
 @mixin noseur-scheme-bd-3px-sw-ac($main: #f5f8fa) {
-	box-shadow: 0 0 0 3px var(--focusBoxShadowColor, $main);
-	-moz-box-shadow: 0 0 0 3px var(--focusBoxShadowColor, $main);
-	-webkit-box-shadow: 0 0 0 3px var(--focusBoxShadowColor, $main);
+	box-shadow: 0 0 0 3px var(--noseurSchemeFocusBoxShadowColor, var(--noseurSchemeMainColor, $main));
+	-moz-box-shadow: 0 0 0 3px var(--noseurSchemeFocusBoxShadowColor, var(--noseurSchemeMainColor, $main));
+	-webkit-box-shadow: 0 0 0 3px var(--noseurSchemeFocusBoxShadowColor, var(--noseurSchemeMainColor, $main));
 }
 
 @mixin noseur-scheme-bd-rd($main: #f5f8fa) {
-	box-shadow: 1px 2.5px 5px var(--boxShadowColor, $main);
-	-moz-box-shadow: 1px 2.5px 5px var(--boxShadowColor, $main);
-	-webkit-box-shadow: 1px 2.5px 5px var(--boxShadowColor, $main);
+	box-shadow: 1px 2.5px 5px var(--noseurSchemeBoxShadowColor, var(--noseurSchemeMainColor, $main));
+	-moz-box-shadow: 1px 2.5px 5px var(--noseurSchemeBoxShadowColor, var(--noseurSchemeMainColor, $main));
+	-webkit-box-shadow: 1px 2.5px 5px var(--noseurSchemeBoxShadowColor, var(--noseurSchemeMainColor, $main));
 }
 
 @mixin noseur-scheme-bg-accent($accent: #f5f8fa) {
-	background-color: $accent;
+	background-color: var(--noseurSchemeAccentColor, $accent);
 }
 
 @mixin noseur-scheme-rp($accent: #f5f8fa) {
-	background-color: rgba($accent, 0.7);
+	background-color: rgba(var(--noseurSchemeAccentColor, $accent), 0.7);
 }
 
 @mixin noseur-scheme-vars($main: #f5f8fa, $accent: #293742, $secondary-accent: #e5dee6) {
-	--mainColor: #{$main};
-	--textColor: #{$main};
-	--accentColor: #{$accent};
-	--fixtureColor: #{$accent};
-	--fixtureBackgroundColor: #{$main};
-	--borderColor: #{$secondary-accent};
-	--stripColor: #{toRgba($main, 0.07)};
-	--dataBorderColor: #{$secondary-accent};
-	--boxShadowColor: #{toRgba($main, 0.25)};
-	--mainColor01Percent: #{toRgba($main, 0.1)};
-	--secondaryAccentColor: #{$secondary-accent};
-	--focusBoxShadowColor: #{toRgba($main, 0.3)};
+	--noseurSchemeMainColor: #{$main};
+	--noseurSchemeTextColor: #{$main};
+	--noseurSchemeAccentColor: #{$accent};
+	--noseurSchemeFixtureColor: #{$accent};
+	--noseurSchemeFixtureBackgroundColor: #{$main};
+	--noseurSchemeBorderColor: #{$secondary-accent};
+	--noseurSchemeStripColor: #{toRgba($main, 0.07)};
+	--noseurSchemeDataBorderColor: #{$secondary-accent};
+	--noseurSchemeBoxShadowColor: #{toRgba($main, 0.25)};
+	--noseurSchemeMainColor01Percent: #{toRgba($main, 0.1)};
+	--noseurSchemeSecondaryAccentColor: #{$secondary-accent};
+	--noseurSchemeFocusBoxShadowColor: #{toRgba($main, 0.3)};
 }
 
 @mixin noseur-scheme-vars-outlined($main: #f5f8fa) {
-	--borderColor: #{$main};
-	--dataBorderColor: #{$main};
+	--noseurSchemeBorderColor: #{$main};
+	--noseurSchemeDataBorderColor: #{$main};
 }
 
 .noseur-stateless {
 	@include noseur-scheme;
-	border-color: #a7b6c2;
+	border-color: var(--noseurSchemeBorderColor, #a7b6c2);
 }
 
 @each $name,
@@ -370,7 +370,7 @@ $palette in $schemes {
 	.noseur-#{$name}-vars {
 		@include noseur-scheme-vars($main, $accent, $secondary-accent);
 		@if $name =="secondary" {
-			--textColor: #{$accent};
+			--noseurSchemeTextColor: #{$accent};
 		}
 	}
 

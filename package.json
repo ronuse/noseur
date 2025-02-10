@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "sh -c 'rm -Rf dist'",
-    "update": "npx -y npm-check-updates -u",
+    "upgrade": "npx -y npm-check-updates -u",
     "_build:css": "sass src/ -o dist/esm/ ",
     "showcase": "sh -c 'cd showcase; npm run watch'",
     "lint": "eslint \"{**/*,*}.{js,ts,jsx,tsx}\"",
@@ -44,7 +44,6 @@
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@types/react-transition-group": "^4.4.12",
-    "@types/sass": "^1.45.0",
     "chart.js": "^4.4.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

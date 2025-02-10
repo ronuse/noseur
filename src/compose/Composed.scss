@@ -197,7 +197,7 @@ input.noseur-fctrl-cc {
 .noseur-date-time-picker-popover {
     padding: 15px;
     border-radius: 7px;
-    border: 1px solid var(--dataBorderColor, rgb(145, 144, 144));
+    border: 1px solid var(--noseurSchemeDataBorderColor, rgb(145, 144, 144));
 }
 
 .noseur-date-time-picker-modal {
@@ -318,7 +318,7 @@ input.noseur-fctrl-cc {
 .noseur-date-time-picker-days>.noseur-date-time-picker-days-date-today,
 .noseur-date-time-picker-days>.noseur-date-time-picker-days-date-in-range,
 .noseur-date-time-picker-days>.noseur-date-time-picker-days-date-hover:hover {
-    background: var(--stripColor, #dee2e6);
+    background: var(--noseurSchemeStripColor, #dee2e6);
 }
 
 .noseur-date-time-picker-row,
@@ -332,8 +332,8 @@ input.noseur-fctrl-cc {
 .noseur-date-time-picker-days-underline {
     padding-top: 10px;
     padding-bottom: 10px;
-    border-top: 1px solid var(--dataBorderColor, rgb(145, 144, 144));
-    border-bottom: 1px solid var(--dataBorderColor, rgb(145, 144, 144));
+    border-top: 1px solid var(--noseurSchemeDataBorderColor, rgb(145, 144, 144));
+    border-bottom: 1px solid var(--noseurSchemeDataBorderColor, rgb(145, 144, 144));
 }
 
 .noseur-date-time-picker-selected-dates {
@@ -385,7 +385,7 @@ input.noseur-fctrl-cc {
 .noseur-date-time-picker-month-name-selected,
 .noseur-date-time-picker-long-year-enabled:hover,
 .noseur-date-time-picker-month-name-enabled:hover {
-    color: var(--textColor, black);
+    color: var(--noseurSchemeTextColor, black);
 }
 
 .noseur-date-time-picker-years,
@@ -409,7 +409,7 @@ input.noseur-fctrl-cc {
 
 .noseur-color-slider {
     content: "";
-    --accentColor: transparent !important;
+    --noseurSchemeAccentColor: transparent !important;
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAuSURBVHgBxYyxDQAwDMJIL+YT+DjtzFRliUfLcklqBCRT4eCTxbD6kdL2/LgYXqpvCbs3kBv/AAAAAElFTkSuQmCC) center repeat !important;
 }
 
@@ -422,7 +422,7 @@ input.noseur-fctrl-cc {
 }
 
 .noseur-color-slider>.noseur-slider-handle {
-    --mainColor: rgba(1, 1, 1, 0.6) !important;
+    --noseurSchemeMainColor: rgba(1, 1, 1, 0.6) !important;
 }
 
 .noseur-color-slider-range-vertical {
@@ -431,4 +431,16 @@ input.noseur-fctrl-cc {
 
 .noseur-color-slider-range-horizontal {
     width: 100%;
+}
+
+/* Fieldset */
+
+.noseur-fieldset {
+    padding: 0px;
+}
+
+.noseur-fieldset-legend {
+    z-index: 2;
+    padding: 0px 7px;
+    margin: 0px 15px -6px 15px;
 }

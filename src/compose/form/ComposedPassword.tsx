@@ -111,9 +111,9 @@ class ComposedPasswordComponent extends React.Component<ComposedPasswordProps, C
 
 }
 
-export const ComposedPassword = React.forwardRef<HTMLDivElement, Partial<ComposedPasswordProps>>((props, ref) => (
-    <ComposedPasswordComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const ComposedPassword  = ({ ref, ...props }: Partial<ComposedPasswordProps>) => (
+    <ComposedPasswordComponent {...props} forwardRef={ref} />
+);
 
 // 20% symbol
 // 20% number
