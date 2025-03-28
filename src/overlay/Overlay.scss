@@ -55,6 +55,7 @@
   .noseur-popover-b>*:hover,
   .noseur-popover-b>*:active,
   .noseur-popover-b>*.active {
+	color: var(--noseurPopoverItemColor);
 	background-color: var(--noseurPopoverItemHighlight, rgb(235, 235, 235));
   }
   

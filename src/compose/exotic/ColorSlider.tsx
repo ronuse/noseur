@@ -19,14 +19,14 @@ export const ColorSliderGradient = {
     RAINBOW_HORIZONTAL: "linear-gradient(to right, red 0, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, red 100%)",
 };
 
-export type ColorSliderAttributtesRelays = {
+export type ColorSliderAttributesRelays = {
     sliderProps?: Partial<SliderProps>;
 }
 
 export interface ColorSliderManageRef extends BareInputManageRef<Color> {
 }
 
-export interface ColorSliderProps extends ComponentBaseProps<HTMLDivElement, ColorSliderManageRef, ColorSliderAttributtesRelays> {
+export interface ColorSliderProps extends ComponentBaseProps<HTMLDivElement, ColorSliderManageRef, ColorSliderAttributesRelays> {
     hue: string;
     primaryColor: string;
     colorGradient: string;

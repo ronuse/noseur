@@ -8,6 +8,7 @@ import { ObjectHelper } from "../../utils/ObjectHelper";
 import { MicroBuilder } from "../../utils/MicroBuilder";
 import { ComponentBaseProps } from "../../core/ComponentBaseProps";
 import { NoseurLabel, NoseurObject, NoseurElement } from "../../constants/Types";
+import { DOMHelper } from "../../utils/DOMUtils";
 
 export interface FormControlProps extends ComponentBaseProps<HTMLDivElement> {
     fill: boolean;
@@ -28,6 +29,7 @@ export interface FormControlProps extends ComponentBaseProps<HTMLDivElement> {
     children?: NoseurElement;
     invalidClassname: string;
     centerOverlayContent: any;
+    fieldsetLegendBackground: string;
     childrenProps: NoseurObject<any>;
     childrenValidPropsMap: NoseurObject<any>;
     childrenInvalidPropsMap: NoseurObject<any>;
@@ -109,7 +111,13 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
         if (!this.props.isFieldset) return;
         let className = "noseur-fieldset-legend";
         const label = MicroBuilder.buildLabel(this.props.label, { scheme: this.props.scheme, type: "label", htmlFor: this.props.labelFor, className: "noseur-fctrl-l" });
-        return (<legend className={className}>{label}</legend>);
+        return (<legend className={className} ref={(r) => {
+            if (!r) return;
+            if (this.props.fieldsetLegendBackground === "dynamic") {
+                console.log(DOMHelper.getElementStyle(r.parentElement?.parentElement?.parentElement)?.backgroundColor);
+                r.style.backgroundColor = DOMHelper.getElementStyle(r.parentElement?.parentElement)?.backgroundColor;
+            }
+        }} style={{ backgroundColor: (this.props.fieldsetLegendBackground && this.props.fieldsetLegendBackground !== "dynamic" ? this.props.fieldsetLegendBackground : undefined)}}>{label}</legend>);
     }
 
     renderCenterOverlayContent() {

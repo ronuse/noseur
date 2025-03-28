@@ -323,6 +323,12 @@ export const ObjectHelper = {
     object(obj: any) {
         if (!TypeChecker.isObject(obj)) return {};
         return obj;
-    }
+    },
+
+    getExtension(value: string, options?: { delimiter?: string; lastOnly?: boolean; excludeDelimiter?: boolean; }) {
+        const delimiter = options?.delimiter ?? ".";
+        if (options?.lastOnly) return value.substring(value.lastIndexOf(delimiter) + (options.excludeDelimiter ? 1 : 0));
+        return value.substring(0, value.indexOf(delimiter));
+    },
 
 }

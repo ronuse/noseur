@@ -17,7 +17,7 @@ import { ComponentBaseProps, ComponentElementBasicAttributes, TransitionProps } 
 export type MessageEventHandler = () => void;
 export type MessageContentHandler = (attr?: ComponentElementBasicAttributes) => NoseurElement;
 
-export type MessageAttributtesRelays = {
+export type MessageAttributesRelays = {
     progressBar: Partial<ProgressBarProps>;
     content?: ComponentElementBasicAttributes;
     closeIcon?: ComponentElementBasicAttributes;
@@ -28,7 +28,7 @@ export interface MessageManageRef {
     update: (messageProps: Partial<MessageProps>, borrowLifetime?: boolean) => void;
 }
 
-export interface MessageProps extends ComponentBaseProps<HTMLDivElement, MessageManageRef, MessageAttributtesRelays>, TransitionProps {
+export interface MessageProps extends ComponentBaseProps<HTMLDivElement, MessageManageRef, MessageAttributesRelays>, TransitionProps {
     fill: boolean;
     sticky: boolean;
     lifetime: number;

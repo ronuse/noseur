@@ -74,4 +74,7 @@ export * from "./panel/ScrollPanel";
 export * from "./sensor/DragSensor";
 export * from "./sensor/ViewportSensor";
 
+// hooks
+export * from "./hooks/useSubscription";
+
 import "./core/noseur.css";

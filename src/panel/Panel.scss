@@ -327,14 +327,18 @@
 
 .noseur-tabpanel-header {
     border: none;
-    font-weight: bold;
     border-radius: 0px;
     align-items: flex-end;
     min-width: fit-content;
     outline: none !important;
     box-shadow: none !important;
 
-    &.noseur-active,
+    &:hover,
+    &.noseur-active {
+        font-weight: 450;
+    }
+
+    &.noseur-active:not(.noseur-tabpanel-noline),
     &:not(.noseur-active):not(.noseur-tabpanel-noline):hover {
         border-bottom: 2px solid var(--noseurSchemeMainColor, #EEF0F8);
     }

@@ -5,11 +5,11 @@ import { ColorHelper } from "../utils/ColorHelper";
 import { ColorEventHandler, NoseurObject } from "../constants/Types";
 import { ComponentBaseProps, ComponentElementBasicAttributes } from "../core/ComponentBaseProps";
 
-export type ColorPaletteAttributtesRelays = {
+export type ColorPaletteAttributesRelays = {
     tile?: ComponentElementBasicAttributes;
 }
 
-export interface ColorPaletteProps extends ComponentBaseProps<HTMLDivElement, {}, ColorPaletteAttributtesRelays> {
+export interface ColorPaletteProps extends ComponentBaseProps<HTMLDivElement, {}, ColorPaletteAttributesRelays> {
     grid: number;
     defaultValue: string;
     palette: string[] | string;

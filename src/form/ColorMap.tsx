@@ -5,7 +5,7 @@ import { Alignment } from "../constants/Alignment";
 import { Color, NoseurElement } from "../constants/Types";
 import { ComponentBaseProps, ComponentElementBasicAttributes } from "../core/ComponentBaseProps";
 
-export type ColorMapAttributtesRelays = {
+export type ColorMapAttributesRelays = {
     map?: {
         size: number;
     } & ComponentElementBasicAttributes;
@@ -15,7 +15,7 @@ export interface ColorMapManageRef {
 
 }
 
-export interface ColorMapProps extends ComponentBaseProps<HTMLDivElement, ColorMapManageRef, ColorMapAttributtesRelays> {
+export interface ColorMapProps extends ComponentBaseProps<HTMLDivElement, ColorMapManageRef, ColorMapAttributesRelays> {
     hex: string;
     color: Color;
     hideMap: boolean;

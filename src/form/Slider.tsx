@@ -13,13 +13,13 @@ import { ComponentBaseProps, ComponentElementBasicAttributes } from "../core/Com
 export interface SliderManageRef extends BareInputManageRef<number | number[]> {
 }
 
-export type SliderAttributtesRelays = {
+export type SliderAttributesRelays = {
     range?: ComponentElementBasicAttributes;
     handle?: ComponentElementBasicAttributes;
     dragSensorProps?: Partial<DragSensorProps>;
 }
 
-export interface SliderProps extends ComponentBaseProps<HTMLDivElement, SliderManageRef, SliderAttributtesRelays> {
+export interface SliderProps extends ComponentBaseProps<HTMLDivElement, SliderManageRef, SliderAttributesRelays> {
     inverse: boolean;
     range: NoseurElement;
     handle: NoseurElement;

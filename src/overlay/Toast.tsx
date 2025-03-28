@@ -21,7 +21,7 @@ enum ToastType {
 
 export type ToastMessageEventHandler = (message?: Partial<MessageProps>, key?: string) => void;
 
-export type ToastAttributtesRelays = {
+export type ToastAttributesRelays = {
 
 }
 
@@ -36,7 +36,7 @@ export interface ToastManageRef {
     update: (key: string | string[], message: Partial<MessageProps> | Partial<MessageProps>[], borrowLifetime?: boolean) => void;
 }
 
-export interface ToastProps extends ComponentBaseProps<HTMLDivElement, ToastManageRef, ToastAttributtesRelays> {
+export interface ToastProps extends ComponentBaseProps<HTMLDivElement, ToastManageRef, ToastAttributesRelays> {
     limit: number;
     reverse: boolean;
     position: Alignment;

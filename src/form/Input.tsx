@@ -208,6 +208,9 @@ class Input extends React.Component<InputProps, InputState> {
                 ObjectHelper.resolveRef(this.props.forwardRef, el);
             }
         };
+        if (this.internalInputElement && this.internalInputElement.value !== this.props.defaultValue) {
+            this.internalInputElement.value = this.props.defaultValue as any ?? "";
+        }
         return (this.props.type === "textarea"
             ? <textarea {...props} />
             : <input {...props} />);

@@ -84,7 +84,7 @@ export type FileInputFixtureTemplateHandler = (options: FileInputFixtureOptions)
 export type FileInputMountHandler = (onSelect?: (e?: any) => void, onDrop?: React.DragEventHandler<any>, onDragOver?: React.DragEventHandler<any>) => void;
 export type FileInputEmptyTemplateHandler = (onSelect?: (e?: any) => void, onDrop?: React.DragEventHandler<any>, onDragOver?: React.DragEventHandler<any>) => NoseurElement;
 
-export type FileInputAttributtesRelays = {
+export type FileInputAttributesRelays = {
     control?: {
         alignment?: Alignment;
     } & ComponentElementBasicAttributes;
@@ -102,7 +102,7 @@ export interface FileInputManageRef extends BareInputManageRef<File> {
 }
 
 // TODO accept the file input type on the select function in manage ref
-export interface FileInputProps extends ComponentBaseProps<HTMLInputElement, FileInputManageRef, FileInputAttributtesRelays> {
+export interface FileInputProps extends ComponentBaseProps<HTMLInputElement, FileInputManageRef, FileInputAttributesRelays> {
     accepts: string;
     rounded: boolean;
     multiple: boolean;
@@ -391,7 +391,7 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
     buildInput() {
         const style = this.props.mode === FileInputMode.ELEMENT ? null : { display: "none" };
         const eventProps = ObjectHelper.extractEventProps(this.props, [
-            "onAction", "onRemoveFile", "onBeforeDrop", "onSelectFiles",
+            "onMount", "onAction", "onRemoveFile", "onBeforeDrop", "onSelectFiles",
             "onCancelDialog", "onConfirmDialog", "onValidationFail", "onDragBegin", "onDragComplete"
         ]);
         const props: any = {

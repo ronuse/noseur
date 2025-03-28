@@ -180,7 +180,7 @@ export type DateTimePickerWeekdayElementTemplateHandler = (weekday: Weekday, opt
 export type DateTimePickerSelectionElementTemplateHandler = (selectedDates: Date[], options: DateTimePickerElementOptions) => NoseurElement;
 export type DateTimePickerDayElementTemplateHandler = (date: number, options: DateTimePickerElementOptions, selected: boolean, dateObj?: Date, overlap?: boolean) => NoseurElement;
 
-export type DateTimePickerAttributtesRelays = {
+export type DateTimePickerAttributesRelays = {
     dialog?: Partial<DialogProps>;
     popover?: Partial<PopoverProps>
     rowGroup?: ComponentElementBasicAttributes;
@@ -238,7 +238,7 @@ export interface DateTimePickerManageRef {
     prev: (leftNeigbhor?: string, rightNeigbhor?: string) => void;
 }
 
-export interface DateTimePickerProps<T1 = NoseurDivElement, T2 = DateTimePickerManageRef, T3 = DateTimePickerAttributtesRelays> extends ComponentBaseProps<T1, T2, T3> {
+export interface DateTimePickerProps<T1 = NoseurDivElement, T2 = DateTimePickerManageRef, T3 = DateTimePickerAttributesRelays> extends ComponentBaseProps<T1, T2, T3> {
     date: Date;
     minDate: Date;
     maxDate: Date;

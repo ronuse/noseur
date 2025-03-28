@@ -457,6 +457,66 @@ export const DOMHelper = {
 		el.style.top = position.y + 'px';
 	},
 
+    copyToClipboard(text: string, cb?: (err?: any) => void) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => cb?.(), (err: any) => cb?.(err));
+            return;
+        }
+        if ((window as any).clipboardData && (window as any).clipboardData.setData) {
+            return (window as any).clipboardData.setData("Text", text);
+
+        } else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+            var textarea = document.createElement("textarea");
+            textarea.textContent = text;
+            textarea.style.position = "fixed";
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand("copy");
+                cb?.();
+            } catch (ex) {
+                cb?.(ex);
+                return prompt("Copy to clipboard: Ctrl+C, Enter", text);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+    },
+
+
+    getImageAspectRatio(image: HTMLImageElement) {
+        const w = image.naturalWidth;
+        const h = image.naturalHeight;
+        return (w > h ? w / h : h / w);
+    },
+
+    getSizeRelativeToImageAspectRatio(image: HTMLImageElement, size: { width?: number; height?: number; }, mutate?: "WIDTH" | "HEIGHT" | "WIDTH_HEIGHT") {
+        const w = image.naturalWidth;
+        const h = image.naturalHeight;
+        const newSize = {
+            width: size.width ?? w,
+            height: size.height ?? h,
+        };
+        const widthGreater = w > h;
+        const aspectRation = (widthGreater ? w / h : h / w);
+        if (!size.height || (mutate === "HEIGHT" || mutate === "WIDTH_HEIGHT")) {
+            if (widthGreater) {
+                newSize.height = (newSize.width / aspectRation);
+            } else {
+                newSize.height = (newSize.width * aspectRation);
+            }
+        }
+        if (!size.width || (mutate === "WIDTH" || mutate === "WIDTH_HEIGHT")) {
+            if (widthGreater) {
+                newSize.width = ((newSize.height) * aspectRation);
+            } else {
+                newSize.width = (newSize.height / aspectRation);
+            }
+        }
+        
+        return newSize;
+    },
+
 };
 
 export const ScrollHandler = {

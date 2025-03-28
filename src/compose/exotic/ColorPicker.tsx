@@ -31,7 +31,7 @@ export enum ColorPickerLayout {
     
 }
 
-export type ColorPickerAttributtesRelays = {
+export type ColorPickerAttributesRelays = {
     dialog?: Partial<DialogProps>;
     popover?: Partial<PopoverProps>
 }
@@ -40,7 +40,7 @@ export interface ColorPickerManageRef {
 
 }
 
-export interface ColorPickerProps extends ComponentBaseProps<HTMLDivElement, ColorPickerManageRef, ColorPickerAttributtesRelays> {
+export interface ColorPickerProps extends ComponentBaseProps<HTMLDivElement, ColorPickerManageRef, ColorPickerAttributesRelays> {
     autoFocus: boolean;
     modalVisible: boolean;
     type: ComponentRenderType;

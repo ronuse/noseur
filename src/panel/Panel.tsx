@@ -25,7 +25,7 @@ export interface PanelFixtureOptions {
 export type PanelFixtureTemplate = (options?: PanelFixtureOptions) => NoseurElement;
 export type PanelFixtureEventHandler = (manageRef?: PanelManageRef) => boolean | void | undefined;
 
-export type PannelAttributtesRelays = {
+export type PannelAttributesRelays = {
     header?: ComponentElementBasicAttributes;
     footer?: ComponentElementBasicAttributes;
     content?: ComponentElementBasicAttributes & Partial<TransitionProps>;
@@ -37,7 +37,7 @@ export interface PanelManageRef {
     toggle: (collapsed?: boolean) => void;
 }
 
-export interface PanelProps extends ComponentBaseProps<HTMLDivElement, PanelManageRef, PannelAttributtesRelays> {
+export interface PanelProps extends ComponentBaseProps<HTMLDivElement, PanelManageRef, PannelAttributesRelays> {
     active: boolean;
     outlined: boolean;
     title: NoseurLabel;

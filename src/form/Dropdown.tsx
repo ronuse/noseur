@@ -332,7 +332,6 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
                 }
             }
         }
-
         return (<TextInput {...inputProps} onClick={(e: any) => this.togglePopover(e, false)} />)
     }
 
