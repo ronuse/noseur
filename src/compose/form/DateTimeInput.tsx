@@ -120,10 +120,13 @@ class DateTimeInputComponent extends React.Component<DateTimeInputProps, DateTim
             },
             className: Classname.build('noseur-date-time-input-inputtext', {
                 'noseur-cursor-pointer': !this.props.editable,
-            }, (this.props.textInputProps || {}).className, this.props.className),
+            }, (this.props.textInputProps ?? {}).className, this.props.className),
         };
         if (!this.props.editable) {
             inputProps.style.cursor = "pointer";
+        }
+        if (this.internalTextInputElement && this.internalTextInputElement.value !== defaultValue) {
+            this.internalTextInputElement.value = defaultValue;
         }
         return (<TextInput {...inputProps} onClick={this.toggleDateTimePicker} />);
     }
@@ -136,9 +139,8 @@ class DateTimeInputComponent extends React.Component<DateTimeInputProps, DateTim
         const cahcedOnSelectDate = this.props.onSelectDate;
         const onSelectDate = (options: DateTimePickerEvent) => {
             if (!options.selectedDate) return;
-            cahcedOnSelectDate && cahcedOnSelectDate(options);
+            cahcedOnSelectDate?.(options);
             this.setState({ selectedDates: options.selectedDates });
-            this.internalTextInputElement!.value = this.getFineDateValue(options.selectedDates);
         };
         const onClear = () => {
             cahcedOnClear && cahcedOnClear();

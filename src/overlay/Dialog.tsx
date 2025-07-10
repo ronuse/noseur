@@ -34,7 +34,7 @@ export interface DialogProps extends ComponentBaseProps<HTMLDivElement, DialogMa
     footer: NoseurElement,
     disableScroll: boolean,
     closeIcon: NoseurElement,
-    dismissableModal: boolean,
+    dismissibleModal: boolean,
     container: NoseurRawElement,
     modalProps: NoseurObject<any>,
     headerProps: NoseurObject<any>,
@@ -61,7 +61,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
     public static defaultProps: Partial<DialogProps> = {
         notClosable: false,
         disableScroll: false,
-        dismissableModal: true,
+        dismissibleModal: true,
         closeIcon: "fa fa-times",
         alignment: Alignment.CENTER,
         baseZIndex: BaseZIndex.MODAL,
@@ -167,7 +167,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
     }
 
     onModalClick(event: any) {
-        if (this.props.dismissableModal && !this.props.noOverlay && this.internalModalElement === event.target) {
+        if (this.props.dismissibleModal && !this.props.noOverlay && this.internalModalElement === event.target) {
             this.onClose(event);
         }
     }
@@ -330,7 +330,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
             <CSSTransition classNames={transition} timeout={transition === Transition.NONE ? 0 : transitionTimeout} in={this.state.visible}
                 options={this.props.transitionOptions} unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExited={this.onExited} nodeRef={elementRef}>
                 <div ref={elementRef} id={id} className={className} style={this.props.style}
-                    role="dialog" aria-labelledby={id + '-header'} aria-describedby={id + '-content'} aria-modal={this.props.dismissableModal}>
+                    role="dialog" aria-labelledby={id + '-header'} aria-describedby={id + '-content'} aria-modal={this.props.dismissibleModal}>
                     {header}
                     {content}
                     {footer}

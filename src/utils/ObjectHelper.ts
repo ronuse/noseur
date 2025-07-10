@@ -331,4 +331,31 @@ export const ObjectHelper = {
         return value.substring(0, value.indexOf(delimiter));
     },
 
+    escapeCharacters(message: string) {
+        let messagePart = message.split("");
+        for (let index = 0; index < messagePart.length; index++) {
+            let char = messagePart[index];
+            if ("~!@#$%^&*()_+-={}[]<>?".includes(char)) {
+                char = "\\" + char;
+            }
+            messagePart[index] = char;
+        }
+        return messagePart.join("");
+    },
+
+    resolveEnclosedValues(content: string, paramsMap: { search: { open: string; close: string; }, replace: { open: string; close: string; } }[]) {
+        let resolvedContent = content;
+        for (const params of paramsMap) {
+            let { open: searchOpen, close: searchClose } = params.search;
+            let { open: replaceOpen, close: replaceClose } = params.replace;
+            let escapedSearchOpen = ObjectHelper.escapeCharacters(searchOpen);
+            let escapedSearchClose = ObjectHelper.escapeCharacters(searchClose);
+            resolvedContent = resolvedContent.replace(new RegExp(escapedSearchOpen + `*([\\w&,.+×÷=/-<>\\[\\]():\\s+])+` + escapedSearchClose, "g"), (m, _) => {
+                const value = (m.replaceAll(searchOpen, "")?.replaceAll(searchClose, "") ?? "");
+                return `${replaceOpen}${value}${replaceClose}`;
+            });
+        }
+        return resolvedContent;
+    },
+
 }

@@ -5,10 +5,10 @@ import { Classname } from "../../utils/Classname";
 import { TypeChecker } from "../../utils/TypeChecker";
 import { MicroBuilder } from "../../utils/MicroBuilder";
 import { ObjectHelper } from "../../utils/ObjectHelper";
-import { InputProps, TextInput } from "../../form/Input";
 import { FormControl, FormControlProps } from "./FormControl";
 import { ComponentBaseProps } from "../../core/ComponentBaseProps";
 import { NoseurElement, NumberRange, ToggleIcons } from "../../constants/Types";
+import { InputOnInputCompleteHandler, InputProps, TextInput } from "../../form/Input";
 import { ProgressBar, ProgressBarManageRef, ProgressBarProps } from "../../misc/ProgressBar";
 
 export type ComposedPasswordEventHandler = () => void;
@@ -17,6 +17,7 @@ export type ComposedPasswordStrengthHandler = (value: string) => NumberRange<0, 
 export interface ComposedPasswordProps extends ComponentBaseProps<HTMLDivElement> {
     hidden: boolean;
     toggleMask: boolean;
+    borderless: boolean;
     toggleIcons: ToggleIcons;
     inputProps: Partial<InputProps>;
     progressProps: Partial<ProgressBarProps>;
@@ -26,6 +27,7 @@ export interface ComposedPasswordProps extends ComponentBaseProps<HTMLDivElement
     onShow: ComposedPasswordEventHandler;
     onHide: ComposedPasswordEventHandler;
     strengthComputer: ComposedPasswordStrengthHandler;
+    onInputComplete: InputOnInputCompleteHandler | undefined;
 }
 
 interface ComposedPasswordState {
@@ -100,9 +102,15 @@ class ComposedPasswordComponent extends React.Component<ComposedPasswordProps, C
         const inputType = (this.state.hidden ? "password" : "text");
         const className = Classname.build("noseur-composed-password", this.props.className);
 
+        const onInputComplete = (value: string) => {
+            this.props.onInputComplete?.(value);
+            this.props.inputProps?.onInputComplete?.(value);
+        };
+
         return (<div className={className} style={this.props.style}>
-            <FormControl {...this.props.formControlProps} rightContent={icon} scheme={this.props.formControlProps.scheme || this.props.scheme}>
-                <TextInput {...this.props.inputProps} type={inputType} id={this.props.id} name={this.props.name}
+            <FormControl {...this.props.formControlProps} rightContent={icon} scheme={this.props.formControlProps.scheme ?? this.props.scheme}
+                borderless={this.props.formControlProps.borderless ?? this.props.borderless}>
+                <TextInput {...this.props.inputProps} type={inputType} id={this.props.id} name={this.props.name} onInputComplete={onInputComplete}
                     noStyle={this.props.inputProps.noStyle || true} scheme={this.props.inputProps.scheme || this.props.scheme} onInput={this.onInput} />
             </FormControl>
             {strengthIndicator}
@@ -111,7 +119,7 @@ class ComposedPasswordComponent extends React.Component<ComposedPasswordProps, C
 
 }
 
-export const ComposedPassword  = ({ ref, ...props }: Partial<ComposedPasswordProps>) => (
+export const ComposedPassword = ({ ref, ...props }: Partial<ComposedPasswordProps>) => (
     <ComposedPasswordComponent {...props} forwardRef={ref} />
 );
 

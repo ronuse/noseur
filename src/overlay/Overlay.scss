@@ -45,7 +45,7 @@
 	display: flex;
 	font-size: 14px;
 	cursor: pointer;
-	padding: 15px 40px;
+	padding: 15px 30px;
 	padding-right: 80px;
 	font-weight: normal;
 	align-items: center;
@@ -56,6 +56,7 @@
   .noseur-popover-b>*:active,
   .noseur-popover-b>*.active {
 	color: var(--noseurPopoverItemColor);
+	font-weight: var(--noseurPopoverItemFontWeight, normal);
 	background-color: var(--noseurPopoverItemHighlight, rgb(235, 235, 235));
   }
   
@@ -308,6 +309,7 @@
 .noseur-messages>.noseur-messages-top-left {
 	top: 0.5em;
 	left: 0.5em;
+	align-items: flex-start;
 }
 
 .noseur-toast>.noseur-toast-top-right,
@@ -323,6 +325,7 @@
 .noseur-messages>.noseur-messages-top-center {
 	left: 50%;
 	top: 0.5em;
+	align-items: center;
 	transform: translateX(-50%);
 }
 
@@ -330,6 +333,7 @@
 .noseur-messages>.noseur-messages-bottom-left {
 	left: 0.5em;
 	bottom: 0.5em;
+	align-items: flex-start;
 }
 
 .noseur-toast>.noseur-toast-bottom-right,

@@ -139,7 +139,7 @@ export const DateHelper = {
         array.forEach(item => {
             if (!item) return;
             let leftOperand = withoutTime ? DateHelper.withoutTime(item) : item;
-            for (const rightOperand  of rightOperands) {
+            for (const rightOperand of rightOperands) {
                 if (leftOperand.getTime() === rightOperand.getTime()) presentCount++;
             }
         });
@@ -197,6 +197,14 @@ export const DateHelper = {
         return todaysDate.getDate() === date.getDate() && todaysDate.getMonth() === date.getMonth() && todaysDate.getFullYear() === date.getFullYear();
     },
 
+    isPast(date: Date) {
+        return (new Date()).getTime() > date.getTime();
+    },
+
+    isFuture(date: Date) {
+        return !DateHelper.isPast(date);
+    },
+
     isNow(date: Date) {
         return new Date().getTime() === date.getTime();
     },
@@ -225,6 +233,39 @@ export const DateHelper = {
         const negator = reverse ? -daysInMonth : 1;
         const days = Array.from({ length: count ? count : daysInMonth }, (_, i) => new Date(year, month, Math.abs(i + negator)));
         return reverse ? days.reverse() : days;
-    }
+    },
+
+    getMilliSecondsBetweenDates(date1: Date, date2: Date) {
+        return Math.abs(date2.getTime() - date1.getTime());
+    },
+
+    getSecondsBetweenDates(date1: Date, date2: Date) {
+        return DateHelper.getMilliSecondsBetweenDates(date1, date2);
+    },
+
+    getMinutesBetweenDates(date1: Date, date2: Date) {
+        return Math.round(DateHelper.getMilliSecondsBetweenDates(date1, date2) / (1000 * 60));
+    },
+
+    getHoursBetweenDates(date1: Date, date2: Date) {
+        return Math.round(DateHelper.getMilliSecondsBetweenDates(date1, date2) / (1000 * 60 * 60));
+    },
+
+    getDaysBetweenDates(date1: Date, date2: Date) {
+        return Math.round(DateHelper.getMilliSecondsBetweenDates(date1, date2) / (1000 * 60 * 60 * 24));
+    },
+
+    getWeeksBetweenDates(date1: Date, date2: Date) {
+        return Math.round(DateHelper.getMilliSecondsBetweenDates(date1, date2) / (1000 * 60 * 60 * 24 * 7));
+    },
+
+    getMonthsBetweenDates(date1: Date, date2: Date) {
+        const diffYears = date2.getFullYear() - date1.getFullYear();
+        return Math.abs((diffYears * 12) + (date2.getMonth() - date1.getMonth()));
+    },
+
+    getYearsBetweenDates(date1: Date, date2: Date) {
+        return date2.getFullYear() - date1.getFullYear();
+    },
 
 }

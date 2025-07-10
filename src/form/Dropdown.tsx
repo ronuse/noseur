@@ -2,6 +2,7 @@
 import "./Form.css";
 import React from 'react';
 import { Scheme } from "../constants/Scheme";
+import { DOMHelper } from "../utils/DOMUtils";
 import { Classname } from "../utils/Classname";
 import { BoolHelper } from "../utils/BoolHelper";
 import { TypeChecker } from "../utils/TypeChecker";
@@ -42,6 +43,7 @@ export interface DropdownProps extends ComponentBaseProps<NoseurDivElement, Drop
     placeholder: string;
     borderless: boolean;
     noToggleIcons: boolean;
+    responsiveWidth: boolean;
     optionsClassName: string;
     noSelectionIcon: boolean;
     toggleIcons: ToggleIcons;
@@ -94,6 +96,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
         borderless: false,
         textInputProps: {},
         formControlProps: {},
+        responsiveWidth: true,
         selectedOptionIndex: -1,
         scheme: Scheme.SECONDARY,
         iconPosition: Position.LEFT,
@@ -157,6 +160,9 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
                     else this.internalTextInputElement!.value = "";
                 } else {
                     newState.selectedOptionIndex = selectedOptionIndex;
+                    if (optionsChanged) {
+                        this.selectOption(null, newState.selectedOptionIndex, newState.options.find((_: any, i: number) => i === selectedOptionIndex.primaryIndex), true);
+                    }
                 }
             }
             this.setState(newState);
@@ -183,16 +189,23 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
         if (this.props.onDropdownShow) this.props.onDropdownShow();
     }
 
-    selectOption(e: any, selectedOptionIndex: DropdownSelectedIndex, option?: any) {
-        if (selectedOptionIndex.primaryIndex === -1) {
+    selectOption(e: any, selectedOptionIndex: DropdownSelectedIndex, option?: any, skipReport?: boolean) {
+        if (!skipReport && selectedOptionIndex.primaryIndex === -1) {
             if (this.props.onDeSelectOption) this.props.onDeSelectOption(e);
         };
-        if (selectedOptionIndex.primaryIndex === -1 || (!this.props.onSelectOption || !this.props.onSelectOption(option, e))) {
-            this.setState({ selectedOptionIndex: selectedOptionIndex });
+        if (selectedOptionIndex.primaryIndex === -1 || (skipReport || !this.props.onSelectOption || !this.props.onSelectOption(option, e))) {
+            if (!skipReport) this.setState({ selectedOptionIndex: selectedOptionIndex });
             const optionLabel = option ? this.resolveOptionLabel(option) : (this.props.renderOptionAsPlaceholder ? this.props.placeholder : "");
-            if (this.props.renderOptionAsPlaceholder) this.internalTextInputElement!.placeholder = optionLabel;
-            else this.internalTextInputElement!.value = optionLabel;
+            if (this.props.renderOptionAsPlaceholder) {
+                this.internalTextInputElement!.placeholder = optionLabel;
+            } else {
+                this.internalTextInputElement!.value = optionLabel;
+            }
+            if (!this.props.fill && this.props.responsiveWidth) {
+                this.internalTextInputElement.style.width = `${DOMHelper.getTextWidth(optionLabel, this.internalTextInputElement)}px`;
+            }
         }
+        if (skipReport) return;
         return this.togglePopover(e, false);
     }
 
@@ -293,10 +306,12 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
         let selectedOptionLabel = this.resolveOptionLabel(selectedOption);
         if (this.props.translateSelectionLabel) selectedOptionLabel = this.props.translateSelectionLabel(selectedOptionLabel, selectedOption);
         let defaultValue = selectedOptionLabel;
+        const placeholder = (this.props.renderOptionAsPlaceholder && selectedOptionLabel ? selectedOptionLabel : this.props.placeholder);
         if (defaultValue && this.props.renderOptionAsPlaceholder) defaultValue = null;
         if (!defaultValue) defaultValue = this.props.textInputProps.defaultValue;
         if (!defaultValue) defaultValue = this.props.defaultInputValue;
         const inputProps: NoseurObject<any> = {
+            placeholder,
             defaultValue,
             noStyle: true,
             borderless: true,
@@ -307,19 +322,21 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
             disabled: this.props.disabled,
             readOnly: !this.props.editable,
             highlight: this.props.highlight,
-            style: { ...(this.props.style || {}) },
             onInputComplete: this.props.onInputComplete,
-            placeholder: (this.props.renderOptionAsPlaceholder && selectedOptionLabel ? selectedOptionLabel : this.props.placeholder),
+            style: { ...(this.props.style ?? {}), ...(this.props.textInputProps?.style ?? {}) },
             ref: (el: any) => {
                 if (!el) return;
                 this.internalTextInputElement = el;
+                if (!this.props.fill && this.props.responsiveWidth) {
+                    el.style.width = `${DOMHelper.getTextWidth((defaultValue ? defaultValue : placeholder), el)}px`;
+                }
                 if (!this.props.textInputRef) return;
                 if (this.props.textInputRef instanceof Function) this.props.textInputRef(el);
                 else this.props.textInputRef.current = el;
             },
             className: Classname.build('noseur-dropdown-inputtext', {
                 'noseur-cursor-pointer': !this.props.editable,
-            }, (this.props.textInputProps || {}).className, this.props.className),
+            }, (this.props.textInputProps ?? {}).className, this.props.className),
         };
         if (!this.props.editable) {
             inputProps.style.cursor = "pointer";
@@ -420,7 +437,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
 
 }
 
-export const Dropdown  = ({ ref, ...props }: Partial<DropdownProps>) => (
+export const Dropdown = ({ ref, ...props }: Partial<DropdownProps>) => (
     <DropdownComponent {...props} forwardRef={ref} />
 );
 

@@ -1813,7 +1813,7 @@ function App() {
                     </Dialog>
                     <Dialog transition={transition} visible={showDialog} disableScroll={true} alignment={dialogAlignment} notClosable={false}
                         icons={["One", "two",]} header={<i className='fa fa-user' />} noOverlay={false} modalProps={{ style: { background: "rgba(35, 97, 204, 0.4)" } }}
-                        closeIcon={<span>Close</span>} dismissableModal={false} container={refs.current["dialogDiv1"]}
+                        closeIcon={<span>Close</span>} dismissibleModal={false} container={refs.current["dialogDiv1"]}
                         contentProps={{ style: { background: "red" } }} headerProps={{ style: { background: "green", borderBottom: "none" } }}
                         footer={<div style={{ background: "yellow", borderTop: "none" }}>
                             <Button text="Cancel" leftIcon="fa fa-times" textOnly scheme={Scheme.DANGER} onClick={() => setShowDialog(false)} />

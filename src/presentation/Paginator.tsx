@@ -149,7 +149,7 @@ class PaginatorComponent extends React.Component<PaginatorProps, PaginatorState>
     public static defaultProps: Partial<PaginatorProps> = {
         initialPage: 1,
         rowsPerPage: 10,
-        totalRecords: 1,
+        totalRecords: 0,
         visiblePageCount: 5,
         scheme: Scheme.STATELESS,
         expandOnHiddenPagesButtonClicked: false,

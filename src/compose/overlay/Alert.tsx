@@ -29,7 +29,7 @@ export interface AlertProps extends ComponentBaseProps<HTMLDivElement>, Transiti
     alignFooter: Alignment;
     message: NoseurElement;
     icon: NoseurIconElement;
-    dismissableModal: boolean,
+    dismissibleModal: boolean,
     container: NoseurRawElement,
     cancel: AlertControl | null,
     confirm: AlertControl | null,
@@ -51,7 +51,7 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
     public static defaultProps: Partial<AlertProps> = {
         component: Dialog,
         componentProps: {},
-        dismissableModal: true,
+        dismissibleModal: true,
         transitionTimeout: 500,
         alignment: Alignment.CENTER,
         alignFooter: Alignment.RIGHT,
@@ -93,7 +93,7 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
         if (prevProps.visible !== this.props.visible) {
             const isVisible = this.state.visible;
             this.setState({ visible: this.props.visible });
-            if (isVisible && this.props.dismissableModal) return;
+            if (isVisible && this.props.dismissibleModal) return;
             this.internalComponentSelfRef && this.internalComponentSelfRef.toggle && this.internalComponentSelfRef.toggle({}, this.getUsableTarget());
         }
     }
@@ -195,8 +195,8 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
             closeIcon: closeIcon,
             visible: this.state.visible,
             transition: this.props.transition,
-            dismissable: this.props.dismissableModal,
-            dismissableModal: this.props.dismissableModal,
+            dismissible: this.props.dismissibleModal,
+            dismissibleModal: this.props.dismissibleModal,
             transitionOptions: this.props.transitionOptions,
             transitionTimeout: this.props.transitionTimeout,
         }, (<div className="noseur-alert-content" ref={this.props.forwardRef}>
@@ -273,7 +273,7 @@ export function loadingAlert<T>(props: Partial<LoadingAlertDialog<T>>, params?: 
         message: props.message,
         className: props.className,
         footerElements: props.footerElements,
-        dismissableModal: props.dismissableModal,
+        dismissibleModal: props.dismissibleModal,
     };
     const loadingProps = {
         ...props,
@@ -281,7 +281,7 @@ export function loadingAlert<T>(props: Partial<LoadingAlertDialog<T>>, params?: 
 		cancel: null,
 		confirm: null,
         message: null,
-        dismissableModal: false,
+        dismissibleModal: false,
         className: "noseur-alert-loading",
         ...(props.loadingProps || {})
 	};

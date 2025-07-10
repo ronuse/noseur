@@ -21,6 +21,8 @@ export interface CheckboxProps extends ComponentBaseProps<NoseurFormElement | HT
     checkedIndex: NoseurNummber;
     checkStates: NoseurCheckState[];
     defaultCheckedIndex: NoseurNummber;
+
+    onChecked?: (checked: boolean) => void;
 }
 
 interface CheckboxState {
@@ -87,15 +89,14 @@ class CheckboxComponent extends React.Component<CheckboxProps, CheckboxState> {
         if (this.props.readOnly) return;
         let newCheckedIndex = this.getCheckStatesIndex() + 1;
         if (newCheckedIndex >= this.props.checkStates.length) newCheckedIndex = 0;
-        if (this.props.onChange) {
-            const checkState = this.props.checkStates[newCheckedIndex];
-            this.props.onChange({
-                ...event,
-                checkState,
-                value: checkState?.value,
-                checked: checkState?.checked
-            } as any);
-        }
+        const checkState = this.props.checkStates[newCheckedIndex];
+        this.props.onChecked?.(checkState?.checked);
+        this.props.onChange?.({
+            ...event,
+            checkState,
+            value: checkState?.value,
+            checked: checkState?.checked
+        } as any);
         this.setState({ checkedIndex: newCheckedIndex });
     }
 
@@ -172,7 +173,7 @@ class CheckboxComponent extends React.Component<CheckboxProps, CheckboxState> {
             'noseur-fl-d-c': this.props.alignLabel === Alignment.BOTTOM,
             'noseur-disabled': !this.props.noStyle && this.props.disabled,
         });
-        const eventProps = ObjectHelper.extractEventProps(this.props);
+        const eventProps = ObjectHelper.extractEventProps(this.props, ["onChecked"]);
         const props = {
             className,
             ...eventProps,
