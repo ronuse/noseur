@@ -268,4 +268,48 @@ export const DateHelper = {
         return date2.getFullYear() - date1.getFullYear();
     },
 
+    getStartOfDay(date: Date = new Date()) {
+        const newDate = DateHelper.clone(date);
+        newDate.setUTCHours(0, 0, 0, 0);
+        return newDate;
+    },
+
+    getEndOfDay(date: Date = new Date()) {
+        const newDate = DateHelper.clone(date);
+        newDate.setUTCHours(23, 59, 59, 999);
+        return newDate;
+    },
+
+    getFirstDayInMonth(date: Date = new Date()) {
+        return new Date(date.getFullYear(), date.getMonth(), 1);
+    },
+
+    getLastDayInMonth(date: Date = new Date()) {
+        return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    },
+
+    getStartOfMonth(date: Date = new Date()) {
+        return DateHelper.getFirstDayInMonth(date);
+    },
+
+    getEndOfMonth(date: Date = new Date()) {
+        return DateHelper.getLastDayInMonth(date);
+    },
+
+    getFirstDayInYear(date: Date = new Date()) {
+        return new Date(date.getFullYear(), 0, 1);
+    },
+
+    getLastDayInYear(date: Date = new Date()) {
+        return new Date(date.getFullYear(), 11, 31);
+    },
+
+    getStartOfYear(date: Date = new Date()) {
+        return DateHelper.getFirstDayInYear(date);
+    },
+
+    getEndOfYear(date: Date = new Date()) {
+        return DateHelper.getLastDayInYear(date);
+    },
+
 }

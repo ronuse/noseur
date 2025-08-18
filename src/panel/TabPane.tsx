@@ -283,7 +283,7 @@ class TabPaneComponent extends React.Component<TabPaneProps, TabPaneState> {
     renderContentAndNavigator(orientation: "vertical" | "horizontal") {
         const { headers, contents } = this.renderTabs();
         const scheme = this.props.attrsRelay?.navigator?.scheme ?? this.props.scheme;
-        const contentClassName = Classname.build("noseur-tabpane-content", this.props.attrsRelay?.content?.className);
+        const contentClassName = Classname.build("noseur-tabpane-content noseur-unset-scheme-vars", this.props.attrsRelay?.content?.className);
         const scrollLeftElement = this.props.scrollable ? MicroBuilder.buildIcon(this.props.scrollIcons[orientation].prev, {
             id: this.props.attrsRelay?.navigator?.control?.prev?.id,
             style: this.props.attrsRelay?.navigator?.control?.prev?.style,

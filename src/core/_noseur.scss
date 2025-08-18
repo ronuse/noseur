@@ -278,6 +278,23 @@ span.noseur-skeleton {
 
 /* Scheme */
 
+
+
+.noseur-unset-scheme-vars {
+	--noseurSchemeMainColor: initial;
+	--noseurSchemeTextColor: initial;
+	--noseurSchemeStripColor: initial;
+	--noseurSchemeBorderColor: initial;
+	--noseurSchemeAccentColor: initial;
+	--noseurSchemeFixtureColor: initial;
+	--noseurSchemeBoxShadowColor: initial;
+	--noseurSchemeDataBorderColor: initial;
+	--noseurSchemeMainColor01Percent: initial;
+	--noseurSchemeFocusBoxShadowColor: initial;
+	--noseurSchemeSecondaryAccentColor: initial;
+	--noseurSchemeFixtureBackgroundColor: initial;
+}
+
 $schemes: (
 	info: (#8950FC, white, #e5dee6),
 	dark: (#000000, white, #dee2e6),

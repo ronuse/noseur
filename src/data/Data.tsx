@@ -3,7 +3,7 @@ import React from "react";
 import { Classname } from "../utils/Classname";
 import { ObjectHelper } from "../utils/ObjectHelper";
 import { ComponentBaseProps } from "../core/ComponentBaseProps";
-import { NoseurElement, NoseurObject, SortDirection } from "../constants/Types";
+import { NoseurElement, SortDirection } from "../constants/Types";
 import { Paginator, PaginatorPageChangeOption, PaginatorProps, PaginatorTemplateOptions } from "../presentation/Paginator";
 import { DOMHelper } from "../utils/DOMUtils";
 
@@ -19,17 +19,17 @@ export interface RowControlOptions {
 }
 
 export type DataFixtureTemplateHandler = () => NoseurElement;
-export type DataRowValuedPropsHandler = (data?: any) => RowProps;
-export type DataRowExpansionTemplateHandler = (data: any) => NoseurElement;
-export type DataRowSelectionHandler = (value: any, rowNumber?: number) => boolean;
+export type DataRowValuedPropsHandler<D> = (data?: D) => RowProps;
+export type DataRowExpansionTemplateHandler<D> = (data: D) => NoseurElement;
+export type DataRowSelectionHandler <D>= (value: D, rowNumber?: number) => boolean;
 export type DataSelectionElementTemplateHandler = (index: number) => NoseurElement;
-export type DataComparatorHandler = (sortDirection: SortDirection, dataKey: string, p: any, c: any) => number;
+export type DataComparatorHandler<D> = (sortDirection: SortDirection, dataKey: string, p: D, c: D) => number;
 
 export interface DataManageRef {
+    setData: <D>(data?: D[]) => void;
     expandContent: (row: number) => void;
     toggleContent: (row: number) => void;
     collapseContent: (row: number) => void;
-    setData: (data?: NoseurObject<any>[]) => void;
     setLoadingState: (isLoading: boolean) => void;
     setAndExpandRowContent: (row: number, content: NoseurElement) => void;
 }
@@ -41,7 +41,8 @@ export interface DataInternalElementProps {
     style?: React.CSSProperties;
 }
 
-export interface DataProps<T> extends ComponentBaseProps<T, DataManageRef> {
+export interface DataProps<T, D> extends ComponentBaseProps<T, DataManageRef> {
+    data?: D[];
     dataId: string;
     paginate: boolean;
     rowProps: RowProps;
@@ -56,7 +57,6 @@ export interface DataProps<T> extends ComponentBaseProps<T, DataManageRef> {
     dataSelectionKey: string;
     emptyState: NoseurElement;
     multiRowExpansion: boolean;
-    data?: NoseurObject<any>[];
     loadingState: NoseurElement;
     allowNoDataPagination: boolean;
     rowsContent: { [key: number]: any };
@@ -66,33 +66,33 @@ export interface DataProps<T> extends ComponentBaseProps<T, DataManageRef> {
 
     header: DataFixtureTemplateHandler;
     footer: DataFixtureTemplateHandler;
-    compareData: DataComparatorHandler;
-    onRowSelection: DataRowSelectionHandler;
-    valuedRowProps: DataRowValuedPropsHandler;
-    rowExpansionTemplate: DataRowExpansionTemplateHandler;
+    compareData: DataComparatorHandler<D>;
+    onRowSelection: DataRowSelectionHandler<D>;
+    valuedRowProps: DataRowValuedPropsHandler<D>;
+    rowExpansionTemplate: DataRowExpansionTemplateHandler<D>;
     onPageChange?: (event: PaginatorPageChangeOption) => void;
     selectionElementTemplate: DataSelectionElementTemplateHandler;
 }
 
-export interface DataState {
+export interface DataState<D> {
     isLoading?: boolean;
     dataOffset: number;
     currentPage: number;
-    activeData?: NoseurObject<any>[];
+    activeData?: D[];
     rowsContent: { [key: number]: any };
 };
 
-export class DataComponent<T, P extends DataProps<T>, S extends DataState> extends React.Component<P, S> {
+export class DataComponent<T, P extends DataProps<T, D>, S extends DataState<D>, D> extends React.Component<P, S> {
 
     rowContentElementMaps: { [key: number]: { rowElement?: any; contentElement?: any; expanded?: boolean; originalHeight?: number; } } = {};
 
     componentDidMount() {
-        ObjectHelper.resolveManageRef(this, {
+        ObjectHelper.resolveManageRef(this as any, {
             toggleContent: (row: number) => this.internalToggleRowContent(row),
             setLoadingState: (isLoading: boolean) => this.setState({ isLoading }),
             expandContent: (row: number) => this.internalToggleRowContent(row, true),
             collapseContent: (row: number) => this.internalToggleRowContent(row, false),
-            setData: (data?: NoseurObject<any>[]) => this.setState({ activeData: data }),
+            setData: (data?: D[]) => this.setState({ activeData: data }),
             setAndExpandRowContent: (row: number, content: NoseurElement) => this.internalToggleRowContent(row, undefined, content)
         });
     }

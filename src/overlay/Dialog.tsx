@@ -137,7 +137,6 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         event.stopPropagation();
 
         this.setState({ visible: !this.props.visible });
-        if (this.props.onHide) this.props.onHide();
     }
 
     onEnter() {
@@ -164,6 +163,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         if (elementToReceiveCloseFocus && TypeChecker.isFunction(elementToReceiveCloseFocus?.focus)) {
             elementToReceiveCloseFocus.focus();
         }
+        if (this.props.onHide) this.props.onHide();
     }
 
     onModalClick(event: any) {
@@ -321,7 +321,8 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         };
         if (!modalProps.onClick) modalProps.onClick = this.onModalClick;
 
-        return (<div {...modalProps} style={{ ...(modalProps.style), zIndex: this.props.baseZIndex || modalProps.style?.zIndex }} ref={(r) => {
+        return (<div {...modalProps} style={{ ...(modalProps.style), zIndex: this.props.baseZIndex ?? modalProps.style?.zIndex }} ref={(r) => {
+            ObjectHelper.resolveRef(cacheModalRef, r);
             if (!(r && !this.state.visible && this.props.visible)) return;
             this.setState({
                 visible: this.props.visible

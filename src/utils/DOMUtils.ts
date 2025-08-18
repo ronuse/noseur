@@ -84,6 +84,21 @@ export const DOMHelper = {
 		}
 	},
 
+	addClassToElementById(id: string, className: string) {
+		DOMHelper.addClass(document.getElementById(id)!, className);
+	},
+
+	removeClassFromElementById(id: string, className: string) {
+		DOMHelper.removeClass(document.getElementById(id)!, className);
+	},
+
+	removeClassFromElementsByClassname(clazzName: string, className: string) {
+		const elements = document.getElementsByClassName(clazzName);
+		for (let i = 0; i < elements.length; i++) {
+			DOMHelper.removeClass(elements[i], className);
+		}
+	},
+
 	getTarget: (event: any) => event.target || event.currentTarget,
 
 	getElementOffset(element: Element, defaultValue?: NoseurObject<any>) {

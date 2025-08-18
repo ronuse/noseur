@@ -136,7 +136,10 @@ textarea.noseur-input {
 }
 
 .noseur-dropdown-popover {
+	display: flex;
+	overflow: auto;
 	min-width: 190px;
+	flex-direction: column;
 	border-radius: 0px 0px 3px 3px;
 	--componentMarginTopOrBottom: 3px;
 	background-color: var(--noseurDropdownPopoverBgColor, white);
@@ -144,6 +147,7 @@ textarea.noseur-input {
 }
 
 .noseur-dropdown-popover-list {
+	flex: 1;
 	margin: 0px;
 	padding: 0px;
 	overflow: auto;
@@ -209,7 +213,7 @@ textarea.noseur-input {
 	flex-direction: row;
 }
 
-.noseur-file-input-control > *:not(:last-child) {
+.noseur-file-input-control>*:not(:last-child) {
 	margin-right: 5px;
 }
 
@@ -228,7 +232,7 @@ textarea.noseur-input {
 
 .noseur-file-input>div>.noseur-file-input-preview {
 	display: flex;
-    width: inherit;
+	width: inherit;
 	height: inherit;
 	position: relative;
 	align-items: center;
@@ -310,7 +314,7 @@ textarea.noseur-input {
 }
 
 .noseur-file-input>.noseur-file-input-previews {
-    width: inherit;
+	width: inherit;
 	height: inherit;
 }
 

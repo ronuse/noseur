@@ -22,7 +22,7 @@ export interface CheckboxProps extends ComponentBaseProps<NoseurFormElement | HT
     checkStates: NoseurCheckState[];
     defaultCheckedIndex: NoseurNummber;
 
-    onChecked?: (checked: boolean) => void;
+    onChecked?: (checked: boolean) => void | boolean;
 }
 
 interface CheckboxState {
@@ -89,8 +89,10 @@ class CheckboxComponent extends React.Component<CheckboxProps, CheckboxState> {
         if (this.props.readOnly) return;
         let newCheckedIndex = this.getCheckStatesIndex() + 1;
         if (newCheckedIndex >= this.props.checkStates.length) newCheckedIndex = 0;
-        const checkState = this.props.checkStates[newCheckedIndex];
-        this.props.onChecked?.(checkState?.checked);
+        let checkState = this.props.checkStates[newCheckedIndex];
+        if (this.props.onChecked?.(checkState?.checked) === true && checkState?.checked === true) {
+            return;
+        }
         this.props.onChange?.({
             ...event,
             checkState,

@@ -36,6 +36,7 @@ export interface DropdownManageRef {
 
 export interface DropdownProps extends ComponentBaseProps<NoseurDivElement, DropdownManageRef> {
     fill: boolean;
+    noIcon: boolean;
     editable: boolean;
     disabled: boolean;
     highlight: boolean;
@@ -202,7 +203,8 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
                 this.internalTextInputElement!.value = optionLabel;
             }
             if (!this.props.fill && this.props.responsiveWidth) {
-                this.internalTextInputElement.style.width = `${DOMHelper.getTextWidth(optionLabel, this.internalTextInputElement)}px`;
+                const sidePaddings = parseInt(DOMHelper.getElementStyle(this.internalTextInputElement).paddingLeft) + parseInt(DOMHelper.getElementStyle(this.internalTextInputElement).paddingRight);
+                this.internalTextInputElement.style.width = `${DOMHelper.getTextWidth(optionLabel, this.internalTextInputElement) + sidePaddings}px`;
             }
         }
         if (skipReport) return;
@@ -220,7 +222,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
     }
 
     resolveOptionIcon(option: any) {
-        if (!option) return null;
+        if (!option || this.props.noIcon) return null;
         const optionMap = this.props.optionMap;
         let icon = option.icon;
         if (optionMap && optionMap.icon) {
@@ -328,7 +330,8 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
                 if (!el) return;
                 this.internalTextInputElement = el;
                 if (!this.props.fill && this.props.responsiveWidth) {
-                    el.style.width = `${DOMHelper.getTextWidth((defaultValue ? defaultValue : placeholder), el)}px`;
+                    const sidePaddings = parseInt(DOMHelper.getElementStyle(el).paddingLeft) + parseInt(DOMHelper.getElementStyle(el).paddingRight);
+                    el.style.width = `${DOMHelper.getTextWidth((defaultValue ? defaultValue : placeholder), el) + sidePaddings}px`;
                 }
                 if (!this.props.textInputRef) return;
                 if (this.props.textInputRef instanceof Function) this.props.textInputRef(el);

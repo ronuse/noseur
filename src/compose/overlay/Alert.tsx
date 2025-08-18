@@ -37,7 +37,6 @@ export interface AlertProps extends ComponentBaseProps<HTMLDivElement>, Transiti
     component: React.FunctionComponent<Partial<ComponentBaseProps<NoseurDivElement, any>> & React.RefAttributes<NoseurDivElement>>;
 
     onHide: Function;
-    onUnMount: Function;
     onCancel: AlertEvent;
     onConfirm: AlertEvent;
 }
@@ -102,7 +101,6 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
         if (!this.documentClickListener) return;
         document.removeEventListener('click', this.documentClickListener);
         this.documentClickListener = undefined;
-        this.props.onUnMount && this.props.onUnMount();
     }
 
     getUsableTarget(e?: any) {
@@ -208,11 +206,11 @@ class AlertComponent extends React.Component<AlertProps, AlertState> {
 }
 
 export interface AlertInterface {
-    show: (onMount?: Function) => void,
     hide: (onUnMount?: Function) => void,
     destroy: (onUnMount?: Function) => void,
-    startLoading: (onMount?: Function) => void,
     doneLoading: (onMount?: Function) => void,
+    startLoading: (onMount?: Function) => void,
+    show: (onMount?: Function) => AlertInterface,
     update: (newProps: Partial<AlertProps>, onMount?: Function, onUnMount?: Function) => void,
 }
 
@@ -228,7 +226,7 @@ export function alert(props: Partial<AlertProps>): AlertInterface {
 
 	let updateAlert = (newProps: Partial<AlertProps>, onMount?: Function, onUnMount?: Function) => {
 		if (destroyed) return;
-        props = { ...props, ...newProps, onUnMount };
+        props = { ...props, ...newProps, onHide: onUnMount };
         mounted = props.visible;
         const cachedRef = (props as any).ref;
         (props as any).ref = !onMount ? cachedRef : (r: any) => {
@@ -238,7 +236,7 @@ export function alert(props: Partial<AlertProps>): AlertInterface {
         root.render(React.cloneElement(alertDialog, props));
 	};
 
-    return {
+    const alertInterface = {
         hide: (onUnMount?: Function) => updateAlert({ visible: false }, undefined, onUnMount),
         update: (newProps: Partial<AlertProps>, onMount?: Function, nUnMount?: Function) => updateAlert(newProps, onMount, nUnMount),
 		destroy: (onUnMount?: Function) => {
@@ -252,10 +250,13 @@ export function alert(props: Partial<AlertProps>): AlertInterface {
             updateAlert({ visible: true, onHide: () => {
 				updateAlert({ visible: false }, undefined, onUnMount);
 			}}, onMount);
+            return alertInterface;
         },
         doneLoading: (_?: Function) => { throw new Error("Alert is not of the loading type."); },
         startLoading: (_?: Function) => { throw new Error("Alert is not of the loading type."); },
     };
+
+    return alertInterface;
 }
 
 export interface LoadingAlertDialog<T> extends AlertProps {
@@ -297,6 +298,7 @@ export function loadingAlert<T>(props: Partial<LoadingAlertDialog<T>>, params?: 
         alert.update({ ...loadingProps, visible: true, onHide: () => {
             alert.update({ visible: false }, onMount, onUnMount);
         }}, onMount, onUnMount);
+        return alert;
     };
     alert.startLoading = (onMount?: Function) => {
         alert.update(loadingProps, onMount);

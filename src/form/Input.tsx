@@ -38,6 +38,7 @@ export interface InputProps extends ComponentBaseProps<NoseurFormElement, InputM
     placeholder: string;
     children: NoseurElement;
     autoGrowHeight: boolean;
+    value: NoseurInputValue;
     defaultValue: NoseurInputValue;
     completeInputOnBlurOnly: boolean;
     completeInputOnEnterPressOnly: boolean;
@@ -60,7 +61,7 @@ class Input extends React.Component<InputProps, InputState> {
     };
 
     state: InputState = {
-        value: this.props.defaultValue
+        value: this.props.value ?? this.props.defaultValue
     };
 
     internalInputElement: NoseurFormElement | undefined;
@@ -212,6 +213,7 @@ class Input extends React.Component<InputProps, InputState> {
                 ObjectHelper.resolveRef(this.props.forwardRef, el);
             }
         };
+        if (this.props.value) (props as any).value = this.props.value;
         if (this.internalInputElement && !this.internalInputElement.value && this.internalInputElement.value !== this.state.value) {
             this.internalInputElement.value = this.state.value as any ?? "";
         }

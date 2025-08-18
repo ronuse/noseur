@@ -35,7 +35,7 @@ export interface ChartProps extends ComponentBaseProps<HTMLDivElement, ChartMana
     canvasProps: NoseurObject<any>;
     type: ChartTypeRegistry | string;
     canvasStyle: React.CSSProperties | undefined;
-    canvasElement: React.ForwardedRef<HTMLCanvasElement>;
+    canvasRef: React.ForwardedRef<HTMLCanvasElement>;
 }
 
 interface ChartState {
@@ -88,17 +88,17 @@ export class ChartComponent extends React.Component<ChartProps, ChartState> {
         const className = Classname.build("noseur-chart", this.props.className);
         const canvasElement = (ref: HTMLCanvasElement) => {
             this.canvasElement = ref;
-            ObjectHelper.resolveRef(this.props.canvasElement, ref);
+            ObjectHelper.resolveRef(this.props.canvasRef, ref);
         };
 
-        return (<div className={className} style={this.props.style}>
+        return (<div className={className} style={this.props.style} ref={this.props.forwardRef}>
             <canvas id={this.state.id} style={this.props.canvasStyle} className={this.props.canvasClassName} ref={canvasElement} {...(this.props.canvasProps || {})}></canvas>
         </div>)
     }
 
 }
 
+export { ChartTypeRegistry } from "chart.js/auto";
 export const Chart  = ({ ref, ...props }: Partial<ChartProps>) => (
     <ChartComponent {...props} forwardRef={ref} />
 );
-
