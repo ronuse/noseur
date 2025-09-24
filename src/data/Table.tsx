@@ -24,7 +24,7 @@ export interface TableProps<D> extends DataProps<HTMLTableElement, D> {
     canDisableSort: boolean;
     sortOrder: null | 0 | 1 | -1;
     selectionMode: TableSelectionMode;
-    children: React.ReactElement<ColumnProps> | React.ReactElement<ColumnProps>[];
+    children: React.JSX.Element | React.JSX.Element[] | React.ReactElement | React.ReactElement[];
 
     onColumnSelection: TableSelectionEventHandler;
 };
@@ -109,7 +109,7 @@ class TableComponent<D> extends DataComponent<HTMLTableElement, TableProps<D>, T
         if (!this.state.activeData || this.state.isLoading) return;
         let data = this.state.activeData.slice(this.state.dataOffset, (this.props.rowsPerPage + this.state.dataOffset));
         if (!data.length && !this.props.allowNoDataPagination) data = this.state.activeData;
-        const children: any = (this.props.children as any).length ? this.props.children : [this.props.children];
+        const children: any = ObjectHelper.flattenChildren(this.props.children);
         const rowsContents = this.state.rowsContent;
 
         const rows = data.map((data: D, index: number) => {
@@ -143,7 +143,7 @@ class TableComponent<D> extends DataComponent<HTMLTableElement, TableProps<D>, T
     }
 
     renderTableHeader() {
-        const children: any = (this.props.children as any).length ? this.props.children : [this.props.children];
+        const children: any = ObjectHelper.flattenChildren(this.props.children);
         const columns = children?.map((child: React.ReactElement<ColumnProps>, index: number) => {
             const cachedOnSort = child.props.onSort;
             const onSort = (sortDirection: SortDirection) => {
@@ -187,7 +187,7 @@ class TableComponent<D> extends DataComponent<HTMLTableElement, TableProps<D>, T
 
     renderTableFooter() {
         let hasNoFooter = true;
-        const children: any = (this.props.children as any).length ? this.props.children : [this.props.children];
+        const children: any = ObjectHelper.flattenChildren(this.props.children);
         const columns = children?.map((child: React.ReactElement<ColumnProps>, index: number) => {
             if (child.props.footer) hasNoFooter = false;
             return React.createElement(ColumnComponent, {

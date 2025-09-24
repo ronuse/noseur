@@ -118,7 +118,7 @@ export class DataComponent<T, P extends DataProps<T, D>, S extends DataState<D>,
 
     buildRowProps(data?: any) {
         const valuedRowProps = this.props.valuedRowProps ? this.props.valuedRowProps(data) : {};
-        return ObjectHelper.merge(this.props.rowProps, valuedRowProps);
+        return ObjectHelper.merge(this.props.rowProps ?? {}, valuedRowProps);
     }
 
     onPageChange(event: PaginatorPageChangeOption) {

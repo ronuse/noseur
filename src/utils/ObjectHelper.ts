@@ -1,7 +1,8 @@
 
+import React from "react";
+import { TypeChecker } from "./TypeChecker";
 import { NoseurObject } from "../constants/Types";
 import { ComponentBaseProps } from "../core/ComponentBaseProps";
-import { TypeChecker } from "./TypeChecker";
 
 export const ObjectHelper = {
 
@@ -356,6 +357,19 @@ export const ObjectHelper = {
             });
         }
         return resolvedContent;
+    },
+
+    flattenChildren(propsChildren: any) {
+        const _children: any = (propsChildren as any).length ? propsChildren : [propsChildren];
+        let children: any = [];
+        for (const child of _children) {
+            if (child.type === React.Fragment && child.props.children) {
+                children.push(...ObjectHelper.flattenChildren(child.props.children));
+                continue;
+            }
+            children.push(child);
+        }
+        return children;
     },
 
 }
