@@ -19,6 +19,7 @@ export interface ColumnManageRef {
 }
 
 export interface ColumnProps extends ComponentBaseProps<HTMLTableColElement, ColumnManageRef> {
+    key: any;
     value: any;
     group: string;
     element: string;
@@ -124,6 +125,7 @@ export class ColumnComponent extends React.Component<ColumnProps, ColumnState> {
             ...props,
             ...valuedRowProps,
             role: "row",
+            key: this.props.key,
             "data-n-group": this.props.group,
         }, (<div className={Classname.build("noseur-column", this.props.valueClassName)}>
             {value}

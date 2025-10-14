@@ -65,6 +65,9 @@ class DateTimeInputComponent extends React.Component<DateTimeInputProps, DateTim
             value: () => {
                 return this.dateTimePickerManageRef?.formattedValue();
             },
+            setValue: (value: string | string[]) => {
+                this.setState({ selectedDates: (typeof value === "string" ? [new Date(value)] : value.map((v) => new Date(v))) });
+            },
         });
     }
 

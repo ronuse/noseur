@@ -63,6 +63,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
     target: HTMLElement | any;
     hostRectBeforeRerendering: DOMRect = {} as any;
     documentScrollHandler: NoseurObject<any> | undefined;
+    transitionNodeRef: React.RefObject<HTMLDivElement | null>;
     windowResizeListener: ((event: Event) => void) | undefined;
     documentClickListener: ((event: Event) => void) | undefined;
 
@@ -77,6 +78,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
         this.rePosition = this.rePosition.bind(this);
         this.showPopover = this.showPopover.bind(this);
         this.hidePopover = this.hidePopover.bind(this);
+        this.transitionNodeRef = React.createRef<HTMLDivElement>();
         this.resolvePopoverStyle = this.resolvePopoverStyle.bind(this);
     }
 
@@ -270,15 +272,15 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
             style: this.props.style,
         };
         const ref = (el: NoseurDivElement) => {
-            if (!el) return;
             this.internalElement = el;
             ObjectHelper.resolveRef(this.props.forwardRef, el);
-            if (!this.hostRectBeforeRerendering.width) this.hostRectBeforeRerendering = this.internalElement.getBoundingClientRect();
+            ObjectHelper.resolveRef(this.transitionNodeRef, el);
+            if (el && !this.hostRectBeforeRerendering.width) this.hostRectBeforeRerendering = this.internalElement.getBoundingClientRect();
         };
 
         return (
             <CSSTransition classNames={transition} timeout={this.props.transitionTimeout} in={this.state.visible} options={this.props.transitionOptions}
-                unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExit={this.onExit} onExited={this.onExited} nodeRef={ref}>
+                unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExit={this.onExit} onExited={this.onExited} nodeRef={this.transitionNodeRef}>
                 <div ref={ref} {...props}>
                     {this.props.children}
                 </div>

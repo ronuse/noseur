@@ -11,6 +11,7 @@ import { DOMHelper, ObserverHandler } from "../utils/DOMUtils";
 import { NoseurElement, NoseurObject } from "../constants/Types";
 import { Button, ButtonManageRef, ButtonProps, buildButtonControl } from "./Button";
 import { ComponentBaseProps, ComponentElementBasicAttributes } from "../core/ComponentBaseProps";
+import { FileHelper } from "../utils/FileHelper";
 
 export enum FileInputMode {
     BUTTON,
@@ -182,7 +183,7 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
 
     state: FileInputState = {
         files: ObjectHelper.clone(this.props.defaultFiles),
-        maxFileSizeHumanReadable: ObjectHelper.humanFileSize(this.props.maxFileSize, true)
+        maxFileSizeHumanReadable: FileHelper.humanFileSize(this.props.maxFileSize, true)
     };
 
     componentUnmounted: boolean = false;
@@ -224,6 +225,9 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
             value: () => {
                 const files = this.state.files;
                 return files.length ? files[0] : null;
+            },
+            setValue: (value: File) => {
+                this.setState({ files: [value] });
             },
             changeFiles: (files: File[]) => {
                 this.setState({ files });
@@ -433,7 +437,7 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
         (file as any).key = index;
         const url = URL.createObjectURL(file);
         const isTemplated = !!this.props.itemTemplate;
-        const formattedSize = ObjectHelper.humanFileSize(file.size, true);
+        const formattedSize = FileHelper.humanFileSize(file.size, true);
         const className = Classname.build("noseur-file-input-preview", this.props.attrsRelay.preview?.className, {
             "noseur-cursor-pointer": this.props.clickToChange
         });
@@ -591,7 +595,7 @@ export function fileInputBuildFileInputPreview(options: FileInputPreviewOption) 
     const onRemove = options.onRemove;
     const closeButton = options.removeButton;
     const url = (file as any).__noseur__url__ ?? options.url ?? URL.createObjectURL(file);
-    const formattedSize = options.formattedSize || ObjectHelper.humanFileSize(file.size, true);
+    const formattedSize = options.formattedSize || FileHelper.humanFileSize(file.size, true);
     if (previewType === FileInputPreviewType.IMAGE) {
         return (<React.Fragment>
             <img ref={options.ref} className="noseur-file-input-preview-image" style={options.style} alt={file.name} src={url} />

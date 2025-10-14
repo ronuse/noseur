@@ -1009,7 +1009,6 @@ function App() {
                     <Dropdown fill options={Object.keys(Transition).map((alignment, index) => ({ label: alignment, value: Object.values(Transition)[index] }))}
                         onSelectOption={(option: any) => {
                             setTransition(option.value);
-                            return true;
                         }} selectedOptionIndex={0} formControlProps={{ fill: true }} popoverProps={{ style: { height: 300, overflow: "auto" } }} />
 
                     <Button text="PopoverX" onClick={(e: any) => refs.current["popoverx"].toggle(e/*, refs.current["portaldiv1"] */)} />

@@ -82,6 +82,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
     internalModalElement: any;
     internalDialogElement: any;
     componentUnmounted: boolean = false;
+    transitionNodeRef: React.RefObject<HTMLDivElement | null>;
 
     constructor(props: DialogProps) {
         super(props);
@@ -92,6 +93,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         this.onEntered = this.onEntered.bind(this);
         this.onModalClick = this.onModalClick.bind(this);
         this.toggleMaximize = this.toggleMaximize.bind(this);
+        this.transitionNodeRef = React.createRef<HTMLDivElement>();
     }
 
     componentDidMount() {
@@ -317,6 +319,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         const elementRef = (r: HTMLDivElement) => {
             this.internalDialogElement = r;
             ObjectHelper.resolveRef(cacheModalRef, r);
+            ObjectHelper.resolveRef(this.transitionNodeRef, r);
             ObjectHelper.resolveRef(this.props.forwardRef, r, true);
         };
         if (!modalProps.onClick) modalProps.onClick = this.onModalClick;
@@ -329,7 +332,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
             });
         }}>
             <CSSTransition classNames={transition} timeout={transition === Transition.NONE ? 0 : transitionTimeout} in={this.state.visible}
-                options={this.props.transitionOptions} unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExited={this.onExited} nodeRef={elementRef}>
+                options={this.props.transitionOptions} unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExited={this.onExited} nodeRef={this.transitionNodeRef}>
                 <div ref={elementRef} id={id} className={className} style={this.props.style}
                     role="dialog" aria-labelledby={id + '-header'} aria-describedby={id + '-content'} aria-modal={this.props.dismissibleModal}>
                     {header}
@@ -348,7 +351,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
 
 }
 
-export const Dialog  = ({ ref, ...props }: Partial<DialogProps>) => (
+export const Dialog = ({ ref, ...props }: Partial<DialogProps>) => (
     <DialogComponent {...props} forwardRef={ref} />
 );
 

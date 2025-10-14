@@ -14,6 +14,7 @@ export type InputOnFirstInputCompleteHandler = (value?: string) => void;
 
 export interface BareInputManageRef<T> {
     clear: () => void;
+    setValue: (value: T) => void;
     value: () => T | null | undefined;
 }
 
@@ -89,6 +90,12 @@ class Input extends React.Component<InputProps, InputState> {
             value: () => {
                 if (!this.internalInputElement) return null;
                 return this.internalInputElement.value;
+            },
+            setValue: (value: any) => {
+                this.setState({ value }, () => {
+                    if (!this.internalInputElement) return;
+                    this.internalInputElement.value = value;
+                });
             },
         });
     }

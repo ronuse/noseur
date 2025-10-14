@@ -194,7 +194,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
         if (!skipReport && selectedOptionIndex.primaryIndex === -1) {
             if (this.props.onDeSelectOption) this.props.onDeSelectOption(e);
         };
-        if (selectedOptionIndex.primaryIndex === -1 || (skipReport || !this.props.onSelectOption || !this.props.onSelectOption(option, e))) {
+        if (selectedOptionIndex.primaryIndex === -1 || (skipReport || !this.props.onSelectOption || this.props.onSelectOption(option, e) !== true)) {
             if (!skipReport) this.setState({ selectedOptionIndex: selectedOptionIndex });
             const optionLabel = option ? this.resolveOptionLabel(option) : (this.props.renderOptionAsPlaceholder ? this.props.placeholder : "");
             if (this.props.renderOptionAsPlaceholder) {

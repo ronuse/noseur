@@ -2,9 +2,9 @@
 import React from "react";
 import { Scheme } from "../constants/Scheme";
 import { Classname } from "../utils/Classname";
+import { NoseurObject } from "../constants/Types";
 import { Transition } from "../constants/Transition";
 import { ObjectHelper } from "../utils/ObjectHelper";
-import { NoseurInputValue, NoseurObject } from "../constants/Types";
 
 export interface ComponentElementBasicAttributes {
     id?: string;
@@ -20,6 +20,7 @@ export interface ComponentBaseProps<T1, T2 = {}, T3 = {}> extends MicroComponent
 }
 
 export interface MicroComponentBaseProps<T1 = {}> {
+    key: any;
     id: string;
     name: string;
     attrsRelay: T1;
@@ -28,7 +29,6 @@ export interface MicroComponentBaseProps<T1 = {}> {
     className: string;
     disabled: boolean;
     draggable: boolean;
-    key: NoseurInputValue;
     style: React.CSSProperties | undefined;
 }
 

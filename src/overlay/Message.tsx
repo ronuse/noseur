@@ -82,6 +82,7 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
 
     timer?: Timer;
     progressBarComponent?: ProgressBarManageRef;
+    transitionNodeRef: React.RefObject<HTMLDivElement | null>;
 
     constructor(props: MessageProps) {
         super(props);
@@ -94,6 +95,7 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
         this.onMouseEnter = this.onMouseEnter.bind(this);
         this.onMouseLeave = this.onMouseLeave.bind(this);
         this.onTimerAction = this.onTimerAction.bind(this);
+        this.transitionNodeRef = React.createRef<HTMLDivElement>();
     }
 
     componentDidMount() {
@@ -239,12 +241,12 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
         }, scheme, (this.state.props.scheme ? `${this.state.props.scheme}-bd-rd ${this.state.props.scheme}-vars` : null),
             (this.state.props.closeOnClick ? "noseur-cursor-pointer" : null), this.state.props.className);
         const ref = (el: HTMLDivElement) => {
-            if (!el) return;
             ObjectHelper.resolveRef(this.props.forwardRef, el);
+            ObjectHelper.resolveRef(this.transitionNodeRef, el);
         };
 
         const children = (<CSSTransition classNames={transition} options={this.state.props.transitionOptions}
-            timeout={transition === Transition.NONE ? 0 : this.state.props.transitionTimeout} nodeRef={ref}
+            timeout={transition === Transition.NONE ? 0 : this.state.props.transitionTimeout} nodeRef={this.transitionNodeRef}
             in={this.state.mount} unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExited={this.onExited}>
             <div ref={ref} className={className} id={this.props.id} style={this.state.props.style}
                 onClick={this.onClick} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>

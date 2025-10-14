@@ -75,12 +75,14 @@ class PanelComponent extends React.Component<PanelProps, PanelState> {
     };
 
     manageRef?: PanelManageRef;
+    transitionNodeRef: React.RefObject<HTMLDivElement | null>;
 
     constructor(props: PanelProps) {
         super(props);
 
         this.onToggle = this.onToggle.bind(this);
         this.isCollapsed = this.isCollapsed.bind(this);
+        this.transitionNodeRef = React.createRef<HTMLDivElement>();
     }
 
     componentDidMount() {
@@ -164,8 +166,8 @@ class PanelComponent extends React.Component<PanelProps, PanelState> {
             return React.cloneElement(child, childProps);
         });
 
-        return (<CSSTransition classNames={attrRelays?.transition} timeout={transitionTimeout} options={attrRelays?.transitionOptions} in={!collapsed} unmountOnExit>
-            <div className={className} id={attrRelays?.id} style={attrRelays?.style}>{children}</div>
+        return (<CSSTransition nodeRef={this.transitionNodeRef} classNames={attrRelays?.transition} timeout={transitionTimeout} options={attrRelays?.transitionOptions} in={!collapsed} unmountOnExit>
+            <div className={className} id={attrRelays?.id} style={attrRelays?.style} ref={this.transitionNodeRef}>{children}</div>
         </CSSTransition>);
     }
 

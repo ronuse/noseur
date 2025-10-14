@@ -565,6 +565,12 @@ export const DOMHelper = {
 		};
 	},
 
+	removeAllChildren(el: HTMLElement) {
+		while (el.firstChild) {
+			el.removeChild(el.firstChild);
+		}
+	}
+
 };
 
 export const ScrollHandler = {

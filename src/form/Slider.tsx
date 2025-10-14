@@ -72,6 +72,9 @@ class SliderComponent extends React.Component<SliderProps, SliderState> {
             value: () => {
                 return (this.state.values.length < 2 ? this.state.values[0] : this.state.values);
             },
+            setValue: (values: any) => {
+                this.setState({ values });
+            },
         });
         if (this.documentScrollHandler) return;
         this.documentScrollHandler = ScrollHandler.handle((this.compoundRef as Node), async (_: any) => {
@@ -203,6 +206,6 @@ class SliderComponent extends React.Component<SliderProps, SliderState> {
 
 }
 
-export const Slider  = ({ ref, ...props }: Partial<SliderProps>) => (
+export const Slider = ({ ref, ...props }: Partial<SliderProps>) => (
     <SliderComponent {...props} forwardRef={ref} />
 );

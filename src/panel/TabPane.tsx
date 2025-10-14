@@ -79,6 +79,7 @@ export type TabPaneAttributesRelays = {
 export interface TabPaneManageRef {
     next: () => void;
     previous: () => void;
+    activeTab: () => number;
     readd: (index: number) => void;
     switch: (index: number) => void;
     remove: (index: number) => void;
@@ -145,6 +146,7 @@ class TabPaneComponent extends React.Component<TabPaneProps, TabPaneState> {
     componentDidMount() {
         ObjectHelper.resolveManageRef(this, {
             next: () => this.navigateTab("next"),
+            activeTab: () => this.state.activeIndex,
             previous: () => this.navigateTab("prev"),
             readd: (index: number) => this.onRemoveHeader(index, "readd"),
             remove: (index: number) => this.onRemoveHeader(index, "remove"),
