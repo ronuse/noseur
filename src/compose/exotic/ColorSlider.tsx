@@ -29,6 +29,7 @@ export interface ColorSliderManageRef extends BareInputManageRef<Color> {
 export interface ColorSliderProps extends ComponentBaseProps<HTMLDivElement, ColorSliderManageRef, ColorSliderAttributesRelays> {
     hue: string;
     primaryColor: string;
+    reportOnDrag: boolean;
     colorGradient: string;
     allowedOverflow: number;
     orientation: Orientation.VERTICAL | Orientation.HORIZONTAL;
@@ -37,9 +38,7 @@ export interface ColorSliderProps extends ComponentBaseProps<HTMLDivElement, Col
 }
 
 interface ColorSliderState {
-    alpha: number;
     primaryColor: string;
-    hsb: { h: number; s: number; b: number; };
 }
 
 class ColorSliderComponent extends React.Component<ColorSliderProps, ColorSliderState> {
@@ -54,15 +53,18 @@ class ColorSliderComponent extends React.Component<ColorSliderProps, ColorSlider
     };
 
     state: ColorSliderState = {
-        alpha: 1,
         primaryColor: this.props.primaryColor,
-        hsb: ColorHelper.hexToHsb(this.props.hue),
     };
 
+    alpha: number;
     cachedAttrs: any = {};
+    hsb: { h: number; s: number; b: number; };
 
     constructor(props: ColorSliderProps) {
         super(props);
+
+        this.alpha = 1;
+        this.hsb = ColorHelper.hexToHsb(this.props.hue);
 
         this.onChange = this.onChange.bind(this);
         this.onHandleDrag = this.onHandleDrag.bind(this);
@@ -70,28 +72,31 @@ class ColorSliderComponent extends React.Component<ColorSliderProps, ColorSlider
 
     componentDidUpdate(prevProps: Readonly<ColorSliderProps>, _: Readonly<ColorSliderState>) {
         if (this.props.primaryColor !== prevProps.primaryColor || this.props.hue !== prevProps.hue) {
-            this.setState({ hsb: (this.props.hue !== prevProps.hue ? ColorHelper.hexToHsb(this.props.hue) : this.state.hsb), primaryColor: this.props.primaryColor });
+            this.hsb = (this.props.hue !== prevProps.hue ? ColorHelper.hexToHsb(this.props.hue) : this.hsb);
+            this.setState({ primaryColor: this.props.primaryColor });
         }
     }
 
     onChange(evt: any) {
         this.props.onChange && this.props.onChange(evt);
         const value = evt.value + this.props.allowedOverflow;
-        this.setState({ alpha: (value / 100) });
+        this.alpha = (value / 100);
     }
 
     async onHandleDrag(evt?: DragSensorEvent) {
         const { event } = evt! as any;
-        let position = (event[this.cachedAttrs.page] !== undefined ? event[this.cachedAttrs.page] : ((event as any).changedTouches !== undefined ? (event as any).changedTouches[0][this.cachedAttrs.page] : 0));
-        const topOrLeft = (this.cachedAttrs.rect[this.cachedAttrs.topLeft] ?? 0) + (window[this.cachedAttrs.scrollXy] ?? (document.documentElement as any)[this.cachedAttrs.scrollTl] ?? (document.body as any)[this.cachedAttrs.scrollTl] ?? 0);
-        const hsb = ColorHelper.normalizeHsB({
-            s: this.state.hsb.s,
-            b: this.state.hsb.b,
-            h: Math.floor((360 * (Math.max(0, Math.min(224, position - topOrLeft)))) / 224),
-        });
-        const eventValue = { color: ColorHelper.hsbToColor(hsb, this.state.alpha)!, previousColor: ColorHelper.hsbToColor(this.state.hsb, this.state.alpha) };
-        if ((this.props.onSelectColor && this.props.onSelectColor(eventValue) === true)) return;
-        this.setState({ hsb });
+        setTimeout(() => {
+            let position = (event[this.cachedAttrs.page] !== undefined ? event[this.cachedAttrs.page] : ((event as any).changedTouches !== undefined ? (event as any).changedTouches[0][this.cachedAttrs.page] : 0));
+            const topOrLeft = (this.cachedAttrs.rect[this.cachedAttrs.topLeft] ?? 0) + (window[this.cachedAttrs.scrollXy] ?? (document.documentElement as any)[this.cachedAttrs.scrollTl] ?? (document.body as any)[this.cachedAttrs.scrollTl] ?? 0);
+            const hsb = ColorHelper.normalizeHsB({
+                s: this.hsb.s,
+                b: this.hsb.b,
+                h: Math.floor((360 * (Math.max(0, Math.min(224, position - topOrLeft)))) / 224),
+            });
+            const eventValue = { color: ColorHelper.hsbToColor(hsb, this.alpha)!, previousColor: ColorHelper.hsbToColor(this.hsb, this.alpha) };
+            if ((this.props.onSelectColor && this.props.onSelectColor(eventValue) === true)) return;
+            this.hsb = hsb;
+        }, 100);
     }
 
     renderRange() {
@@ -103,8 +108,8 @@ class ColorSliderComponent extends React.Component<ColorSliderProps, ColorSlider
         const className = Classname.build("noseur-color-slider", `noseur-color-slider-${this.props.orientation}`, this.props.className, this.props.attrsRelay?.sliderProps?.className);
         const style: any = {
             ...(this.props.style ?? {}),
-            "--noseurSchemeMainColor": this.props.colorGradient,
             "--primaryColor": this.state.primaryColor,
+            "--noseurSchemeMainColor": this.props.colorGradient,
             ...(this.props.attrsRelay?.sliderProps?.style ?? {}),
         };
         this.props.attrsRelay.sliderProps = {
@@ -113,7 +118,7 @@ class ColorSliderComponent extends React.Component<ColorSliderProps, ColorSlider
                 ...(this.props.attrsRelay?.sliderProps?.attrsRelay ?? {}),
                 dragSensorProps: {
                     ...(this.props.attrsRelay?.sliderProps?.attrsRelay?.dragSensorProps ?? {}),
-                    onDragEvent: this.onHandleDrag,
+                    [this.props.reportOnDrag ? `onDragEvent` : `onDragEventEnd`]: this.onHandleDrag,
                     allowedOverflow: this.props.allowedOverflow,
                 }
             }

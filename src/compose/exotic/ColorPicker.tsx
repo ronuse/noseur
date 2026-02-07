@@ -223,7 +223,7 @@ class ColorPickerComponent extends React.Component<ColorPickerProps, ColorPicker
             } else if (requiredLayoutElement === DateTimePickerLayoutElement.DaysElements) {
                 const daysElements: any[] = [];
                 const row = 7, column = 6, rowColumnSum = row * column;
-                const underline = this.props.showDatesSeparator && !this.props.showGridlines;
+                const underline = this.props.showDatesSeparator && !this.props.showGridLines;
                 const monthDays = DateHelper.getAllDaysInMonth(formattedDate.year, formattedDate.month);
                 const startWeekday = monthDays[0].getDay();
                 const previousMonthPadding = startWeekday;

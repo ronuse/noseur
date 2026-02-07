@@ -44,6 +44,7 @@ export interface DragSensorProps extends ComponentBaseProps<HTMLDivElement, Drag
     padding: number;
     ceiling: Ceiling;
     edgeOnly: boolean;
+    showTrail: boolean;
     singleton: boolean;
     direction: Direction;
     allowedOverflow: number;
@@ -61,8 +62,10 @@ export interface DragSensorProps extends ComponentBaseProps<HTMLDivElement, Drag
 }
 
 interface DragSensorState {
-
 }
+
+const transparentDragIcon = new Image();
+transparentDragIcon.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 class DragSensorComponent extends React.Component<DragSensorProps, DragSensorState> {
 
@@ -90,6 +93,9 @@ class DragSensorComponent extends React.Component<DragSensorProps, DragSensorSta
         this.props.onDragStart && this.props.onDragStart(event);
         if (!this.dragElementRefs || !(key in this.dragElementRefs)) return;
         const element = this.dragElementRefs[key];
+        if (!this.props.showTrail) {
+            event.dataTransfer.setDragImage(transparentDragIcon, 0, 0);
+        }
         const evt = { ...DOMHelper.elementRelativeAndAbsolutePositions(element, event, this.props.boundToParent, this.props.allowedOverflow, this.props.direction, this.props.ceiling), event, key };
         this.props.onDragEventChange && this.props.onDragEventChange(DragSensorEventType.START, evt);
         this.props.onDragEventStart && this.props.onDragEventStart(evt);
@@ -211,6 +217,6 @@ class DragSensorComponent extends React.Component<DragSensorProps, DragSensorSta
 
 }
 
-export const DragSensor  = ({ ref, ...props }: Partial<DragSensorProps>) => (
+export const DragSensor = ({ ref, ...props }: Partial<DragSensorProps>) => (
     <DragSensorComponent {...props} forwardRef={ref} />
 );

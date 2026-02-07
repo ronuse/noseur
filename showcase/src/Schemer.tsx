@@ -35,7 +35,7 @@ function Schemer() {
         <br />
         <hr style={{ width: "100%" }} />
         <br />
-        <Table paginate scheme={scheme} data={tableData} stripedRows showGridlines={false} hideHeaders={false}
+        <Table paginate scheme={scheme} data={tableData} stripedRows showGridLines={false} hideHeaders={false}
             sortMode={SortMode.MULTIPLE} style={{ marginTop: 20 }} noDivider
             paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }}>
             <Column template={(logo: any) => <i className={logo} />} dataKey="logo" />

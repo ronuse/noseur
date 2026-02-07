@@ -48,6 +48,7 @@ export * from "./form/Slider";
 export * from "./form/ColorMap";
 export * from "./form/Checkbox";
 export * from "./form/Dropdown";
+export * from "./form/Calendar";
 export * from "./form/FileInput";
 export * from "./form/RadioButton";
 export * from "./form/ColorPalette";
@@ -70,6 +71,9 @@ export * from "./panel/Panel";
 export * from "./panel/TabPane";
 export * from "./panel/Accordion";
 export * from "./panel/ScrollPanel";
+
+// layout
+export * from "./layout/GridView";
 
 // sensor
 export * from "./sensor/DragSensor";

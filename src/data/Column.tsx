@@ -26,6 +26,7 @@ export interface ColumnProps extends ComponentBaseProps<HTMLTableColElement, Col
     dataKey: string;
     sortable: boolean;
     canUnsort: boolean;
+    doNotRender: boolean;
     sortIcons: SortIcons;
     valueClassName: string;
     rowControlOptions: RowControlOptions;

@@ -18,6 +18,8 @@ import {
     ColorSlider,
     ColorSliderGradient,
     ColorPicker,
+    Calendar,
+    GridView,
 } from "@ronuse/noseur";
 
 function App() {
@@ -73,15 +75,35 @@ function App() {
         return (
             <div className="Apps" style={{ background: "white" }}>
                 <div style={{ margin: 30 }}>
+                    <GridView column={2} gap={1}>
+                        <div style={{ width: "100%", height: 10, background: "red" }}>
+
+                        </div>
+                        <div style={{ width: "100%", height: 10, background: "red" }}>
+
+                        </div>
+                        <div style={{ width: "100%", height: 10, background: "red" }}>
+
+                        </div>
+                        <div style={{ width: "100%", height: 10, background: "red" }}>
+
+                        </div>
+                    </GridView>
+                </div>
+                {/* <div style={{ margin: 30 }}>
+                    <Calendar />
+                </div> */}
+                {/* <div style={{ margin: 30 }}>
                     <h5>As Button Icons</h5>
                     <Button scheme={Scheme.PRIMARY} text="Messages" leftIcon={<span className="norseu-badge norseu-secondary norseu-no-border">9</span>} />
                     <Button scheme={Scheme.INFO} text="Emails" rightIcon={<span className="norseu-badge norseu-secondary norseu-no-border">9</span>} />
                     <Button scheme={Scheme.WARNING} text="Type" leftIcon={<span className="norseu-tag norseu-warning">warning</span>} outlined />
                     <Button scheme={Scheme.DANGER} text="Error" rightIcon={<span className="norseu-pill norseu-danger">danger</span>} outlined rounded />
                     <Button text="Tags" rightIcon={(<div style={{ marginTop: "6px" }}>
-                        {/* <Tag scheme={Scheme.INFO} icon="fa fa-square" text="Info" outlined />
-                        <Tag scheme={Scheme.PRIMARY} icon="fa fa-square" text="Primary" outlined />
-                        <Tag scheme={Scheme.DANGER} icon="fa fa-square" text="Danger" outlined /> */}
+                        {//<Tag scheme={Scheme.INFO} icon="fa fa-square" text="Info" outlined />
+                        //<Tag scheme={Scheme.PRIMARY} icon="fa fa-square" text="Primary" outlined />
+                        //<Tag scheme={Scheme.DANGER} icon="fa fa-square" text="Danger" outlined />
+                        }
                     </div>)} scheme={Scheme.SECONDARY} outlined />
 
                     <h5>Positioned</h5>
@@ -181,12 +203,13 @@ function App() {
                         <span className="noseur-badge noseur-primary noseur-size-lx">69</span>
                         <span className="noseur-badge noseur-success noseur-size-lxx">41</span>
                     </div>
-                </div>
+                </div> */}
                 <div style={{ margin: 30 }}>
                     {/* <ColorPicker /> */}
                 </div>
-                <div style={{ margin: 30 }}>
+                {/* <div style={{ margin: 30 }}>
                     <ColorMap hex={states.csHex1} />
+                    <ColorMap hex={states.csHex1} style={{ marginTop: 15 }} hideAlpha />
                 </div>
                 <div style={{ margin: 30 }}>
                     <span>{states.csHex1 ?? "..."}</span>
@@ -199,7 +222,7 @@ function App() {
                         setStates({ ...states, csHex1: color.hex, });
                     }} />
                     <br />
-                    <ColorSlider colorGradient={ColorSliderGradient.RAINBOW} onSelectColor={async ({ color }) => {
+                    <ColorSlider reportOnDrag={false} colorGradient={ColorSliderGradient.RAINBOW} onSelectColor={async ({ color }) => {
                         setStates({ ...states, csHex1: color.hex });
                     }} />
                     <br />
@@ -401,21 +424,21 @@ function App() {
                     <br />
                     <div style={{ backgroundColor: "green", width: 200, height: 200 }}>
                         Bouundless + drag
-                        <DragSensor draggable id="drag-dot-one" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                        <DragSensor draggable id="drag-dot-three" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
                             DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
                         }} />
                     </div>
                     <br />
                     <div style={{ backgroundColor: "green", width: 200, height: 200 }}>
                         Bouundless + drag over
-                        <DragSensor draggable id="drag-dot-one" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventDragOver={(evt?: DragSensorEvent) => {
+                        <DragSensor draggable id="drag-dot-two" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventDragOver={(evt?: DragSensorEvent) => {
                             DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
                         }} />
                     </div>
                     <br />
                     <div style={{ backgroundColor: "green", width: 200, height: 200 }}>
                         Bouundless
-                        <DragSensor draggable id="drag-dot-one" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventEnd={(evt?: DragSensorEvent) => {
+                        <DragSensor showTrail draggable id="drag-dot-one" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventEnd={(evt?: DragSensorEvent) => {
                             console.log("EVENT", evt);
                             DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
                         }} />
@@ -435,7 +458,7 @@ function App() {
                     <br />
                 </div>
                 <div style={{ margin: 30 }}>
-                    <ColorPalette grid={8} size={16} gap={3} palette={"Default"} attrsRelay={{ tile: { style: { borderRadius: 2 } } }} onSelectColor={(e) => console.log("THE EVENT", e.color)} />
+                    <ColorPalette grid={4} size={16} gap={3} palette={"Default"} attrsRelay={{ tile: { style: { borderRadius: 2 } } }} onSelectColor={(e) => console.log("THE EVENT", e.color)} />
                     <br />
                     <ColorPalette size={50} palette={"MicrosofVisualStudio"} onSelectColor={(e) => true} />
                     <br />
@@ -472,7 +495,7 @@ function App() {
                     <List multiRowExpansion manageRef={(m: any) => refs.current["dm-list-expansion-2"] = m} rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
                     }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
-                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        stripedRows showGridLines={true} style={{ marginTop: 20 }}
                         template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
                     <br />
                     <hr />
@@ -494,7 +517,7 @@ function App() {
                     <List manageRef={(m: any) => refs.current["dm-list-expansion"] = m} rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
                     }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
-                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        stripedRows showGridLines={true} style={{ marginTop: 20 }}
                         template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
                     <br />
                     <hr />
@@ -503,7 +526,7 @@ function App() {
                     <List multiRowExpansion rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
                     }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
-                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        stripedRows showGridLines={true} style={{ marginTop: 20 }}
                         template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
                     <br />
                     <hr />
@@ -511,7 +534,7 @@ function App() {
                     <List rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
                     }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
-                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        stripedRows showGridLines={true} style={{ marginTop: 20 }}
                         template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
                     <br />
                     <hr />
@@ -522,7 +545,7 @@ function App() {
                         2: <div style={{ height: 45 }}>Hello Two 22</div>,
                         3: "Hello Three 333",
                     }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
-                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        stripedRows showGridLines={true} style={{ marginTop: 20 }}
                         template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
                     <br />
                     <hr />
@@ -532,7 +555,7 @@ function App() {
                         2: <div style={{ height: 45 }}>Hello Two 22</div>,
                         3: "Hello Three 333",
                     }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
-                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        stripedRows showGridLines={true} style={{ marginTop: 20 }}
                         template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
                 </div>
                 <div style={{ margin: 30, marginTop: 100 }}>
@@ -733,7 +756,7 @@ function App() {
                         <RadioButton scheme={Scheme.PRIMARY} label={"Align Label BOTTOM"} alignLabel={Alignment.BOTTOM} />
                     </div>
                 </div>
-                <div style={{ margin: 30, /*background: "grey", */padding: 20 }}>
+                <div style={{ margin: 30, padding: 20 }}>
                     <div>
                         <Button text="Next" onClick={() => tabPaneManageRef.current?.next()} />
                         <Button text="Prev" onClick={() => tabPaneManageRef.current?.previous()} />
@@ -861,7 +884,7 @@ function App() {
                         <TabPanel header="Panel 3">3 - {basicText()}</TabPanel>
                     </TabPane>
                 </div>
-                <div style={{ margin: 30, /*background: "grey", */padding: 20 }}>
+                <div style={{ margin: 30, padding: 20 }}>
                     <div>
                         <Button text="Expand 1" onClick={() => accordionManageRef.current?.expand([1])} />
                         <Button text="Collapse 1" onClick={() => accordionManageRef.current?.collapse([1])} />
@@ -940,7 +963,7 @@ function App() {
                             <AccordionTab title={`Header 3 (${scheme})`}>{basicText()}</AccordionTab>
                         </Accordion>))}
                 </div>
-                <div style={{ margin: 30, /*background: "grey", */padding: 20 }}>
+                <div style={{ margin: 30, padding: 20 }}>
                     <div>
                         <Button text="Toggle" onClick={() => panelManageRef.current?.toggle()} />
                         <Button text="Expand" onClick={() => panelManageRef.current?.expand()} />
@@ -1011,7 +1034,7 @@ function App() {
                             setTransition(option.value);
                         }} selectedOptionIndex={0} formControlProps={{ fill: true }} popoverProps={{ style: { height: 300, overflow: "auto" } }} />
 
-                    <Button text="PopoverX" onClick={(e: any) => refs.current["popoverx"].toggle(e/*, refs.current["portaldiv1"] */)} />
+                    <Button text="PopoverX" onClick={(e: any) => refs.current["popoverx"].toggle(e)} />
                     <Popover manageRef={(e: any) => refs.current["popoverx"] = e} matchTargetSize={false} pointingArrowClassName={""}
                         style={{ backgroundColor: "white", padding: 10, "--componentMarginTopOrBottom": "0px" } as any} transition={transition} transitionTimeout={1000}
                         onShow={() => console.log("onShow")} onHide={() => console.log("onHide")}>
@@ -1446,7 +1469,7 @@ function App() {
                     <Button text="clear" onClick={() => console.log(inputManageRef.current?.clear())} />
                 </div>
                 <div style={{ margin: 30 }}>
-                    <List paginate scheme={Scheme.SECONDARY} stripedRows={false} showGridlines={false} dataKey="name"
+                    <List paginate scheme={Scheme.SECONDARY} stripedRows={false} showGridLines={false} dataKey="name"
                         header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
                             <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
                                 <TextInput fill />
@@ -1457,7 +1480,7 @@ function App() {
                         onPageChange={(e: PaginatorPageChangeOption) => {
                             setDynamicDataTable(Array(5).fill((e.currentPage - 1) * 5));
                         }} style={{ width: "fit-content" }} />
-                    <List paginate scheme={Scheme.PRIMARY} stripedRows showGridlines={true} template={(d) => (<div><i className={d.logo} /> {d.name}</div>)}
+                    <List paginate scheme={Scheme.PRIMARY} stripedRows showGridLines={true} template={(d) => (<div><i className={d.logo} /> {d.name}</div>)}
                         header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
                             <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
                                 <TextInput fill />
@@ -1465,10 +1488,10 @@ function App() {
                         </div>)} style={{ marginTop: 20 }} rowsPerPage={5}
                         paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }} footer={() => "The foooter"}
                         data={Array(30).fill(null).map((_, i) => ({ name: "Platform " + (i + 1), service_code: "svc_" + (i + 1), logo: "fa fa-" + Math.min(9, i + 1), }))} />
-                    <List paginate scheme={Scheme.DANGER} data={tableData} stripedRows showGridlines={false}
+                    <List paginate scheme={Scheme.DANGER} data={tableData} stripedRows showGridLines={false}
                         style={{ marginTop: 20 }} noDivider template={(d) => (<div><i className={d.logo} /> {d.name}</div>)}
                         paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }} />
-                    <List data={[]} stripedRows showGridlines={true} style={{ marginTop: 20 }} template={(d) => (<div><i className={d.logo} /> {d.name}</div>)}
+                    <List data={[]} stripedRows showGridLines={true} style={{ marginTop: 20 }} template={(d) => (<div><i className={d.logo} /> {d.name}</div>)}
                         emptyState={(<div>No data</div>)} />
                 </div>
                 <div style={{ margin: 30 }}>
@@ -1729,7 +1752,7 @@ function App() {
                     <Chart style={{ width: 700 }} type={charty} data={chartyMap[charty].data} options={chartyMap[charty].options} />
                 </div>
                 <div style={{ margin: 30 }}>
-                    <Table paginate scheme={Scheme.SECONDARY} stripedRows={false} showGridlines={false} hideHeaders={false}
+                    <Table paginate scheme={Scheme.SECONDARY} stripedRows={false} showGridLines={false} hideHeaders={false}
                         header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
                             <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
                                 <TextInput fill />
@@ -1754,7 +1777,7 @@ function App() {
                             };
                         }
                         return {};
-                    }} paginate scheme={Scheme.PRIMARY} stripedRows showGridlines={true} hideHeaders={false}
+                    }} paginate scheme={Scheme.PRIMARY} stripedRows showGridLines={true} hideHeaders={false}
                         header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
                             <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
                                 <TextInput fill />
@@ -1766,7 +1789,7 @@ function App() {
                         <Column header="Namer" dataKey="name" />
                         <Column header="Service Code" dataKey="service_code" />
                     </Table>
-                    <Table paginate scheme={Scheme.DANGER} data={tableData} stripedRows showGridlines={false} hideHeaders={false}
+                    <Table paginate scheme={Scheme.DANGER} data={tableData} stripedRows showGridLines={false} hideHeaders={false}
                         sortMode={SortMode.MULTIPLE} style={{ marginTop: 20 }} noDivider
                         paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }}>
                         <Column template={(logo: any) => <i className={logo} />} dataKey="logo" />
@@ -1780,7 +1803,7 @@ function App() {
                         }} />
                         <Column canUnsort sortable header="Service Code" dataKey="service_code" />
                     </Table>
-                    <Table data={[]} stripedRows showGridlines={true} hideHeaders={false} style={{ marginTop: 20 }}
+                    <Table data={[]} stripedRows showGridLines={true} hideHeaders={false} style={{ marginTop: 20 }}
                         emptyState={(<div>No data</div>)}>
                         <Column template={(logo: any) => <i className={logo} />} dataKey="logo" />
                         <Column header="Name" dataKey="name" />
@@ -1857,7 +1880,7 @@ function App() {
                                 },
                             ]}
                             clearable
-                            /*highlight editable*/
+                            //*highlight editable
                             scheme={Scheme.SUCCESS}
                             placeholder='Select a country'
                             optionMap={{
@@ -1884,7 +1907,7 @@ function App() {
                     </FormControl>
                 </div>
                 <div style={{ margin: 30 }}>
-                    <Button text="Popover1" onClick={(e: any) => refs.current["popover1"].toggle(e/*, refs.current["portaldiv1"] */)} />
+                    <Button text="Popover1" onClick={(e: any) => refs.current["popover1"].toggle(e)} />
                     <Popover manageRef={(e: any) => refs.current["popover1"] = e} matchTargetSize={false}
                         onOpenFocusRef={onOpenRef} onCloseFocusRef={onCloseRef} pointingArrowClassName={""}
                         style={{ backgroundColor: "white", padding: 10 }}
@@ -2128,7 +2151,7 @@ function App() {
                     <br />
                     <br />
                 </div>
-                <DateTimePicker type={ComponentRenderType.POPOVER} showTime manageRef={(e: any) => refs.current["popover-date01"] = e} />
+                <DateTimePicker type={ComponentRenderType.POPOVER} showTime manageRef={(e: any) => refs.current["popover-date01"] = e} /> */}
 
             </div>
         );

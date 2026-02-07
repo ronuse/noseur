@@ -114,11 +114,11 @@ class TableComponent<D> extends DataComponent<HTMLTableElement, TableProps<D>, T
 
         const rows = data.map((data: D, index: number) => {
             const row = index + 1;
-            const columns = children?.map((child: React.ReactElement<ColumnProps>, sindex: number) => {
+            const columns = children?.filter((child: React.ReactElement<ColumnProps>) => !child.props?.doNotRender)?.map((child: React.ReactElement<ColumnProps>, sindex: number) => {
                 return React.createElement(ColumnComponent, {
                     ...(child.props),
                     sortable: false,
-                    key: (child.props.key ?? sindex),
+                    key: (child.props.key ?? child.props.dataKey ?? `${child.props.header}` ?? sindex),
                     rowControlOptions: {
                         toggleContent: (() => {
                             this.setState({ rowsContent: this.toggleRowContent(row, data) });
@@ -144,7 +144,7 @@ class TableComponent<D> extends DataComponent<HTMLTableElement, TableProps<D>, T
 
     renderTableHeader() {
         const children: any = ObjectHelper.flattenChildren(this.props.children);
-        const columns = children?.map((child: React.ReactElement<ColumnProps>, index: number) => {
+        const columns = children?.filter((child: React.ReactElement<ColumnProps>) => !child.props.doNotRender)?.map((child: React.ReactElement<ColumnProps>, index: number) => {
             const cachedOnSort = child.props.onSort;
             const onSort = (sortDirection: SortDirection) => {
                 if (cachedOnSort) cachedOnSort(sortDirection);
@@ -171,7 +171,7 @@ class TableComponent<D> extends DataComponent<HTMLTableElement, TableProps<D>, T
                 template: undefined,
                 group: "column-header",
                 manageRef: columnSelfRef!,
-                key: (child.props.key || index),
+                key: (child.props.key ?? child.props.dataKey ?? `${child.props.header}` ?? index),
                 valueClassName: "noseur-column-header",
                 sortIcons: (this.props.sortIcons || child.props.sortIcons),
                 value: (typeof child.props.header == "function"
@@ -194,7 +194,7 @@ class TableComponent<D> extends DataComponent<HTMLTableElement, TableProps<D>, T
                 ...(child.props),
                 element: "th",
                 group: "column-footer",
-                key: (child.props.key || index),
+                key: (child.props.key ?? child.props.dataKey ?? `${child.props.header}` ?? index),
                 valueClassName: "noseur-column-footer",
                 value: (typeof child.props.footer == "function"
                     ? child.props.footer()
@@ -220,8 +220,8 @@ class TableComponent<D> extends DataComponent<HTMLTableElement, TableProps<D>, T
         const className = Classname.build('noseur-data-container noseur-table', {
             "noseur-disabled": this.props.disabled,
             "noseur-data-striped": this.props.stripedRows,
-            "noseur-data-grid-h": !hasHeader && this.props.showGridlines,
-            "noseur-data-grid-f": !hasFooter && this.props.showGridlines && this.props.data?.length,
+            "noseur-data-grid-h": !hasHeader && this.props.showGridLines,
+            "noseur-data-grid-f": !hasFooter && this.props.showGridLines && this.props.data?.length,
         }, this.props.internalElementProps.className);
 
         return (<table {...props} role="table" data-n-group="table" className={className} ref={this.props.forwardRef}>
@@ -243,8 +243,8 @@ class TableComponent<D> extends DataComponent<HTMLTableElement, TableProps<D>, T
         const header = this.renderFixtures(this.props.header, "noseur-data-header");
         const footer = this.renderFixtures(this.props.footer, "noseur-data-footer");
         const className = Classname.build('noseur-data-compound', {
-            "noseur-data-grid": this.props.showGridlines,
-            "noseur-data-no-divider": this.props.noDivider && !this.props.showGridlines,
+            "noseur-data-grid": this.props.showGridLines,
+            "noseur-data-no-divider": this.props.noDivider && !this.props.showGridLines,
         }, this.props.className, (this.props.scheme ? `${this.props.scheme}-vars` : null));
         const paginator = this.renderPaginator(!!footer);
         const table = this.renderTable(!!header, !!footer);

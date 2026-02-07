@@ -267,7 +267,7 @@ export interface DateTimePickerProps<T1 = NoseurDivElement, T2 = DateTimePickerM
     disableFromDate: Date;
     modalVisible: boolean;
     enabledYears: number[];
-    showGridlines: boolean;
+    showGridLines: boolean;
     yearModeLayout: string;
     enabledMonths: Month[];
     disabledMonths: Month[];
@@ -1026,7 +1026,7 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
             } else if (requiredLayoutElement === DateTimePickerLayoutElement.DaysElements) {
                 const daysElements: any[] = [];
                 const row = 7, column = 6, rowColumnSum = row * column;
-                const underline = this.props.showDatesSeparator && !this.props.showGridlines;
+                const underline = this.props.showDatesSeparator && !this.props.showGridLines;
                 const monthDays = DateHelper.getAllDaysInMonth(formattedDate.year, formattedDate.month);
                 const startWeekday = monthDays[0].getDay();
                 const previousMonthPadding = startWeekday;

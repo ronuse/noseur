@@ -98,8 +98,8 @@ class ListComponent<D> extends DataComponent<HTMLUListElement, ListProps<D>, Dat
         const className = Classname.build('noseur-data-container noseur-list', {
             "noseur-disabled": this.props.disabled,
             "noseur-data-striped": this.props.stripedRows,
-            "noseur-data-grid-h": !hasHeader && this.props.showGridlines,
-            "noseur-data-grid-f": !hasFooter && this.props.showGridlines && this.props.data?.length,
+            "noseur-data-grid-h": !hasHeader && this.props.showGridLines,
+            "noseur-data-grid-f": !hasFooter && this.props.showGridLines && this.props.data?.length,
         }, this.props.internalElementProps.className);
 
         return (<ul {...props} role="list" data-n-group="list" className={className} ref={this.props.forwardRef}>
@@ -119,8 +119,8 @@ class ListComponent<D> extends DataComponent<HTMLUListElement, ListProps<D>, Dat
         const header = this.renderFixtures(this.props.header, "noseur-data-header");
         const footer = this.renderFixtures(this.props.footer, "noseur-data-footer");
         const className = Classname.build('noseur-data-compound', {
-            "noseur-data-grid": this.props.showGridlines,
-            "noseur-data-no-divider": this.props.noDivider && !this.props.showGridlines,
+            "noseur-data-grid": this.props.showGridLines,
+            "noseur-data-no-divider": this.props.noDivider && !this.props.showGridLines,
         }, this.props.className, (this.props.scheme ? `${this.props.scheme}-vars` : null));
         const paginator = this.renderPaginator(!!footer);
         const list = this.renderList(!!header, !!footer);

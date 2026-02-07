@@ -368,6 +368,7 @@ textarea.noseur-input {
 
 .noseur-color-palette {
 	display: grid;
+	width: fit-content;
 }
 
 .noseur-color-palette-tile {
@@ -383,6 +384,7 @@ textarea.noseur-input {
 
 .noseur-color-map {
 	display: flex;
+	width: fit-content;
 }
 
 .noseur-color-map-map {
@@ -464,4 +466,14 @@ textarea.noseur-input {
 
 .noseur-slider-handle.active {
 	z-index: 2;
+}
+
+/* Calendar */
+
+.noseur-calendar {
+	display: flex;
+}
+
+.noseur-calendar-week {
+	display: flex;
 }

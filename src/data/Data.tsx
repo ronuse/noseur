@@ -52,7 +52,7 @@ export interface DataProps<T, D> extends ComponentBaseProps<T, DataManageRef> {
     totalRecords: number;
     stripedRows: boolean;
     rowSelection: boolean;
-    showGridlines: boolean;
+    showGridLines: boolean;
     dataRefreshKeys: any[];
     dataSelectionKey: string;
     emptyState: NoseurElement;
@@ -144,8 +144,8 @@ export class DataComponent<T, P extends DataProps<T, D>, S extends DataState<D>,
             if (this.props.onPageChange) this.props.onPageChange(event);
         };
         const className = Classname.build(props.className, {
-            "noseur-data-grid-f": !hasFooter && this.props.showGridlines,
-            "noseur-no-bd-t": !hasFooter && this.props.data?.length && this.props.showGridlines,
+            "noseur-data-grid-f": !hasFooter && this.props.showGridLines,
+            "noseur-no-bd-t": !hasFooter && this.props.data?.length && this.props.showGridLines,
         });
 
         return (<Paginator {...props} className={className} />);
