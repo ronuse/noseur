@@ -57,6 +57,7 @@ export interface DropdownProps extends ComponentBaseProps<NoseurDivElement, Drop
     popoverProps: Partial<PopoverProps>;
     textInputProps: Partial<InputProps>;
     options: NoseurObject<any>[] | undefined;
+    forceUpdateIfSelectedIndexChanges: boolean;
     formControlProps: Partial<FormControlProps>;
     selectedOptionIndexes: DropdownSelectedIndex;
     iconPosition: Alignment.LEFT | Alignment.RIGHT;
@@ -161,7 +162,7 @@ class DropdownComponent extends React.Component<DropdownProps, DropdownState> {
                     else this.internalTextInputElement!.value = "";
                 } else {
                     newState.selectedOptionIndex = selectedOptionIndex;
-                    if (optionsChanged) {
+                    if (optionsChanged || this.props.forceUpdateIfSelectedIndexChanges) {
                         this.selectOption(null, newState.selectedOptionIndex, newState.options.find((_: any, i: number) => i === selectedOptionIndex.primaryIndex), true);
                     }
                 }

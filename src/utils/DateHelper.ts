@@ -312,4 +312,32 @@ export const DateHelper = {
         return DateHelper.getLastDayInYear(date);
     },
 
+    formatDuration(startDate: Date, endDate: Date, language: { days: string; hrs: string; mins: string; sec: string; } = {
+        sec: "sec",
+        hrs: "hrs",
+        mins: "mins",
+        days: "days",
+    }): string {
+        let diffInSeconds = Math.abs(Math.floor((endDate.getTime() - startDate.getTime()) / 1000));
+        if (diffInSeconds === 0) return "0sec";
+        
+        const days = Math.floor(diffInSeconds / 86400);
+        diffInSeconds %= 86400;
+
+        const hours = Math.floor(diffInSeconds / 3600);
+        diffInSeconds %= 3600;
+
+        const minutes = Math.floor(diffInSeconds / 60);
+        const seconds = diffInSeconds % 60;
+
+        const parts: string[] = [];
+
+        if (days > 0) parts.push(`${days}${language.days}`);
+        if (hours > 0) parts.push(`${hours}${language.hrs}`);
+        if (minutes > 0) parts.push(`${minutes}${language.mins}`);
+        if (seconds > 0) parts.push(`${seconds}${language.sec}`);
+
+        return parts.join(' ');
+    }
+
 }

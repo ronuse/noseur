@@ -26,6 +26,7 @@ export type DataSelectionElementTemplateHandler = (index: number) => NoseurEleme
 export type DataComparatorHandler<D> = (sortDirection: SortDirection, dataKey: string, p: D, c: D) => number;
 
 export interface DataManageRef {
+    getData: <D>() => D[];
     setData: <D>(data?: D[]) => void;
     expandContent: (row: number) => void;
     toggleContent: (row: number) => void;
@@ -75,10 +76,10 @@ export interface DataProps<T, D> extends ComponentBaseProps<T, DataManageRef> {
 }
 
 export interface DataState<D> {
+    activeData?: D[];
     isLoading?: boolean;
     dataOffset: number;
     currentPage: number;
-    activeData?: D[];
     rowsContent: { [key: number]: any };
 };
 
@@ -88,11 +89,12 @@ export class DataComponent<T, P extends DataProps<T, D>, S extends DataState<D>,
 
     componentDidMount() {
         ObjectHelper.resolveManageRef(this as any, {
+            getData: () => this.state.activeData,
+            setData: (data?: D[]) => this.setState({ activeData: data }),
             toggleContent: (row: number) => this.internalToggleRowContent(row),
             setLoadingState: (isLoading: boolean) => this.setState({ isLoading }),
             expandContent: (row: number) => this.internalToggleRowContent(row, true),
             collapseContent: (row: number) => this.internalToggleRowContent(row, false),
-            setData: (data?: D[]) => this.setState({ activeData: data }),
             setAndExpandRowContent: (row: number, content: NoseurElement) => this.internalToggleRowContent(row, undefined, content)
         });
     }

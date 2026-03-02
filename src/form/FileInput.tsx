@@ -21,16 +21,16 @@ export enum FileInputMode {
 }
 
 export enum FileInputPreviewType {
-    PDF,
-    AUTO,
-    NONE,
-    HTML,
-    TEXT,
-    IMAGE,
-    VIDEO,
-    AUDIO,
-    BINARY,
-    CUSTOM,
+    PDF = "PDF",
+    AUTO = "AUTO",
+    NONE = "NONE",
+    HTML = "HTML",
+    TEXT = "TEXT",
+    IMAGE = "IMAGE",
+    VIDEO = "VIDEO",
+    AUDIO = "AUDIO",
+    BINARY = "BINARY",
+    CUSTOM = "CUSTOM",
 }
 
 export interface FileInputFixtureOptions {
@@ -89,6 +89,10 @@ export type FileInputAttributesRelays = {
     control?: {
         alignment?: Alignment;
     } & ComponentElementBasicAttributes;
+    previews?: {
+        className?: string;
+        style?: React.CSSProperties;
+    };
     preview?: {
         className?: string;
         style?: React.CSSProperties;
@@ -120,12 +124,14 @@ export interface FileInputProps extends ComponentBaseProps<HTMLInputElement, Fil
     controlIsManaged: boolean;
     previewType: FileInputPreviewType;
     buttonProps: Partial<ButtonProps>;
+    relayToAttachFileInputOnly: boolean;
     elementProps: Partial<NoseurObject<any>>;
     clearControl: Partial<ButtonProps> | NoseurElement;
     selectControl: Partial<ButtonProps> | NoseurElement;
     actionControl: Partial<ButtonProps> | NoseurElement;
     dragAndDropRefOptions: Partial<DragAndDropRefOptions>;
     dragAndDropRefs: React.MutableRefObject<HTMLElement>[];
+    attachFileInputManageRef: React.RefObject<FileInputManageRef | null>;
 
     onMount: FileInputMountHandler;
     onUnMount: FileInputMountHandler;
@@ -218,6 +224,7 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
                 if (!this.internalInputElement) return;
                 this.internalInputElement.files = null;
                 this.setState({ files: [] });
+                this.props.attachFileInputManageRef?.current?.clear?.();
             },
             files: () => {
                 return this.state.files;
@@ -228,10 +235,12 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
             },
             setValue: (value: File) => {
                 this.setState({ files: [value] });
+                this.props.attachFileInputManageRef?.current?.setValue?.(value);
             },
             changeFiles: (files: File[]) => {
                 this.setState({ files });
                 this.props.onSelectFiles && this.props.onSelectFiles(files);
+                this.props.attachFileInputManageRef?.current?.changeFiles?.(files);
             },
         });
         this.props.onMount && this.props.onMount((e) => this.onControlClick(ControlType.SELECT, e), this.onDrop, this.onDragOver);
@@ -370,6 +379,8 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
             files.push(file);
         });
         if (!files.length) return;
+        this.props.attachFileInputManageRef?.current?.changeFiles(files);
+        if (this.props.relayToAttachFileInputOnly) return;
         this.props.onSelectFiles && this.props.onSelectFiles(files);
         this.setState({ files });
     }
@@ -546,7 +557,7 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
             "noseur-rounded-bd": this.props.rounded,
             "noseur-file-input-controlled": this.props.mode === FileInputMode.CONTROLLED
         }, this.props.className, (this.props.scheme ? `${this.props.scheme}-vars` : null));
-        const previewsClassName = Classname.build("noseur-file-input-previews", this.props.orientation === Orientation.HORIZONTAL ? "noseur-fl-d-r" : "noseur-fl-d-c");
+        const previewsClassName = Classname.build("noseur-file-input-previews", this.props.attrsRelay.previews?.className, this.props.orientation === Orientation.HORIZONTAL ? "noseur-fl-d-r" : "noseur-fl-d-c");
 
         if (this.props.mode === FileInputMode.ELEMENT) return input;
         return (<div ref={(e: any) => {
@@ -557,7 +568,7 @@ class FileInputComponent extends React.Component<FileInputProps, FileInputState>
             {input}
             {button}
             {header}
-            <div className={previewsClassName}>{previews}</div>
+            <div className={previewsClassName} style={this.props.attrsRelay.previews?.style}>{previews}</div>
             {control}
             {footer}
         </div>);

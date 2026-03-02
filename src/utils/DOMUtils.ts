@@ -569,7 +569,12 @@ export const DOMHelper = {
 		while (el.firstChild) {
 			el.removeChild(el.firstChild);
 		}
-	}
+	},
+
+	openInNewTab(url?: string | URL, target: string = '_blank', features: string = 'noopener,noreferrer') {
+		const newWindow = window.open(url, target, features);
+		if (newWindow) newWindow.opener = null;
+	},
 
 };
 
