@@ -7,7 +7,7 @@ import { BoolHelper } from '../utils/BoolHelper';
 import { NoseurObject } from '../constants/Types';
 import { ObjectHelper } from '../utils/ObjectHelper';
 import { ComponentBaseProps } from '../core/ComponentBaseProps';
-import { Chart as ChartJs, ChartData as ChartJsData, ChartDataCustomTypesPerDataset, ChartTypeRegistry } from 'chart.js/auto';
+import { Chart as ChartJs, ChartData as ChartJsData,  Plugin as ChartJsPlugin, ChartDataCustomTypesPerDataset, ChartTypeRegistry } from 'chart.js/auto';
 
 export const ChartType = {
     BAR: "bar",
@@ -21,6 +21,7 @@ export const ChartType = {
     POLARAREA: "polarArea",
 }
 
+export type ChartPlugin<T extends keyof ChartTypeRegistry> = ChartJsPlugin<T>;
 export type ChartData = ChartJsData<any, any[], unknown> | ChartDataCustomTypesPerDataset<any, any[], unknown>;
 
 export interface ChartManageRef {
@@ -32,6 +33,7 @@ export interface ChartProps extends ComponentBaseProps<HTMLDivElement, ChartMana
     data: ChartData;
     canvasClassName: string;
     options: NoseurObject<any>;
+    plugins?: ChartPlugin<any>[];
     canvasProps: NoseurObject<any>;
     type: ChartTypeRegistry | string;
     canvasStyle: React.CSSProperties | undefined;
@@ -70,8 +72,8 @@ export class ChartComponent extends React.Component<ChartProps, ChartState> {
     }
 
     componentDidUpdate(prevProps: Readonly<ChartProps>, _: Readonly<ChartState>) {
-        if (!BoolHelper.deepEqual(this.props, prevProps, ["type", "data", "options"])) {
-            this.renderChart(this.props.type, this.props.data, this.props.options);
+        if (!BoolHelper.deepEqual(this.props, prevProps, ["type", "data", "options", "plugins"])) {
+            this.renderChart(this.props.type, this.props.data, this.props.options, this.props.plugins);
         }
     }
 
@@ -79,9 +81,9 @@ export class ChartComponent extends React.Component<ChartProps, ChartState> {
         ObjectHelper.resolveManageRef(this, null);
     }
 
-    renderChart(type: ChartTypeRegistry | string, data?: ChartData, options?: NoseurObject<any>) {
+    renderChart(type: ChartTypeRegistry | string, data?: ChartData, options?: NoseurObject<any>, plugins?: ChartPlugin<any>[]) {
         if (this.chart) this.chart.destroy();
-        this.chart = new ChartJs(this.canvasElement, { type, data: data ?? this.props.data, options, });
+        this.chart = new ChartJs(this.canvasElement, { type, data: data ?? this.props.data, options, plugins });
     }
 
     render() {

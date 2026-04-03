@@ -126,9 +126,12 @@ export interface PaginatorProps extends ComponentBaseProps<NoseurElement> {
     currentPage: number;
     totalRecords: number;
     visiblePageCount: number;
+    freezeTotalRecords: boolean;
+    reportOnNavigation: boolean;
     rowsPerPageOptions: number[];
     overlayContainer: NoseurElement;
     resetPageOnCountChange: boolean;
+    reportOnComponentUpdate: boolean;
     template: PaginatorTemplateOptions;
     expandOnHiddenPagesButtonClicked: boolean;
     leftContent: React.ReactElement<any, any>;
@@ -152,6 +155,7 @@ class PaginatorComponent extends React.Component<PaginatorProps, PaginatorState>
         totalRecords: 0,
         visiblePageCount: 5,
         scheme: Scheme.STATELESS,
+        reportOnNavigation: true,
         expandOnHiddenPagesButtonClicked: false,
     };
 
@@ -169,19 +173,20 @@ class PaginatorComponent extends React.Component<PaginatorProps, PaginatorState>
     }
 
     componentDidUpdate(prevProps: Readonly<PaginatorProps>) {
-        if (prevProps.currentPage != this.props.currentPage || prevProps.totalRecords != this.props.totalRecords || prevProps.rowsPerPage != this.props.rowsPerPage) {
+        if (prevProps.currentPage != this.props.currentPage || (prevProps.totalRecords != this.props.totalRecords && (!this.props.freezeTotalRecords || this.state.pageCount < 1)) || prevProps.rowsPerPage != this.props.rowsPerPage) {
             const pageCount = Math.ceil(this.props.totalRecords / this.props.rowsPerPage);
+            const pageCountChanged  = pageCount !== this.state.pageCount;
             let currentPage = prevProps.currentPage != this.props.currentPage ? this.props.currentPage : this.state.currentPage;
             if (currentPage > pageCount) {
                 currentPage = 1;
-                this.props.onPageChange && this.props.onPageChange({
+                if (this.props.reportOnComponentUpdate) this.props.onPageChange?.({
                     pageCount,
                     currentPage
                 });
             }
             this.setState({
                 pageCount,
-                currentPage: (this.props.resetPageOnCountChange ? 1 : currentPage),
+                currentPage: (pageCountChanged && this.props.resetPageOnCountChange ? 1 : currentPage),
             });
         }
     }
@@ -214,12 +219,14 @@ class PaginatorComponent extends React.Component<PaginatorProps, PaginatorState>
             return;
         }
 
-        const option = {
-            currentPage: page,
-            pageCount: pageCount
-        };
-        this.props.onPageChange && this.props.onPageChange(option);
-        this.setState({ currentPage: page });
+        this.setState({ currentPage: page }, () => {
+            if (!this.props.reportOnNavigation) return;
+            const option = {
+                currentPage: page,
+                pageCount: pageCount
+            };
+            this.props.onPageChange?.(option);
+        });
     }
 
     renderNavigationElements(template: PaginatorTemplateOptions, layouts: string[]): NoseurObject<any> {
