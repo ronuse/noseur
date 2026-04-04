@@ -41,14 +41,14 @@ export const BoolHelper = {
 		return true;
 	},
 
-	anyEquals(comparator: (o: any) => boolean, ...values: any[]) {
+	anyEquals<T>(comparator: (o: T) => boolean, ...values: T[]) {
 		for (const value of values) {
 			if (comparator(value)) return true;
 		}
 		return false;
 	},
 
-	notAllEquals(comparator: (o: any) => boolean, ...values: any[]) {
+	notAllEquals<T>(comparator: (o: T) => boolean, ...values: T[]) {
 		let anyAlreadEqual = false;
 		for (const value of values) {
 			if (comparator(value)) {

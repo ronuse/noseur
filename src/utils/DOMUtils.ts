@@ -2,8 +2,11 @@
 import { BoolHelper } from "./BoolHelper";
 import { NoseurObject } from "../constants/Types";
 import { Alignment } from "../constants/Alignment";
+import { SetURLSearchParams } from "react-router-dom";
 import { Orientation } from "../constants/Orientation";
 import { Bound, Ceiling, Direction } from "../constants/Direction";
+
+export type URLSearchParamsValue = string | string[] | number | number[] | undefined | null;
 
 let __noseurGlobal__Browser: NoseurObject<any>;
 let uniqueElementIdsCounter: NoseurObject<number> = {};
@@ -575,6 +578,43 @@ export const DOMHelper = {
 		const newWindow = window.open(url, target, features);
 		if (newWindow) newWindow.opener = null;
 	},
+
+    updateSearchParam(setSearchParams: SetURLSearchParams | URLSearchParams, key: string, value: URLSearchParamsValue, cb?: Function | undefined) {
+        const fun = (prev: URLSearchParams) => {
+            if (value === undefined || value === null) {
+                prev.delete(key);
+            } else if (Array.isArray(value)) {
+                prev.delete(key);
+                for (const v of value) prev.append(key, `${v}`);
+            } else {
+                prev.set(key, `${value}`);
+            }
+            return prev;
+        };
+        if (setSearchParams instanceof URLSearchParams) fun(setSearchParams);
+        else setSearchParams(fun);
+        cb?.();
+    },
+
+    updateSearchParams(setSearchParams: SetURLSearchParams | URLSearchParams, values: NoseurObject<URLSearchParamsValue>, cb?: () => void) {
+        const entries = Object.entries(values);
+        const fun = (prev: URLSearchParams) => {
+            for (const [key, value] of entries) {
+                if (value === undefined || value === null) {
+                    prev.delete(key);
+                } else if (Array.isArray(value)) {
+                    prev.delete(key);
+                    for (const v of value) prev.append(key, `${v}`);
+                } else {
+                    prev.set(key, `${value}`);
+                }
+            };
+            return prev;
+        };
+        if (setSearchParams instanceof URLSearchParams) fun(setSearchParams);
+        else setSearchParams(fun);
+        cb?.();
+    },
 
 };
 

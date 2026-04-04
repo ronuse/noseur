@@ -340,4 +340,4 @@ export const ObjectHelper = {
         return children;
     },
 
-}
+};

@@ -1,3 +1,5 @@
+import { FileInputPreviewType } from "../form/FileInput";
+import { BoolHelper } from "./BoolHelper";
 
 export const FileHelper = {
 
@@ -50,6 +52,21 @@ export const FileHelper = {
                 resolve(base64data!.substring(base64data!.indexOf(',') + 1));
             };
         });
+    },
+
+    detectPreviewTypeFromUrl: (url: string) => {
+        if (BoolHelper.anyEquals((e) => url.includes(e.toLowerCase()), ".pdf")) {
+            return FileInputPreviewType.PDF;
+        } else if (BoolHelper.anyEquals((e) => url.includes(e.toLowerCase()), ".mp3", ".wav")) {
+            return FileInputPreviewType.AUDIO;
+        } else if (BoolHelper.anyEquals((e) => url.includes(e.toLowerCase()), ".html", ".text")) {
+            return FileInputPreviewType.HTML;
+        } else if (BoolHelper.anyEquals((e) => url.includes(e.toLowerCase()), ".mp4", ".mpeg", ".mov")) {
+            return FileInputPreviewType.VIDEO;
+        } else if (BoolHelper.anyEquals((e) => url.includes(e.toLowerCase()), ".png", ".jpg", ".gif", ".jpeg", ".webp")) {
+            return FileInputPreviewType.IMAGE;
+        }
+        return FileInputPreviewType.AUTO;
     },
 
 }

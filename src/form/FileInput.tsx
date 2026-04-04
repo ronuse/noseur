@@ -582,6 +582,7 @@ export const FileInput = ({ ref, ...props }: Partial<FileInputProps>) => (
 
 export interface FileInputPreviewOption {
     file?: File;
+    alt?: string;
     url?: string;
     formattedSize?: string;
     style?: React.CSSProperties;
@@ -609,7 +610,7 @@ export function fileInputBuildFileInputPreview(options: FileInputPreviewOption) 
     const formattedSize = options.formattedSize || FileHelper.humanFileSize(file.size, true);
     if (previewType === FileInputPreviewType.IMAGE) {
         return (<React.Fragment>
-            <img ref={options.ref} className="noseur-file-input-preview-image" style={options.style} alt={file.name} src={url} />
+            <img ref={options.ref} className="noseur-file-input-preview-image" style={options.style} alt={options.alt ?? file.name} src={url} />
             {closeButton}
         </React.Fragment>);
     } else if (previewType === FileInputPreviewType.HTML) {

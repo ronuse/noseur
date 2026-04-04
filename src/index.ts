@@ -23,6 +23,7 @@ export * from "./utils/InputHelper";
 export * from "./utils/ColorHelper";
 export * from "./utils/TypeChecker";
 export * from "./utils/ObjectHelper";
+export * from "./utils/StringHelper";
 
 // compose
 export * from "./compose/overlay/Alert";
@@ -81,5 +82,6 @@ export * from "./sensor/ViewportSensor";
 
 // hooks
 export * from "./hooks/useSubscription";
+export * from "./hooks/useSearchParams";
 
 import "./core/noseur.css";
