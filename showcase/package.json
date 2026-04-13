@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@ronuse/noseur": "file:../ronuse-noseur-1.0.4.tgz",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
@@ -11,6 +10,7 @@
     "@types/node": "^22.12.0",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
+    "noseur": "file:../noseur-1.0.5.tgz",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-scripts": "5.0.1",
@@ -24,7 +24,7 @@
     "eject": "react-scripts eject",
     "upgrade": "npx -y npm-check-updates -u",
     "build:noseur": "cd ../ & npm run pack & cd showcase",
-    "clean:start": "sh -c 'rm -Rf node_modules/.cache; cp -r ../dist/* ./node_modules/@ronuse/noseur/dist/' & npm start"
+    "clean:start": "sh -c 'rm -Rf node_modules/.cache; cp -r ../dist/* ./node_modules/noseur/dist/' & npm start"
   },
   "watch": {
     "clean:start": {

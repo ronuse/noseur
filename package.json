@@ -1,14 +1,14 @@
 {
-  "name": "@ronuse/noseur",
-  "version": "1.0.4",
-  "description": "Configurable React Components by Ronuse",
+  "name": "noseur",
+  "version": "1.0.5",
+  "description": "Eccentric, managed and configurable react components",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/esm/index.d.ts",
   "scripts": {
     "build": "tsc",
     "clean": "sh -c 'rm -Rf dist'",
-    "upgrade": "npx -y npm-check-updates -u",
+    "update": "npx -y npm-check-updates -u",
     "_build:css": "sass src/ -o dist/esm/ ",
     "showcase": "sh -c 'cd showcase; npm run watch'",
     "lint": "eslint \"{**/*,*}.{js,ts,jsx,tsx}\"",
@@ -40,24 +40,23 @@
   },
   "homepage": "https://ronuse.github.io/noseur",
   "dependencies": {
-    "@types/chart.js": "^2.9.41",
-    "@types/react": "^19.0.8",
-    "@types/react-dom": "^19.0.3",
+    "@types/chart.js": "^4.0.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "@types/react-transition-group": "^4.4.12",
-    "chart.js": "^4.4.7",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "chart.js": "^4.5.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "react-router-dom": "^7.14.0",
     "react-transition-group": "^4.4.5",
-    "sass": "^1.83.4",
+    "sass": "^1.99.0",
     "tslib": "^2.8.1",
-    "typescript": "^5.7.3"
+    "typescript": "^6.0.2"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.21.0",
-    "@typescript-eslint/parser": "^8.21.0",
-    "eslint": "^9.19.0",
-    "eslint-plugin-react": "^7.37.4",
-    "eslint-plugin-react-hooks": "^5.1.0"
+    "@typescript-eslint/eslint-plugin": "^8.58.1",
+    "@typescript-eslint/parser": "^8.58.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1"
   }
 }

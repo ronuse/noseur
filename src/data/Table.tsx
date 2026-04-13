@@ -118,7 +118,7 @@ class TableComponent<D> extends DataComponent<HTMLTableElement, TableProps<D>, T
                 return React.createElement(ColumnComponent, {
                     ...(child.props),
                     sortable: false,
-                    key: (child.props.key ?? child.props.dataKey ?? `${child.props.header}` ?? sindex),
+                    key: (child.props.key ?? child.props.dataKey ?? (child.props.header ? `${child.props.header}` : undefined) ?? sindex),
                     rowControlOptions: {
                         toggleContent: (() => {
                             this.setState({ rowsContent: this.toggleRowContent(row, data) });
@@ -171,7 +171,7 @@ class TableComponent<D> extends DataComponent<HTMLTableElement, TableProps<D>, T
                 template: undefined,
                 group: "column-header",
                 manageRef: columnSelfRef!,
-                key: (child.props.key ?? child.props.dataKey ?? `${child.props.header}` ?? index),
+                key: (child.props.key ?? child.props.dataKey ?? (child.props.header ? `${child.props.header}` : undefined) ?? index),
                 valueClassName: "noseur-column-header",
                 sortIcons: (this.props.sortIcons || child.props.sortIcons),
                 value: (typeof child.props.header == "function"
@@ -194,7 +194,7 @@ class TableComponent<D> extends DataComponent<HTMLTableElement, TableProps<D>, T
                 ...(child.props),
                 element: "th",
                 group: "column-footer",
-                key: (child.props.key ?? child.props.dataKey ?? `${child.props.header}` ?? index),
+                key: (child.props.key ?? child.props.dataKey ?? (child.props.header ? `${child.props.header}` : undefined) ?? index),
                 valueClassName: "noseur-column-footer",
                 value: (typeof child.props.footer == "function"
                     ? child.props.footer()

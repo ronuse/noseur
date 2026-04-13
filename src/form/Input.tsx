@@ -152,7 +152,7 @@ class Input extends React.Component<InputProps, InputState> {
     }
 
     onInput(event: React.FormEvent<NoseurFormElement>) {
-        this.props.onInput && this.props.onInput(event);
+        this.props.onInput && this.props.onInput(event as any);
         const value = (event.target as HTMLFormElement).value;
         const valueLength = value.length;
         const hasValue = !!this.state.value;

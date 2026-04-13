@@ -579,7 +579,7 @@ export const DOMHelper = {
 		if (newWindow) newWindow.opener = null;
 	},
 
-    updateSearchParam(setSearchParams: SetURLSearchParams | URLSearchParams, key: string, value: URLSearchParamsValue, cb?: Function | undefined) {
+    updateSearchParam(setSearchParams: SetURLSearchParams | URLSearchParams, key: string, value: URLSearchParamsValue, cb?: Function) {
         const fun = (prev: URLSearchParams) => {
             if (value === undefined || value === null) {
                 prev.delete(key);
@@ -596,7 +596,7 @@ export const DOMHelper = {
         cb?.();
     },
 
-    updateSearchParams(setSearchParams: SetURLSearchParams | URLSearchParams, values: NoseurObject<URLSearchParamsValue>, cb?: () => void) {
+    updateSearchParams(setSearchParams: SetURLSearchParams | URLSearchParams, values: NoseurObject<URLSearchParamsValue>, cb?: Function) {
         const entries = Object.entries(values);
         const fun = (prev: URLSearchParams) => {
             for (const [key, value] of entries) {
