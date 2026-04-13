@@ -1,7 +1,8 @@
 
+import React from "react";
+import { TypeChecker } from "./TypeChecker";
 import { NoseurObject } from "../constants/Types";
 import { ComponentBaseProps } from "../core/ComponentBaseProps";
-import { TypeChecker } from "./TypeChecker";
 
 export const ObjectHelper = {
 
@@ -95,7 +96,7 @@ export const ObjectHelper = {
     },
 
     toTitleCase(value: string): string {
-        return (value && (value[0].toUpperCase() + value.substr(1).toLowerCase()));
+        return (value && (value[0].toUpperCase() + value.substring(1).toLowerCase()));
     },
 
     resolveManageRef<T1, T2>(component: React.Component<ComponentBaseProps<T1, T2>, any>, funsies: T2) {
@@ -109,13 +110,13 @@ export const ObjectHelper = {
         }
     },
 
-    resolveRef<T>(ref: React.ForwardedRef<T>, value: T, always: boolean = false) {
-        if ((!value && !always) || !ref) return;
+    resolveRef<T>(ref: React.ForwardedRef<T>, value?: T, always: boolean = false) {
+        if (!ref || (!value && !always) || !ref) return;
 
         if (ref instanceof Function) {
-            ref(value);
+            ref(value ?? null);
         } else {
-            ref.current = value;
+            ref.current = value ?? null;
         }
     },
 
@@ -129,6 +130,7 @@ export const ObjectHelper = {
 
         }) {
         let value = "";
+        var chopped = "";
         let templateValue = "";
         let openedTemplate = false;
         let subValueMap = valueMap;
@@ -143,24 +145,31 @@ export const ObjectHelper = {
             }
             if (ch === prefix) {
                 openedTemplate = true;
+                if (index > 0 && unprocessed[index - 1] === options.chop) {
+                    chopped = chop;
+                }
                 continue;
             }
             if (openedTemplate && ch === seperator) {
                 if (!(templateValue in subValueMap)) {
-                    value += `${chop}${prefix}${templateValue}${seperator}`;
+                    value += `${chopped}${prefix}${templateValue}${seperator}`;
                     openedTemplate = false;
+                    templateValue = "";
+                    chopped = "";
                     continue;
                 }
                 subValueMap = subValueMap[templateValue];
                 templateValue = "";
+                chopped = "";
                 continue;
             }
             if (openedTemplate && ch === suffix) {
                 value += subValueMap[templateValue]
-                    || (options.relativeExpansion ? `${chop}${prefix}${templateValue}${suffix}` : "");
+                    || (options.relativeExpansion ? `${chopped}${prefix}${templateValue}${suffix}` : "");
                 subValueMap = valueMap;
                 openedTemplate = false;
                 templateValue = "";
+                chopped = "";
                 continue;
             };
             if (openedTemplate) {
@@ -170,7 +179,7 @@ export const ObjectHelper = {
             }
         }
         if (openedTemplate) {
-            value += `${chop}${prefix}${templateValue}`;
+            value += `${chopped}${prefix}${templateValue}`;
         } else {
             value += templateValue;
         }
@@ -259,38 +268,6 @@ export const ObjectHelper = {
         return values;
     },
 
-    fileListToFileArray(fileList: FileList | null) {
-        const files: File[] = [];
-        if (!fileList) return files;
-        for (let index = 0; index < fileList.length; index++) {
-            files.push(fileList.item(index)!);
-        }
-        return files;
-    },
-
-    // https://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable-string/10420404
-    humanFileSize(bytes: number, si = false, dp = 1) {
-        const thresh = si ? 1000 : 1024;
-
-        if (Math.abs(bytes) < thresh) {
-            return bytes + ' B';
-        }
-
-        const units = si
-            ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-            : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-        let u = -1;
-        const r = 10 ** dp;
-
-        do {
-            bytes /= thresh;
-            ++u;
-        } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
-
-
-        return bytes.toFixed(dp) + ' ' + units[u];
-    },
-
     merge<T>(...obj: any[][] | NoseurObject<any>[] | T[]): any {
         if (!obj.length) return {};
         const isObject = TypeChecker.isDict((obj as any)[0]);
@@ -308,4 +285,59 @@ export const ObjectHelper = {
         return result;
     },
 
-}
+    round(num: number) {
+        return Math.round((num + Number.EPSILON) * 100) / 100;
+    },
+
+    object(obj: any) {
+        if (!TypeChecker.isObject(obj)) return {};
+        return obj;
+    },
+
+    getExtension(value: string, options?: { delimiter?: string; lastOnly?: boolean; excludeDelimiter?: boolean; }) {
+        const delimiter = options?.delimiter ?? ".";
+        if (options?.lastOnly) return value.substring(value.lastIndexOf(delimiter) + (options.excludeDelimiter ? 1 : 0));
+        return value.substring(0, value.indexOf(delimiter));
+    },
+
+    escapeCharacters(message: string) {
+        let messagePart = message.split("");
+        for (let index = 0; index < messagePart.length; index++) {
+            let char = messagePart[index];
+            if ("~!@#$%^&*()_+-={}[]<>?".includes(char)) {
+                char = "\\" + char;
+            }
+            messagePart[index] = char;
+        }
+        return messagePart.join("");
+    },
+
+    resolveEnclosedValues(content: string, paramsMap: { search: { open: string; close: string; }, replace: { open: string; close: string; } }[]) {
+        let resolvedContent = content;
+        for (const params of paramsMap) {
+            let { open: searchOpen, close: searchClose } = params.search;
+            let { open: replaceOpen, close: replaceClose } = params.replace;
+            let escapedSearchOpen = ObjectHelper.escapeCharacters(searchOpen);
+            let escapedSearchClose = ObjectHelper.escapeCharacters(searchClose);
+            resolvedContent = resolvedContent.replace(new RegExp(escapedSearchOpen + `*([\\w&,.+×÷=/-<>\\[\\]():\\s+])+` + escapedSearchClose, "g"), (m, _) => {
+                const value = (m.replaceAll(searchOpen, "")?.replaceAll(searchClose, "") ?? "");
+                return `${replaceOpen}${value}${replaceClose}`;
+            });
+        }
+        return resolvedContent;
+    },
+
+    flattenChildren(propsChildren: any) {
+        const _children: any = (propsChildren as any).length ? propsChildren : [propsChildren];
+        let children: any = [];
+        for (const child of _children) {
+            if (child.type === React.Fragment && child.props.children) {
+                children.push(...ObjectHelper.flattenChildren(child.props.children));
+                continue;
+            }
+            children.push(child);
+        }
+        return children;
+    },
+
+};

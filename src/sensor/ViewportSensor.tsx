@@ -114,8 +114,8 @@ class ViewportSensorComponent extends React.Component<ViewportSensorProps, Viewp
 
 }
 
-export const ViewportSensor = React.forwardRef<HTMLDivElement, Partial<ViewportSensorProps>>((props, ref) => (
-    <ViewportSensorComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const ViewportSensor  = ({ ref, ...props }: Partial<ViewportSensorProps>) => (
+    <ViewportSensorComponent {...props} forwardRef={ref} />
+);
 
 

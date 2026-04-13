@@ -1,10 +1,10 @@
 
 import React from "react";
 import { Scheme } from "../constants/Scheme";
-import { ObjectHelper } from "../utils/ObjectHelper";
-import { NoseurInputValue, NoseurObject } from "../constants/Types";
 import { Classname } from "../utils/Classname";
+import { NoseurObject } from "../constants/Types";
 import { Transition } from "../constants/Transition";
+import { ObjectHelper } from "../utils/ObjectHelper";
 
 export interface ComponentElementBasicAttributes {
     id?: string;
@@ -14,11 +14,13 @@ export interface ComponentElementBasicAttributes {
 }
 
 export interface ComponentBaseProps<T1, T2 = {}, T3 = {}> extends MicroComponentBaseProps<T3>, React.DOMAttributes<T1> {
+    ref?: React.Ref<T1>;
     manageRef: React.ForwardedRef<T2>;
     forwardRef: React.ForwardedRef<T1>;
 }
 
 export interface MicroComponentBaseProps<T1 = {}> {
+    key: any;
     id: string;
     name: string;
     attrsRelay: T1;
@@ -26,7 +28,7 @@ export interface MicroComponentBaseProps<T1 = {}> {
     noStyle: boolean;
     className: string;
     disabled: boolean;
-    key: NoseurInputValue;
+    draggable: boolean;
     style: React.CSSProperties | undefined;
 }
 
@@ -38,6 +40,12 @@ export interface TransitionProps {
     transition: Transition;
     transitionOptions: NoseurObject<any>;
     transitionTimeout: NoseurObject<any> | number;
+}
+
+export enum ComponentRenderType {
+    MODAL,
+    INLINE,
+    POPOVER,
 }
 
 const MicroComponentBasePropskeys = ["id", "name", "style", "scheme", "noStyle", "className", "disabled", "key"];
@@ -55,3 +63,22 @@ export function addClassesToComponentElementBasicAttributes(attrs?: ComponentEle
     attrs.className = Classname.build(attrs.className, className);
     return attrs;
 }
+
+
+//* GLOBALS *//
+
+export class NoseurGlobals {
+
+    private static __noseurGlobals: NoseurObject<any> = {};
+    public static KEYS = {
+        LAF: {
+            THEME: "NOSEUR.LAF.THEME"
+        },
+    };
+
+    static put = (key: string, value: any) => NoseurGlobals.__noseurGlobals[key] = value;
+    static get = (key: string, fallback?: any) => NoseurGlobals.__noseurGlobals[key] ?? fallback;
+
+}
+
+//* END GLOBALS *//

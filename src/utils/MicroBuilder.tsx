@@ -14,14 +14,14 @@ export const MicroBuilder = {
     buildIcon(icon: NoseurIconElement, props?: { scheme?: Scheme, className?: string, id?: string; style?: React.CSSProperties; relativeAlignment?: Alignment, fillIcon?: boolean, applyFaScheme?: boolean }, events?: NoseurObject<any>) {
         if (!icon) { return null; }
         const isFontAwesomeIcon = TypeChecker.isTypeOfAny(icon, ["string"]);
-        const className = Classname.build(isFontAwesomeIcon ? icon : (icon as React.ReactElement).props.className, {
+        const className = Classname.build(isFontAwesomeIcon ? icon : (icon as React.ReactElement<any, any>).props.className, {
             "noseur-wd-auto": props?.fillIcon,
             "noseur-mg-r-15": props?.relativeAlignment == Alignment.LEFT,
             "noseur-mg-l-15": props?.relativeAlignment == Alignment.RIGHT,
         }, (isFontAwesomeIcon && props?.scheme && props.applyFaScheme ? `${props.scheme}-tx` : null), "noseur-icon", props?.className);
         const key = `icon-${++MicroBuilder.ICON_COUNTER}`;
         if (!isFontAwesomeIcon) {
-            const iconProps = { ...(icon as React.ReactElement).props };
+            const iconProps = { ...(icon as React.ReactElement<any, any>).props };
             ObjectHelper.addAll(iconProps, events);
             iconProps.key = iconProps.key ?? key;
             iconProps.id = iconProps.id ?? props?.id;
@@ -41,7 +41,7 @@ export const MicroBuilder = {
                 "noseur-mg-r-05rem": props?.relativeAlignment == Alignment.LEFT,
                 "noseur-mg-l-05rem": props?.relativeAlignment == Alignment.RIGHT,
                 "noseur-mg-t-05rem": props?.relativeAlignment == Alignment.BOTTOM,
-        }, "noseur-label", props?.className, (label as React.ReactElement).props?.className);
+        }, "noseur-label", props?.className, (label as React.ReactElement<any, any>).props?.className);
         const key = `icon-${MicroBuilder.LABEL_COUNTER++}`;
         if (!isRawString) {
             const labelProps = { ...((label as any).props || {}) };

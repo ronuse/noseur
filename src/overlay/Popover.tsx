@@ -17,9 +17,9 @@ export interface PopoverManageRef {
     hide: () => void;
     visible: () => boolean;
     sticky: (sticky: boolean) => void;
-    show: (event: Event, target?: HTMLElement) => void;
+    show: (event?: Event, target?: HTMLElement) => void;
     rePosition: (event?: Event, cb?: () => void) => void;
-    toggle: (event: Event, target?: HTMLElement) => void;
+    toggle: (event?: Event, target?: HTMLElement) => void;
 }
 
 export interface PopoverProps<T1 = NoseurDivElement, T2 = PopoverManageRef, T3 = {}> extends ComponentBaseProps<T1, T2, T3>, TransitionProps {
@@ -63,6 +63,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
     target: HTMLElement | any;
     hostRectBeforeRerendering: DOMRect = {} as any;
     documentScrollHandler: NoseurObject<any> | undefined;
+    transitionNodeRef: React.RefObject<HTMLDivElement | null>;
     windowResizeListener: ((event: Event) => void) | undefined;
     documentClickListener: ((event: Event) => void) | undefined;
 
@@ -77,6 +78,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
         this.rePosition = this.rePosition.bind(this);
         this.showPopover = this.showPopover.bind(this);
         this.hidePopover = this.hidePopover.bind(this);
+        this.transitionNodeRef = React.createRef<HTMLDivElement>();
         this.resolvePopoverStyle = this.resolvePopoverStyle.bind(this);
     }
 
@@ -89,7 +91,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
             hide: () => {
                 if (this.state.visible) this.hidePopover();
             },
-            show: (event: Event, target?: HTMLElement) => {
+            show: (event?: Event, target?: HTMLElement) => {
                 if (this.state.visible) this.rePosition(event);
                 else this.showPopover(event, target);
             },
@@ -100,7 +102,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
         ObjectHelper.resolveManageRef(this, null);
     }
 
-    toggle(event: Event, target?: HTMLElement) {
+    toggle(event?: Event, target?: HTMLElement) {
         (!this.state.visible) ? this.showPopover(event, target) : this.hidePopover();
     }
 
@@ -135,8 +137,8 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
         if (this.props.onHide) this.props.onHide();
     }
 
-    showPopover(event: Event, target?: HTMLElement) {
-        this.target = target || event.target || event.currentTarget;
+    showPopover(event?: Event, target?: HTMLElement) {
+        this.target = target ?? event?.target ?? event?.currentTarget;
         if (this.state.visible) {
             this.resolvePopoverStyle();
             return;
@@ -222,6 +224,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
     rePosition(event?: Event, cb?: () => void) {
         if (!this.state.visible) return;
         this.target = event?.target ?? event?.currentTarget ?? this.target;
+        if (!this.target || !this.target.getBoundingClientRect) return;
         DOMHelper.absolutePositionRelatively(this.internalElement, this.target, this.props.positional);
         const targetOffset = DOMHelper.getElementOffset(this.target);
         const popoverOffset = DOMHelper.getElementOffset(this.internalElement);
@@ -241,7 +244,7 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
     }
 
     resolvePopoverStyle() {
-        if (!this.target || !this.target.getBoundingClientRect) return;
+        if (!this.target || !this.target?.getBoundingClientRect) return;
         if (this.props.matchTargetSize) {
             DOMHelper.matchStyles(this.target, [this.internalElement], ["width"], this.matchTargetSizeCb);
         }
@@ -268,17 +271,16 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
             key: this.props.key,
             style: this.props.style,
         };
-        const forwardRef = this.props.forwardRef as React.ForwardedRef<NoseurDivElement>;
         const ref = (el: NoseurDivElement) => {
-            if (!el) return;
             this.internalElement = el;
-            ObjectHelper.resolveRef(forwardRef, el);
-            if (!this.hostRectBeforeRerendering.width) this.hostRectBeforeRerendering = this.internalElement.getBoundingClientRect();
+            ObjectHelper.resolveRef(this.props.forwardRef, el);
+            ObjectHelper.resolveRef(this.transitionNodeRef, el);
+            if (el && !this.hostRectBeforeRerendering.width) this.hostRectBeforeRerendering = this.internalElement.getBoundingClientRect();
         };
 
         return (
             <CSSTransition classNames={transition} timeout={this.props.transitionTimeout} in={this.state.visible} options={this.props.transitionOptions}
-                unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExit={this.onExit} onExited={this.onExited}>
+                unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExit={this.onExit} onExited={this.onExited} nodeRef={this.transitionNodeRef}>
                 <div ref={ref} {...props}>
                     {this.props.children}
                 </div>
@@ -293,6 +295,6 @@ class PopoverComponent extends React.Component<PopoverProps, PopoverState> {
 
 }
 
-export const Popover = React.forwardRef<NoseurDivElement, Partial<PopoverProps>>((props, ref) => (
-    <PopoverComponent {...props} forwardRef={ref as React.ForwardedRef<NoseurDivElement>} />
-));
+export const Popover  = ({ ref, ...props }: Partial<PopoverProps>) => (
+    <PopoverComponent {...props} forwardRef={ref} />
+);

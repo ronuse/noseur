@@ -24,11 +24,10 @@
         "noFallthroughCasesInSwitch": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "jsx": "react",
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "downlevelIteration": true,
         "forceConsistentCasingInFileNames": true,
     }
 }

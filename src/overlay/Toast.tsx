@@ -21,7 +21,7 @@ enum ToastType {
 
 export type ToastMessageEventHandler = (message?: Partial<MessageProps>, key?: string) => void;
 
-export type ToastAttributtesRelays = {
+export type ToastAttributesRelays = {
 
 }
 
@@ -36,12 +36,15 @@ export interface ToastManageRef {
     update: (key: string | string[], message: Partial<MessageProps> | Partial<MessageProps>[], borrowLifetime?: boolean) => void;
 }
 
-export interface ToastProps extends ComponentBaseProps<HTMLDivElement, ToastManageRef, ToastAttributtesRelays> {
+export interface ToastProps extends ComponentBaseProps<HTMLDivElement, ToastManageRef, ToastAttributesRelays> {
     limit: number;
     reverse: boolean;
     position: Alignment;
     orientation: Orientation;
     container: NoseurRawElement;
+    positionProps: {
+        relative?: boolean;
+    } & Partial<ComponentBaseProps<HTMLDivElement>>;
 
     onAction: ToastMessageEventHandler;
     onRemove: ToastMessageEventHandler;
@@ -271,13 +274,17 @@ class ToastComponent extends React.Component<ToastProps, ToastState> {
                 style["--messageMarginBottom"] = "0.25em";
             }
         }
+        if (this.props.positionProps?.relative) {
+            style.position = "relative";
+        }
 
-        return (<div key={position} className={`noseur-${type}-${position}`} style={style} ref={(r: any) => {
-            if (!(position in this.positionElementsMap)) {
-                this.positionElementsMap[position] = ReactDOM.createRoot(r);
-                this.renderMessages(position, this.state.breads[position]);
-            }
-        }}></div>);
+        return (<div key={position} className={Classname.build(`noseur-${type}-${position}`, this.props.positionProps?.className)}
+            id={this.props.positionProps?.id} style={ObjectHelper.merge(style, this.props.positionProps?.style ?? {})} ref={(r: any) => {
+                if (!(position in this.positionElementsMap)) {
+                    this.positionElementsMap[position] = ReactDOM.createRoot(r);
+                    this.renderMessages(position, this.state.breads[position]);
+                }
+            }}></div>);
     }
 
     render() {
@@ -307,13 +314,13 @@ export type ToasterInterface = ToasterInterfaceRelay & ToastManageRef;
 export type MessagesProps = ToastProps;
 export type MessagesManageRef = ToastManageRef;
 
-export const Toast = React.forwardRef<HTMLDivElement, Partial<ToastProps>>((props, ref) => (
-    <ToastComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} __type__={ToastType.TOAST} container={document.body} />
-));
+export const Toast = ({ ref, ...props }: Partial<ToastProps>) => (
+    <ToastComponent {...props} forwardRef={ref} __type__={ToastType.TOAST} container={document.body} />
+);
 
-export const Messages = React.forwardRef<HTMLDivElement, Partial<MessagesProps>>((props, ref) => (
-    <ToastComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} __type__={ToastType.MESSAGES} />
-));
+export const Messages = ({ ref, ...props }: Partial<ToastProps>) => (
+    <ToastComponent {...props} forwardRef={ref} __type__={ToastType.MESSAGES} />
+);
 
 let noseurInternalGlobalToasterRoot: ReactDOM.Root | null;
 let noseurInternalGlobalToasterManageRef: ToastManageRef | null;
@@ -332,7 +339,7 @@ export const Toaster: ToasterInterface = {
             ...(props as any),
             container: document.body,
             __type__: ToastType.TOASTER,
-            forwardRef: ref ?? props.forwardRef,
+            forwardRef: ref ?? props.ref,
             manageRef: (r) => {
                 noseurInternalGlobalToasterManageRef = r;
                 onMount && onMount();

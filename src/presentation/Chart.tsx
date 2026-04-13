@@ -7,7 +7,7 @@ import { BoolHelper } from '../utils/BoolHelper';
 import { NoseurObject } from '../constants/Types';
 import { ObjectHelper } from '../utils/ObjectHelper';
 import { ComponentBaseProps } from '../core/ComponentBaseProps';
-import { Chart as ChartJs, ChartData as ChartJsData, ChartDataCustomTypesPerDataset, ChartTypeRegistry } from 'chart.js/auto';
+import { Chart as ChartJs, ChartData as ChartJsData,  Plugin as ChartJsPlugin, ChartDataCustomTypesPerDataset, ChartTypeRegistry } from 'chart.js/auto';
 
 export const ChartType = {
     BAR: "bar",
@@ -21,21 +21,23 @@ export const ChartType = {
     POLARAREA: "polarArea",
 }
 
+export type ChartPlugin<T extends keyof ChartTypeRegistry> = ChartJsPlugin<T>;
 export type ChartData = ChartJsData<any, any[], unknown> | ChartDataCustomTypesPerDataset<any, any[], unknown>;
 
 export interface ChartManageRef {
     getChart: () => any;
-    update: (type: ChartTypeRegistry | string, data: ChartData, options: NoseurObject<any>) => void;
+    update: (type: ChartTypeRegistry | string, data?: ChartData, options?: NoseurObject<any>) => void;
 }
 
 export interface ChartProps extends ComponentBaseProps<HTMLDivElement, ChartManageRef> {
     data: ChartData;
     canvasClassName: string;
     options: NoseurObject<any>;
+    plugins?: ChartPlugin<any>[];
     canvasProps: NoseurObject<any>;
     type: ChartTypeRegistry | string;
     canvasStyle: React.CSSProperties | undefined;
-    canvasElement: React.ForwardedRef<HTMLCanvasElement>;
+    canvasRef: React.ForwardedRef<HTMLCanvasElement>;
 }
 
 interface ChartState {
@@ -70,8 +72,8 @@ export class ChartComponent extends React.Component<ChartProps, ChartState> {
     }
 
     componentDidUpdate(prevProps: Readonly<ChartProps>, _: Readonly<ChartState>) {
-        if (!BoolHelper.deepEqual(this.props, prevProps, ["type", "data", "options"])) {
-            this.renderChart(this.props.type, this.props.data, this.props.options);
+        if (!BoolHelper.deepEqual(this.props, prevProps, ["type", "data", "options", "plugins"])) {
+            this.renderChart(this.props.type, this.props.data, this.props.options, this.props.plugins);
         }
     }
 
@@ -79,27 +81,26 @@ export class ChartComponent extends React.Component<ChartProps, ChartState> {
         ObjectHelper.resolveManageRef(this, null);
     }
 
-    renderChart(type: ChartTypeRegistry | string, data: ChartData, options: NoseurObject<any>) {
+    renderChart(type: ChartTypeRegistry | string, data?: ChartData, options?: NoseurObject<any>, plugins?: ChartPlugin<any>[]) {
         if (this.chart) this.chart.destroy();
-        this.chart = new ChartJs(this.canvasElement, { type, data, options, });
+        this.chart = new ChartJs(this.canvasElement, { type, data: data ?? this.props.data, options, plugins });
     }
 
     render() {
         const className = Classname.build("noseur-chart", this.props.className);
         const canvasElement = (ref: HTMLCanvasElement) => {
             this.canvasElement = ref;
-            ObjectHelper.resolveRef(this.props.canvasElement, ref);
-        }
+            ObjectHelper.resolveRef(this.props.canvasRef, ref);
+        };
 
-        return (<div className={className} style={this.props.style}>
+        return (<div className={className} style={this.props.style} ref={this.props.forwardRef}>
             <canvas id={this.state.id} style={this.props.canvasStyle} className={this.props.canvasClassName} ref={canvasElement} {...(this.props.canvasProps || {})}></canvas>
         </div>)
     }
 
 }
 
-export const Chart = React.forwardRef<HTMLDivElement, Partial<ChartProps>>((props, _) => (
-    <ChartComponent {...props} />
-));
-
-
+export { ChartTypeRegistry } from "chart.js/auto";
+export const Chart  = ({ ref, ...props }: Partial<ChartProps>) => (
+    <ChartComponent {...props} forwardRef={ref} />
+);

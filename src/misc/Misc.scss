@@ -1,3 +1,4 @@
+/* Progressbar */
 
 .noseur-progress-bar {
     height: 1rem;
@@ -124,4 +125,55 @@
         left: 107%;
         right: -8%;
     }
+}
+
+/* Badge, Tag And Pill */
+
+.noseur-badge {
+    font-weight: 700;
+    overflow: hidden;
+    min-width: 1.2rem;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    text-align: center;
+    align-items: center;
+    line-height: 1.2rem;
+    display: inline-flex;
+    justify-content: center;
+}
+
+.noseur-tag {
+    font-weight: 700;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    text-align: center;
+    align-items: center;
+    display: inline-block;
+    justify-content: center;
+    padding: 0.25rem 0.4rem;
+}
+
+.noseur-pill {
+    font-weight: 700;
+    font-size: 0.65rem;
+    text-align: center;
+    border-radius: 10px;
+    align-items: center;
+    display: inline-block;
+    padding: 0.25rem 0.4rem;
+    justify-content: center;
+}
+
+.noseur-badge-overlay {
+    padding-top: 4px;
+    padding-right: 4px;
+    position: relative;
+    width: max-content;
+}
+
+.noseur-badge-overlay>.noseur-badge,
+.noseur-badge-overlay>.noseur-tag,
+.noseur-badge-overlay>.noseur-pill {
+    z-index: 2;
+    position: absolute;
 }

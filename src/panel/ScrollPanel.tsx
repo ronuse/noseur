@@ -79,6 +79,6 @@ class ScrollPanelComponent extends React.Component<ScrollPanelProps, ScrollPanel
 
 }
 
-export const ScrollPanel = React.forwardRef<HTMLDivElement, Partial<ScrollPanelProps>>((props, ref) => (
-    <ScrollPanelComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const ScrollPanel  = ({ ref, ...props }: Partial<ScrollPanelProps>) => (
+    <ScrollPanelComponent {...props} forwardRef={ref} />
+);

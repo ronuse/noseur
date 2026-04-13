@@ -22,7 +22,7 @@ export type NoseurCheckState = NoseurCheckStateInterface;
 export type NoseurNumberedObject<T> = { [key: number]: T };
 export type NoseurRawElement = Element | DocumentFragment;
 export type NoseurDomElement = React.ReactNode | React.ReactElement | HTMLElement | null;
-export type _NoseurElement = React.ReactNode | React.ReactElement | React.ReactNode | JSX.Element | string | number | null;
+export type _NoseurElement = React.ReactNode | React.ReactElement | React.ReactNode | React.JSX.Element | string | number | null;
 export type NoseurElement = _NoseurElement | _NoseurElement[];
 export type NoseurIconElement = NoseurElement;
 export type NoseurFormElement = HTMLTextAreaElement | HTMLInputElement;
@@ -42,3 +42,25 @@ export enum SortDirection {
     FORWARD,
     BACKWARD,
 }
+
+export interface ToggleIcons {
+    show: NoseurElement;
+    hide: NoseurElement
+}
+
+export interface Color {
+    hex: string;
+    alpha: number;
+    rgb: { r: number; g: number; b: number; };
+    hsb: { h: number; s: number; b: number; };
+    //hsl: { h: number; s: number; l: number; };
+    //hsv: { h: number; s: number; v: number; };
+    cmyk: { c: number; m: number; y: number; k: number; };
+}
+
+export interface ColorEvent {
+    color: Color;
+    previousColor?: Color;
+}
+
+export type ColorEventHandler = (event: ColorEvent) => void | true | Promise<void | true>;

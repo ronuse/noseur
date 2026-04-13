@@ -3,7 +3,7 @@ import React from "react";
 import { Classname } from "../utils/Classname";
 import { ObjectHelper } from "../utils/ObjectHelper";
 import { ComponentBaseProps } from "../core/ComponentBaseProps";
-import { NoseurElement, NoseurObject, SortDirection } from "../constants/Types";
+import { NoseurElement, SortDirection } from "../constants/Types";
 import { Paginator, PaginatorPageChangeOption, PaginatorProps, PaginatorTemplateOptions } from "../presentation/Paginator";
 import { DOMHelper } from "../utils/DOMUtils";
 
@@ -19,17 +19,18 @@ export interface RowControlOptions {
 }
 
 export type DataFixtureTemplateHandler = () => NoseurElement;
-export type DataRowSelectionHandler = (value: any) => boolean;
-export type DataRowValuedPropsHandler = (data?: any) => RowProps;
-export type DataRowExpansionTemplateHandler = (data: any) => NoseurElement;
+export type DataRowValuedPropsHandler<D> = (data?: D) => RowProps;
+export type DataRowExpansionTemplateHandler<D> = (data: D) => NoseurElement;
+export type DataRowSelectionHandler <D>= (value: D, rowNumber?: number) => boolean;
 export type DataSelectionElementTemplateHandler = (index: number) => NoseurElement;
-export type DataComparatorHandler = (sortDirection: SortDirection, dataKey: string, p: any, c: any) => number;
+export type DataComparatorHandler<D> = (sortDirection: SortDirection, dataKey: string, p: D, c: D) => number;
 
 export interface DataManageRef {
+    getData: <D>() => D[];
+    setData: <D>(data?: D[]) => void;
     expandContent: (row: number) => void;
     toggleContent: (row: number) => void;
     collapseContent: (row: number) => void;
-    setData: (data?: NoseurObject<any>[]) => void;
     setLoadingState: (isLoading: boolean) => void;
     setAndExpandRowContent: (row: number, content: NoseurElement) => void;
 }
@@ -41,7 +42,9 @@ export interface DataInternalElementProps {
     style?: React.CSSProperties;
 }
 
-export interface DataProps<T> extends ComponentBaseProps<T, DataManageRef> {
+export interface DataProps<T, D> extends ComponentBaseProps<T, DataManageRef> {
+    data?: D[];
+    dataId: string;
     paginate: boolean;
     rowProps: RowProps;
     noDivider: boolean;
@@ -50,12 +53,11 @@ export interface DataProps<T> extends ComponentBaseProps<T, DataManageRef> {
     totalRecords: number;
     stripedRows: boolean;
     rowSelection: boolean;
-    showGridlines: boolean;
+    showGridLines: boolean;
     dataRefreshKeys: any[];
     dataSelectionKey: string;
     emptyState: NoseurElement;
     multiRowExpansion: boolean;
-    data?: NoseurObject<any>[];
     loadingState: NoseurElement;
     allowNoDataPagination: boolean;
     rowsContent: { [key: number]: any };
@@ -65,33 +67,34 @@ export interface DataProps<T> extends ComponentBaseProps<T, DataManageRef> {
 
     header: DataFixtureTemplateHandler;
     footer: DataFixtureTemplateHandler;
-    compareData: DataComparatorHandler;
-    onRowSelection: DataRowSelectionHandler;
-    valuedRowProps: DataRowValuedPropsHandler;
-    rowExpansionTemplate: DataRowExpansionTemplateHandler;
+    compareData: DataComparatorHandler<D>;
+    onRowSelection: DataRowSelectionHandler<D>;
+    valuedRowProps: DataRowValuedPropsHandler<D>;
+    rowExpansionTemplate: DataRowExpansionTemplateHandler<D>;
     onPageChange?: (event: PaginatorPageChangeOption) => void;
     selectionElementTemplate: DataSelectionElementTemplateHandler;
 }
 
-export interface DataState {
+export interface DataState<D> {
+    activeData?: D[];
     isLoading?: boolean;
     dataOffset: number;
     currentPage: number;
-    activeData?: NoseurObject<any>[];
     rowsContent: { [key: number]: any };
 };
 
-export class DataComponent<T, P extends DataProps<T>, S extends DataState> extends React.Component<P, S> {
+export class DataComponent<T, P extends DataProps<T, D>, S extends DataState<D>, D> extends React.Component<P, S> {
 
     rowContentElementMaps: { [key: number]: { rowElement?: any; contentElement?: any; expanded?: boolean; originalHeight?: number; } } = {};
 
     componentDidMount() {
-        ObjectHelper.resolveManageRef(this, {
+        ObjectHelper.resolveManageRef(this as any, {
+            getData: () => this.state.activeData,
+            setData: (data?: D[]) => this.setState({ activeData: data }),
             toggleContent: (row: number) => this.internalToggleRowContent(row),
             setLoadingState: (isLoading: boolean) => this.setState({ isLoading }),
             expandContent: (row: number) => this.internalToggleRowContent(row, true),
             collapseContent: (row: number) => this.internalToggleRowContent(row, false),
-            setData: (data?: NoseurObject<any>[]) => this.setState({ activeData: data }),
             setAndExpandRowContent: (row: number, content: NoseurElement) => this.internalToggleRowContent(row, undefined, content)
         });
     }
@@ -117,7 +120,7 @@ export class DataComponent<T, P extends DataProps<T>, S extends DataState> exten
 
     buildRowProps(data?: any) {
         const valuedRowProps = this.props.valuedRowProps ? this.props.valuedRowProps(data) : {};
-        return ObjectHelper.merge(this.props.rowProps, valuedRowProps);
+        return ObjectHelper.merge(this.props.rowProps ?? {}, valuedRowProps);
     }
 
     onPageChange(event: PaginatorPageChangeOption) {
@@ -143,8 +146,8 @@ export class DataComponent<T, P extends DataProps<T>, S extends DataState> exten
             if (this.props.onPageChange) this.props.onPageChange(event);
         };
         const className = Classname.build(props.className, {
-            "noseur-data-grid-f": !hasFooter && this.props.showGridlines,
-            "noseur-no-bd-t": !hasFooter && this.props.data?.length && this.props.showGridlines,
+            "noseur-data-grid-f": !hasFooter && this.props.showGridLines,
+            "noseur-no-bd-t": !hasFooter && this.props.data?.length && this.props.showGridLines,
         });
 
         return (<Paginator {...props} className={className} />);
@@ -182,7 +185,12 @@ export class DataComponent<T, P extends DataProps<T>, S extends DataState> exten
         const rowsContents = this.state.rowsContent;
         return Object.keys(rowsContents).map((row: any) => {
             if (!(row in this.rowContentElementMaps)) this.rowContentElementMaps[row] = {};
-            return (<div key={row} ref={(r) => this.rowContentElementMaps[row].contentElement = r} className="noseur-data-row-content">{rowsContents[row]}</div>);
+            return (<div key={row} ref={(r) => {
+                if (!this.rowContentElementMaps[row]) {
+                    this.setState({ rowsContent: {} });
+                }
+                this.rowContentElementMaps[row].contentElement = r;
+            }} className="noseur-data-row-content">{rowsContents[row]}</div>);
         });
     }
 
@@ -201,8 +209,8 @@ export class DataComponent<T, P extends DataProps<T>, S extends DataState> exten
             const contentHeight = DOMHelper.calculateHeight(rowContentElementMap.contentElement);
             const rowStyle = DOMHelper.getElementStyle(rowContentElementMap.rowElement);
             const rowHeight = DOMHelper.sanitizeStyleValue(rowStyle.height);
-            const rowSuperflousHeight = DOMHelper.getElementSuperflousHeight(rowContentElementMap.rowElement, true);
-            const rowOffsetTopPlusHeight = rowContentElementMap.rowElement.offsetTop + rowHeight + rowSuperflousHeight;
+            const rowSuperfluousHeight = DOMHelper.getElementSuperfluousHeight(rowContentElementMap.rowElement, true);
+            const rowOffsetTopPlusHeight = rowContentElementMap.rowElement.offsetTop + rowHeight + rowSuperfluousHeight;
             rowContentElementMap.rowElement.style.height = (rowHeight + contentHeight) + "px";
             rowContentElementMap.contentElement.style.top = rowOffsetTopPlusHeight + "px";
             this.rowContentElementMaps[row].originalHeight = rowHeight;

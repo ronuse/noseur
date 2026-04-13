@@ -9,6 +9,9 @@ import { MicroBuilder } from "../utils/MicroBuilder";
 import { ComponentBaseProps, LoadingProps } from '../core/ComponentBaseProps';
 import { NoseurButtonElement, NoseurElement, NoseurIconElement, NoseurObject } from '../constants/Types';
 
+export type NoseurButtonOnClickHandler = React.EventHandler<NoseurButtonOnClickEvent>;
+export type NoseurButtonOnClickEvent = { manageRef?: ButtonManageRef; } & React.MouseEvent<NoseurButtonElement>;
+
 export interface ButtonManageRef {
     setLoadingState: (isLoading: boolean) => void;
 }
@@ -32,6 +35,8 @@ export interface ButtonProps extends ComponentBaseProps<NoseurButtonElement, But
     rightIcon: NoseurIconElement;
     leftIconRelativeAlignment: Alignment;
     rightIconRelativeAlignment: Alignment;
+
+    onClick?: NoseurButtonOnClickHandler;
 };
 
 interface ButtonState {
@@ -51,6 +56,8 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
         rippleState: { isRippling: false, x: -1, y: -1 },
     };
 
+    buttonManagerRef: ButtonManageRef | undefined;
+
     constructor(props: ButtonProps) {
         super(props);
         
@@ -58,9 +65,10 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
     }
 
     componentDidMount() {
-        ObjectHelper.resolveManageRef(this, {
+        this.buttonManagerRef = {
             setLoadingState: (isLoading: boolean) => this.setState({ isLoading }),
-        });
+        };
+        ObjectHelper.resolveManageRef(this, this.buttonManagerRef);
     }
 
     componentDidUpdate(_: Readonly<ButtonProps>, prevState: Readonly<ButtonState>) {
@@ -79,19 +87,23 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
 
     componentWillUnmount() {
         ObjectHelper.resolveManageRef(this, null);
+        this.buttonManagerRef = undefined;
     }
 
-    onClick(event: React.MouseEvent<NoseurButtonElement>) {
-        const button = (event.currentTarget as NoseurButtonElement);
-        const rect = (event.target as NoseurButtonElement).getBoundingClientRect();
-        this.setState({
-            rippleState: {
-                diameter: button.clientHeight,
-                isRippling: false,
-                y: event.clientY - rect.top,
-                x: event.clientX - rect.left
-            }
-        });
+    onClick(activeProps: Partial<ButtonProps>, event: NoseurButtonOnClickEvent) {
+        if (activeProps.rippleEffect) {
+            const button = (event.currentTarget as NoseurButtonElement);
+            const rect = (event.target as NoseurButtonElement).getBoundingClientRect();
+            this.setState({
+                rippleState: {
+                    diameter: button.clientHeight,
+                    isRippling: false,
+                    y: event.clientY - rect.top,
+                    x: event.clientX - rect.left
+                }
+            });
+        }
+        event.manageRef = this.buttonManagerRef;
         this.props.onClick && this.props.onClick(event);
     }
 
@@ -147,8 +159,11 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
             key: activeProps.key,
             type: this.props.type,
             style: activeProps.style,
+            draggable: this.props.draggable,
+            onClick: (e: React.MouseEvent<NoseurButtonElement>) => {
+                this.onClick(activeProps, e);
+            },
         };
-        if (activeProps.rippleEffect) props.onClick = this.onClick;
 
         return (!activeProps.link
             ? <button ref={this.props.forwardRef as React.ForwardedRef<HTMLButtonElement>} {...props} />
@@ -157,9 +172,9 @@ class ButtonComponent extends React.Component<ButtonProps, ButtonState> {
 
 }
 
-export const Button = React.forwardRef<HTMLButtonElement, Partial<ButtonProps>>((props, ref) => (
-    <ButtonComponent {...props} forwardRef={ref as React.ForwardedRef<NoseurButtonElement>} />
-));
+export const Button  = ({ ref, ...props }: Partial<ButtonProps>) => (
+    <ButtonComponent {...props} forwardRef={ref} />
+);
 
 export function buildButtonControl(control: Partial<ButtonProps> | NoseurElement, customNonOverridingProps: Partial<ButtonProps>, cb?: (e: any) => void, className?: string) {
     if (!control || React.isValidElement(control)) return control as any;

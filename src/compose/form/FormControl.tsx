@@ -8,6 +8,7 @@ import { ObjectHelper } from "../../utils/ObjectHelper";
 import { MicroBuilder } from "../../utils/MicroBuilder";
 import { ComponentBaseProps } from "../../core/ComponentBaseProps";
 import { NoseurLabel, NoseurObject, NoseurElement } from "../../constants/Types";
+import { DOMHelper } from "../../utils/DOMUtils";
 
 export interface FormControlProps extends ComponentBaseProps<HTMLDivElement> {
     fill: boolean;
@@ -20,6 +21,7 @@ export interface FormControlProps extends ComponentBaseProps<HTMLDivElement> {
     highlight: boolean;
     label: NoseurLabel;
     borderless: boolean;
+    isFieldset: boolean;
     invalidScheme: Scheme;
     infoLabel: NoseurLabel;
     validClassname: string;
@@ -27,6 +29,7 @@ export interface FormControlProps extends ComponentBaseProps<HTMLDivElement> {
     children?: NoseurElement;
     invalidClassname: string;
     centerOverlayContent: any;
+    fieldsetLegendBackground: string;
     childrenProps: NoseurObject<any>;
     childrenValidPropsMap: NoseurObject<any>;
     childrenInvalidPropsMap: NoseurObject<any>;
@@ -38,6 +41,7 @@ export interface FormControlProps extends ComponentBaseProps<HTMLDivElement> {
 interface FormControlState {
 };
 
+// TODO implement manageRef to control contents, label, invalid, children, helpLabel, highlight, borderless
 class FormControlComponent extends React.Component<FormControlProps, FormControlState> {
 
     public static defaultProps: Partial<FormControlProps> = {
@@ -103,6 +107,19 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
         return (<div className={className}>{rightContent}</div>);
     }
 
+    renderFieldsetLegend() {
+        if (!this.props.isFieldset) return;
+        let className = "noseur-fieldset-legend";
+        const label = MicroBuilder.buildLabel(this.props.label, { scheme: this.props.scheme, type: "label", htmlFor: this.props.labelFor, className: "noseur-fctrl-l" });
+        return (<legend className={className} ref={(r) => {
+            if (!r) return;
+            if (this.props.fieldsetLegendBackground === "dynamic") {
+                console.log(DOMHelper.getElementStyle(r.parentElement?.parentElement?.parentElement)?.backgroundColor);
+                r.style.backgroundColor = DOMHelper.getElementStyle(r.parentElement?.parentElement)?.backgroundColor;
+            }
+        }} style={{ backgroundColor: (this.props.fieldsetLegendBackground && this.props.fieldsetLegendBackground !== "dynamic" ? this.props.fieldsetLegendBackground : undefined)}}>{label}</legend>);
+    }
+
     renderCenterOverlayContent() {
         if (!this.props.centerOverlayContent) return;
         let className = "noseur-fctrl-coc";
@@ -136,12 +153,13 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
     render() {
         const leftContent = this.renderLeftContent();
         const rightContent = this.renderRightContent();
+        const fieldsetLegend = this.renderFieldsetLegend();
         const centerOverlayContent = this.renderCenterOverlayContent();
         const scheme = this.props.invalid ? this.props.invalidScheme : this.props.scheme;
         const helpLabelClassName = this.props.invalid && !this.props.scheme ? "noseur-fctrl-hl noseur-invalid-tx" : "noseur-fctrl-hl";
         const infoLabel = !this.props.invalid ? MicroBuilder.buildLabel(this.props.infoLabel, { scheme: this.props.scheme, className: "noseur-fctrl-il" }) : null;
         const helpLabel = this.props.invalid ? MicroBuilder.buildLabel(this.props.helpLabel, { scheme: this.props.scheme, className: helpLabelClassName }) : null;
-        const label = MicroBuilder.buildLabel(this.props.label, { scheme: this.props.scheme, type: "label", htmlFor: this.props.labelFor, className: "noseur-fctrl-l" });
+        const label = (this.props.isFieldset ? null : MicroBuilder.buildLabel(this.props.label, { scheme: this.props.scheme, type: "label", htmlFor: this.props.labelFor, className: "noseur-fctrl-l" }));
         const eventProps = ObjectHelper.extractEventProps(this.props);
         const props: NoseurObject<any> = {
             ...eventProps,
@@ -156,28 +174,34 @@ class FormControlComponent extends React.Component<FormControlProps, FormControl
             ...this.props.contentStyle,
             ...(this.props.invalid ? this.props.invalidStyle : this.props.validStyle),
         };
-        const className = Classname.build("noseur-fctrl-c", { 'noseur-no-bd': this.props.borderless, },
+        const tagName = (this.props.isFieldset ? "fieldset" : "div");
+        const className = Classname.build("noseur-fctrl-c", { 'noseur-no-bd': this.props.borderless, "noseur-fieldset": this.props.isFieldset },
             (scheme && this.props.highlight) ? `${scheme}-bd-cl` : null,
             this.props.invalid ? `${this.props.invalidScheme}-bd-cl` : null,
             (this.props.invalid ? this.props.invalidClassname : this.props.validClassname),
             (scheme) ? `${scheme}-bd-3px-bx-sw-fc ${scheme}-bd-cl-fc ${scheme}-bd-cl-hv` : null);
         const children = this.renderChildren(!!leftContent, !!rightContent);
 
-        return (<div ref={this.props.forwardRef as React.ForwardedRef<HTMLDivElement>} {...props}>
+        return (<div ref={this.props.forwardRef} {...props}>
             {label}
-            <div className={className} tabIndex={this.props.tabIndex} style={contentStyle}>
+            {React.createElement(tagName, {
+                className,
+                style: contentStyle,
+                tabIndex: this.props.tabIndex,
+            }, (<>
+                {fieldsetLegend}
                 {leftContent}
                 {children}
                 {centerOverlayContent}
                 {rightContent}
-            </div>
+            </>))}
             {!this.props.invalid ? infoLabel : helpLabel}
         </div>);
     }
 
 }
 
-export const FormControl = React.forwardRef<HTMLDivElement, Partial<FormControlProps>>((props, ref) => (
-    <FormControlComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const FormControl = ({ ref, ...props }: Partial<FormControlProps>) => (
+    <FormControlComponent {...props} forwardRef={ref} />
+);
 

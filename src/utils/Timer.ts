@@ -1,3 +1,4 @@
+
 import { NoseurObject } from "../constants/Types";
 
 export interface TimerCallbacks {
@@ -18,14 +19,15 @@ export interface TimerOption {
     isInterval?: boolean;
 }
 
+// TODO update to be able to maintain states and data
 export class Timer {
 
+    timer?: number;
     startTime?: number;
     cbs?: TimerCallbacks;
     isInterval?: boolean;
     totalTicks: number = 0;
     elapseTicks: number = 0;
-    timer?: NodeJS.Timeout | number;
     options: NoseurObject<any> = {};
 
     constructor(options: TimerOption, ...args: any[]) {
@@ -33,7 +35,7 @@ export class Timer {
         this.options["args"] = args;
         this.isInterval = options.isInterval;
         this.options["timeout"] = options.timeout;
-        this.options["delay"] = options.delay || 1000;
+        this.options["delay"] = options.delay ?? 1000;
         this.totalTicks = this.elapseTicks = options.timeout / this.options["delay"];
     }
 

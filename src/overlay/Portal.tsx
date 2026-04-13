@@ -50,6 +50,6 @@ class PortalComponent extends React.Component<PortalProps, PortalState> {
 
 }
 
-export const Portal = React.forwardRef<HTMLElement, Partial<PortalProps>>((props, ref) => (
-    <PortalComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLElement>} />
-));
+export const Portal  = ({ ref, ...props }: Partial<PortalProps>) => (
+    <PortalComponent {...props} forwardRef={ref} />
+);

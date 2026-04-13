@@ -17,7 +17,7 @@ import { ComponentBaseProps, ComponentElementBasicAttributes, TransitionProps } 
 export type MessageEventHandler = () => void;
 export type MessageContentHandler = (attr?: ComponentElementBasicAttributes) => NoseurElement;
 
-export type MessageAttributtesRelays = {
+export type MessageAttributesRelays = {
     progressBar: Partial<ProgressBarProps>;
     content?: ComponentElementBasicAttributes;
     closeIcon?: ComponentElementBasicAttributes;
@@ -28,7 +28,7 @@ export interface MessageManageRef {
     update: (messageProps: Partial<MessageProps>, borrowLifetime?: boolean) => void;
 }
 
-export interface MessageProps extends ComponentBaseProps<HTMLDivElement, MessageManageRef, MessageAttributtesRelays>, TransitionProps {
+export interface MessageProps extends ComponentBaseProps<HTMLDivElement, MessageManageRef, MessageAttributesRelays>, TransitionProps {
     fill: boolean;
     sticky: boolean;
     lifetime: number;
@@ -82,6 +82,7 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
 
     timer?: Timer;
     progressBarComponent?: ProgressBarManageRef;
+    transitionNodeRef: React.RefObject<HTMLDivElement | null>;
 
     constructor(props: MessageProps) {
         super(props);
@@ -94,6 +95,7 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
         this.onMouseEnter = this.onMouseEnter.bind(this);
         this.onMouseLeave = this.onMouseLeave.bind(this);
         this.onTimerAction = this.onTimerAction.bind(this);
+        this.transitionNodeRef = React.createRef<HTMLDivElement>();
     }
 
     componentDidMount() {
@@ -238,13 +240,17 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
             "noseur-wd-100-pct": this.state.props.fill
         }, scheme, (this.state.props.scheme ? `${this.state.props.scheme}-bd-rd ${this.state.props.scheme}-vars` : null),
             (this.state.props.closeOnClick ? "noseur-cursor-pointer" : null), this.state.props.className);
+        const ref = (el: HTMLDivElement) => {
+            ObjectHelper.resolveRef(this.props.forwardRef, el);
+            ObjectHelper.resolveRef(this.transitionNodeRef, el);
+        };
 
         const children = (<CSSTransition classNames={transition} options={this.state.props.transitionOptions}
-            timeout={transition === Transition.NONE ? 0 : this.state.props.transitionTimeout}
+            timeout={transition === Transition.NONE ? 0 : this.state.props.transitionTimeout} nodeRef={this.transitionNodeRef}
             in={this.state.mount} unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExited={this.onExited}>
-            <div ref={this.props.forwardRef} className={className} id={this.props.id} style={this.state.props.style}
+            <div ref={ref} className={className} id={this.props.id} style={this.state.props.style}
                 onClick={this.onClick} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-                <div className="noseur-message-container container">
+                <div className="noseur-message-container">
                     {icon}
                     {content}
                     {closeIcon}
@@ -257,7 +263,7 @@ class MessageComponent extends React.Component<MessageProps, MessageState> {
 
 }
 
-export const Message = React.forwardRef<HTMLDivElement, Partial<MessageProps>>((props, ref) => (
-    <MessageComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const Message = ({ ref, ...props }: Partial<MessageProps>) => (
+    <MessageComponent {...props} forwardRef={ref} />
+);
 

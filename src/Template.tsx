@@ -34,6 +34,6 @@ class TemplateComponent extends React.Component<TemplateProps, TemplateState> {
 
 }
 
-export const Template = React.forwardRef<HTMLDivElement, Partial<TemplateProps>>((props, ref) => (
-    <TemplateComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const Template  = ({ ref, ...props }: Partial<TemplateProps>) => (
+    <TemplateComponent {...props} forwardRef={ref} />
+);

@@ -15,22 +15,29 @@ function buildTemplate(_: PaginatorState, props: PaginatorProps): PaginatorTempl
         .replace(/\s+/g, " ");
     const paginationElementBuilder = (direction: PaginatorDirection) => {
         return (option: PaginatorPageElementOption) => {
-            const key = (option.label || (option.className || direction));
             const outlined = !option.active && option.scheme != Scheme.SKELETON;
+            const key = (option.key ?? option.label ?? (option.className ?? direction));
             return (<Button key={key} text={option.label} scheme={option.scheme} disabled={option.disabled}
                 className={Classname.build(option.className, direction)} style={{ marginLeft: 10 }}
                 onClick={option.onClick} outlined={outlined} iconOnly fillOnHover borderless />);
         };
     }
-    const pageElement = customTemplate?.pageElement || paginationElementBuilder(PaginatorDirection.PAGE);
-    const nextPageElement = customTemplate?.nextPageElement || paginationElementBuilder(PaginatorDirection.NEXT);
-    const lastPageElement = customTemplate?.lastPageElement || paginationElementBuilder(PaginatorDirection.LAST_PAGE);
-    const firstPageElement = customTemplate?.firstPageElement || paginationElementBuilder(PaginatorDirection.FIRST_PAGE);
-    const previousPageElement = customTemplate?.previousPageElement || paginationElementBuilder(PaginatorDirection.PREVIOUS);
-    const hiddenPagesElement = customTemplate?.hiddenPagesElement || paginationElementBuilder(PaginatorDirection._HIDDEN_PAGES);
-    const activePageLabel = customTemplate?.activePageLabel || ((option: PaginatorPageChangeOption) => {
+    const paginationPropsLabelBuilder = () => {
+        return (option: PaginatorPageElementOption) => {
+            const key = (option.key ?? option.label ?? (option.className));
+            return (<span key={key} className={option.className}>{option.label}</span>);
+        };
+    }
+    const propsValueElement = customTemplate?.propsValueElement ?? paginationPropsLabelBuilder();
+    const pageElement = customTemplate?.pageElement ?? paginationElementBuilder(PaginatorDirection.PAGE);
+    const nextPageElement = customTemplate?.nextPageElement ?? paginationElementBuilder(PaginatorDirection.NEXT);
+    const lastPageElement = customTemplate?.lastPageElement ?? paginationElementBuilder(PaginatorDirection.LAST_PAGE);
+    const firstPageElement = customTemplate?.firstPageElement ?? paginationElementBuilder(PaginatorDirection.FIRST_PAGE);
+    const previousPageElement = customTemplate?.previousPageElement ?? paginationElementBuilder(PaginatorDirection.PREVIOUS);
+    const hiddenPagesElement = customTemplate?.hiddenPagesElement ?? paginationElementBuilder(PaginatorDirection._HIDDEN_PAGES);
+    const activePageLabel = customTemplate?.activePageLabel ?? ((option: PaginatorPageChangeOption) => {
         const label = ObjectHelper.resolveStringTemplate("({currentPage} of {pageCount})", option);
-        return (<span key={label} className={`noseur-paginator-label ${option.scheme || ""}`}>{label}</span>);
+        return (<span key={option.key ?? label} className={`noseur-paginator-label ${option.scheme || ""}`}>{label}</span>);
     });
 
     return {
@@ -40,8 +47,10 @@ function buildTemplate(_: PaginatorState, props: PaginatorProps): PaginatorTempl
         nextPageElement,
         lastPageElement,
         firstPageElement,
+        propsValueElement,
         previousPageElement,
         hiddenPagesElement,
+        customElement: customTemplate?.customElement,
     };
 }
 
@@ -61,18 +70,21 @@ export interface PaginatorPageElementOption {
     active?: boolean;
     disabled?: boolean;
     className?: string;
-    style?: NoseurObject<any>;
+    key?: string | number;
     label?: number | string;
+    style?: NoseurObject<any>;
     direction?: PaginatorDirection;
     onClick?: (...args: any[]) => any;
 };
 
 export type PaginatorTemplateElementEventHandler = (option: PaginatorPageElementOption) => NoseurElement;
+export type PaginatorTemplateCustomElementEventHandler = (layout: string, props?: PaginatorProps, state?: PaginatorState, layoutElementsMap?: NoseurObject<NoseurElement>) => NoseurElement;
 
 export interface PaginatorPageChangeOption {
     scheme?: Scheme;
     pageCount: number;
     currentPage: number;
+    key?: string | number;
 };
 
 export type PaginatorTemplateLabelEventHandler = (option: PaginatorPageChangeOption) => NoseurElement;
@@ -85,17 +97,25 @@ export interface PaginatorTemplateOptions {
     nextPageElement?: PaginatorTemplateElementEventHandler;
     lastPageElement?: PaginatorTemplateElementEventHandler;
     firstPageElement?: PaginatorTemplateElementEventHandler;
+    propsValueElement?: PaginatorTemplateElementEventHandler;
     hiddenPagesElement?: PaginatorTemplateElementEventHandler;
     previousPageElement?: PaginatorTemplateElementEventHandler;
+    customElement?: PaginatorTemplateCustomElementEventHandler;
 }
 
 export enum PaginatorLayoutElements {
+    PageCount = "PageCount",
+    RowPerPage = "RowPerPage",
+    InitialPage = "InitialPage",
+    CurrentPage = "CurrentPage",
+    TotalRecords = "TotalRecords",
     PageElements = "PageElements",
     NextPageElement = "NextPageElement",
     LastPageElement = "LastPageElement",
     ActivePageLabel = "ActivePageLabel",
     NextPagesElement = "NextPagesElement",
     FirstPageElement = "FirstPageElement",
+    VisiblePageCount = "VisiblePageCount",
     PreviousPageElement = "PreviousPageElement",
     PreviousPagesElement = "PreviousPagesElement",
 }
@@ -106,13 +126,16 @@ export interface PaginatorProps extends ComponentBaseProps<NoseurElement> {
     currentPage: number;
     totalRecords: number;
     visiblePageCount: number;
+    freezeTotalRecords: boolean;
+    reportOnNavigation: boolean;
     rowsPerPageOptions: number[];
     overlayContainer: NoseurElement;
-    leftContent: React.ReactElement;
     resetPageOnCountChange: boolean;
-    rightContent: React.ReactElement;
+    reportOnComponentUpdate: boolean;
     template: PaginatorTemplateOptions;
     expandOnHiddenPagesButtonClicked: boolean;
+    leftContent: React.ReactElement<any, any>;
+    rightContent: React.ReactElement<any, any>;
 
     onPageChange?: (event: PaginatorPageChangeOption) => void;
 };
@@ -129,9 +152,10 @@ class PaginatorComponent extends React.Component<PaginatorProps, PaginatorState>
     public static defaultProps: Partial<PaginatorProps> = {
         initialPage: 1,
         rowsPerPage: 10,
-        totalRecords: 1,
+        totalRecords: 0,
         visiblePageCount: 5,
         scheme: Scheme.STATELESS,
+        reportOnNavigation: true,
         expandOnHiddenPagesButtonClicked: false,
     };
 
@@ -149,19 +173,20 @@ class PaginatorComponent extends React.Component<PaginatorProps, PaginatorState>
     }
 
     componentDidUpdate(prevProps: Readonly<PaginatorProps>) {
-        if (prevProps.currentPage != this.props.currentPage || prevProps.totalRecords != this.props.totalRecords || prevProps.rowsPerPage != this.props.rowsPerPage) {
+        if (prevProps.currentPage != this.props.currentPage || (prevProps.totalRecords != this.props.totalRecords && (!this.props.freezeTotalRecords || this.state.pageCount < 1)) || prevProps.rowsPerPage != this.props.rowsPerPage) {
             const pageCount = Math.ceil(this.props.totalRecords / this.props.rowsPerPage);
+            const pageCountChanged  = pageCount !== this.state.pageCount;
             let currentPage = prevProps.currentPage != this.props.currentPage ? this.props.currentPage : this.state.currentPage;
             if (currentPage > pageCount) {
                 currentPage = 1;
-                this.props.onPageChange && this.props.onPageChange({
+                if (this.props.reportOnComponentUpdate) this.props.onPageChange?.({
                     pageCount,
                     currentPage
                 });
             }
             this.setState({
                 pageCount,
-                currentPage: (this.props.resetPageOnCountChange ? 1 : currentPage),
+                currentPage: (pageCountChanged && this.props.resetPageOnCountChange ? 1 : currentPage),
             });
         }
     }
@@ -194,12 +219,14 @@ class PaginatorComponent extends React.Component<PaginatorProps, PaginatorState>
             return;
         }
 
-        const option = {
-            currentPage: page,
-            pageCount: pageCount
-        };
-        this.props.onPageChange && this.props.onPageChange(option);
-        this.setState({ currentPage: page });
+        this.setState({ currentPage: page }, () => {
+            if (!this.props.reportOnNavigation) return;
+            const option = {
+                currentPage: page,
+                pageCount: pageCount
+            };
+            this.props.onPageChange?.(option);
+        });
     }
 
     renderNavigationElements(template: PaginatorTemplateOptions, layouts: string[]): NoseurObject<any> {
@@ -207,6 +234,36 @@ class PaginatorComponent extends React.Component<PaginatorProps, PaginatorState>
             scheme: this.props.scheme,
         };
         return {
+            pageCount: layouts.includes("PageCount") ? template.propsValueElement!({
+                className: "noseur-paginator-props-value",
+                ...generalPaginarorElementsOption,
+                label: this.state.pageCount
+            }) : undefined,
+            rowPerPage: layouts.includes("RowPerPage") ? template.propsValueElement!({
+                className: "noseur-paginator-props-value",
+                ...generalPaginarorElementsOption,
+                label: this.props.rowsPerPage
+            }) : undefined,
+            initialPage: layouts.includes("InitialPage") ? template.propsValueElement!({
+                className: "noseur-paginator-props-value",
+                ...generalPaginarorElementsOption,
+                label: this.props.initialPage
+            }) : undefined,
+            currentPage: layouts.includes("CurrentPage") ? template.propsValueElement!({
+                className: "noseur-paginator-props-value",
+                ...generalPaginarorElementsOption,
+                label: this.state.currentPage
+            }) : undefined,
+            totalRecords: layouts.includes("TotalRecords") ? template.propsValueElement!({
+                className: "noseur-paginator-props-value",
+                ...generalPaginarorElementsOption,
+                label: this.props.totalRecords
+            }) : undefined,
+            visiblePageCount: layouts.includes("VisiblePageCount") ? template.propsValueElement!({
+                className: "noseur-paginator-props-value",
+                ...generalPaginarorElementsOption,
+                label: this.props.visiblePageCount
+            }) : undefined,
             nextPageElement: layouts.includes("NextPageElement") ? template.nextPageElement!({
                 className: "noseur-paginator-pg noseur-paginator-nx",
                 disabled: this.state.currentPage == this.state.pageCount,
@@ -308,6 +365,12 @@ class PaginatorComponent extends React.Component<PaginatorProps, PaginatorState>
         };
         if (this.props.scheme === Scheme.SKELETON) labelMap.scheme = this.props.scheme;
         const {
+            pageCount,
+            rowPerPage,
+            initialPage,
+            currentPage,
+            totalRecords,
+            visiblePageCount,
             firstPageElement,
             previousPageElement,
             nextPageElement,
@@ -322,7 +385,9 @@ class PaginatorComponent extends React.Component<PaginatorProps, PaginatorState>
             previousPagesElements
         } = this.renderPageElements(template, layouts, hiddenPagesElement)
         const activePageLabel = layouts.includes("ActivePageLabel") && template.activePageLabel ? template.activePageLabel(labelMap) : undefined;
-        const layoutElementsMap: any = {
+        const layoutElementsMap: NoseurObject<NoseurElement> = {
+            PageCount: pageCount, RowPerPage: rowPerPage, 
+            InitialPage: initialPage, CurrentPage: currentPage, TotalRecords: totalRecords, VisiblePageCount: visiblePageCount,
             ActivePageLabel: activePageLabel, FirstPageElement: firstPageElement, PreviousPageElement: previousPageElement,
             NextPageElement: nextPageElement, LastPageElement: lastPageElement, PageElements: pageElements,
             NextPagesElement: <React.Fragment key={PaginatorDirection.NEXT_HIDDEN_PAGES}>{nextPagesElement}{nextPagesElements}</React.Fragment>,
@@ -343,14 +408,14 @@ class PaginatorComponent extends React.Component<PaginatorProps, PaginatorState>
 
         return (<div ref={this.props.forwardRef as React.ForwardedRef<HTMLDivElement>} {...props}>
             {leftContent}
-            {layouts.map(layout => layoutElementsMap[layout])}
+            {layouts.map(layout => layoutElementsMap[layout] ?? (template.customElement ? template.customElement(layout, this.props, this.state, layoutElementsMap) : ` ${layout} `))}
             {rightContent}
         </div>);
     }
 
 }
 
-export const Paginator = React.forwardRef<HTMLDivElement, Partial<PaginatorProps>>((props, ref) => (
-    <PaginatorComponent {...props} forwardRef={ref as React.ForwardedRef<NoseurElement>} />
-));
+export const Paginator  = ({ ref, ...props }: Partial<PaginatorProps>) => (
+    <PaginatorComponent {...props} forwardRef={ref} />
+);
 

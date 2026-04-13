@@ -45,11 +45,11 @@ export const InputHelper = {
 	},
 
 	getKey(event: any) {
-		return event.keyCode || event.charCode;
+		return event.keyCode ?? event.charCode;
 	},
 
 	getCharCode(event: InputEventAlias) {
-		return event.charCode || event.keyCode || event.which;
+		return event.charCode ?? event.keyCode ?? event.which;
 	},
 
 	validateEventValue(regex: RegExp, event: React.SyntheticEvent, value: string) {

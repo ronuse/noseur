@@ -12,18 +12,14 @@ import { Dialog, DialogManageRef, DialogProps } from "../../overlay/Dialog";
 import { Popover, PopoverManageRef, PopoverProps } from "../../overlay/Popover";
 import { DateHelper, FormatedDate, Month, Time, Weekday } from "../../utils/DateHelper";
 import { NoseurDivElement, NoseurElement, NoseurLabel, NoseurObject } from "../../constants/Types";
-import { ComponentBaseProps, ComponentElementBasicAttributes, addClassesToComponentElementBasicAttributes } from "../../core/ComponentBaseProps";
+import { ComponentBaseProps, ComponentElementBasicAttributes, ComponentRenderType, addClassesToComponentElementBasicAttributes } from "../../core/ComponentBaseProps";
 
+// TODO multiple date multiple time
+// TODO date range, time range too
 export enum DateTimePickerMode {
     YEAR,
     MONTH,
     DATETIME,
-}
-
-export enum DateTimePickerType {
-    MODAL,
-    INLINE,
-    POPOVER,
 }
 
 export enum DateTimePickerSelectionMode {
@@ -70,7 +66,7 @@ export enum DateTimePickerLayoutElement {
     DateElement = "DateElement",
     NextElement = "NextElement",
     HourElement = "HourElement",
-    PanelSeperatorElement = "|",
+    PanelSeparatorElement = "|",
     ColumnDividerElement = "[|]",
     SpaceLeftRightElement = "<>",
     OpenColumnGroupElement = "<",
@@ -83,7 +79,7 @@ export enum DateTimePickerLayoutElement {
     YearsElements = "YearsElements",
     HeaderElement = "HeaderElement",
     FooterElement = "FooterElement",
-    TimeSeperator = "TimeSeperator",
+    TimeSeparator = "TimeSeparator",
     YearToElement = "YearToElement",
     WeekDayElement = "WeekDayElement",
     MonthsElements = "MonthsElements",
@@ -132,12 +128,12 @@ export enum DateTimePickerLayout {
     DEFAULT_HEADER_LAYOUT = `${DateTimePickerLayoutElement.PreviousElement} <> ${DateTimePickerLayoutElement.MonthElement} ${DateTimePickerLayoutElement.YearElement} <> ${DateTimePickerLayoutElement.NextElement}`,
     DEFAULT_YEAR_MODE_HEADER_LAYOUT = `${DateTimePickerLayoutElement.PreviousElement} <> ${DateTimePickerLayoutElement.YearFromElement} [s] [d] [s] ${DateTimePickerLayoutElement.YearToElement} <> ${DateTimePickerLayoutElement.NextElement}`,
     DEFAULT_LAYOUT = `${DateTimePickerLayoutElement.TopPanelElement} [-] ${DateTimePickerLayoutElement.LeftPanelElement} [|] ${DateTimePickerLayoutElement.HeaderElement} ${DateTimePickerLayoutElement.WeekdaysElements} ${DateTimePickerLayoutElement.DaysElements} ${DateTimePickerLayoutElement.TimeElement} ${DateTimePickerLayoutElement.FooterElement} [|] ${DateTimePickerLayoutElement.RightPanelElement} [-] ${DateTimePickerLayoutElement.BottomPanelElement}`,
-    DEFAULT_TIME_LAYOUT = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MeridianElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
+    DEFAULT_TIME_LAYOUT = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MeridianElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
 
     FINE_LEFT_LAYOUT = `${DateTimePickerLayoutElement.TodayElement} ${DateTimePickerLayoutElement.YesterdayElement} ${DateTimePickerLayoutElement.LastSevenDaysElement} ${DateTimePickerLayoutElement.LastThirtyDaysElement} ${DateTimePickerLayoutElement.ThisMonthElement} ${DateTimePickerLayoutElement.LastMonthElement} ${DateTimePickerLayoutElement.ThisYearElement} ${DateTimePickerLayoutElement.LastYearElement}`,
-    TIME_LAYOUT_WITHOUT_MERIDIAN = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
-    TIME_LAYOUT_WITH_SECONDS_WITHOUT_MERIDIAN = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.SecondsElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
-    TIME_LAYOUT_WITH_SECONDS = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.SecondsElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeperator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MeridianElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
+    TIME_LAYOUT_WITHOUT_MERIDIAN = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
+    TIME_LAYOUT_WITH_SECONDS_WITHOUT_MERIDIAN = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.SecondsElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
+    TIME_LAYOUT_WITH_SECONDS = `< ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.SecondsElement} ${DateTimePickerLayoutElement.DecrementElement} > ${DateTimePickerLayoutElement.TimeSeparator} < ${DateTimePickerLayoutElement.IncrementElement} ${DateTimePickerLayoutElement.MeridianElement} ${DateTimePickerLayoutElement.DecrementElement} >`,
 
 }
 
@@ -184,7 +180,9 @@ export type DateTimePickerWeekdayElementTemplateHandler = (weekday: Weekday, opt
 export type DateTimePickerSelectionElementTemplateHandler = (selectedDates: Date[], options: DateTimePickerElementOptions) => NoseurElement;
 export type DateTimePickerDayElementTemplateHandler = (date: number, options: DateTimePickerElementOptions, selected: boolean, dateObj?: Date, overlap?: boolean) => NoseurElement;
 
-export type DateTimePickerAttributtesRelays = {
+export type DateTimePickerAttributesRelays = {
+    dialog?: Partial<DialogProps>;
+    popover?: Partial<PopoverProps>
     rowGroup?: ComponentElementBasicAttributes;
     columnGroup?: ComponentElementBasicAttributes;
     selectedDate?: ComponentElementBasicAttributes;
@@ -240,7 +238,7 @@ export interface DateTimePickerManageRef {
     prev: (leftNeigbhor?: string, rightNeigbhor?: string) => void;
 }
 
-export interface DateTimePickerProps<T1 = NoseurDivElement, T2 = DateTimePickerManageRef, T3 = DateTimePickerAttributtesRelays> extends ComponentBaseProps<T1, T2, T3> {
+export interface DateTimePickerProps<T1 = NoseurDivElement, T2 = DateTimePickerManageRef, T3 = DateTimePickerAttributesRelays> extends ComponentBaseProps<T1, T2, T3> {
     date: Date;
     minDate: Date;
     maxDate: Date;
@@ -269,7 +267,7 @@ export interface DateTimePickerProps<T1 = NoseurDivElement, T2 = DateTimePickerM
     disableFromDate: Date;
     modalVisible: boolean;
     enabledYears: number[];
-    showGridlines: boolean;
+    showGridLines: boolean;
     yearModeLayout: string;
     enabledMonths: Month[];
     disabledMonths: Month[];
@@ -279,25 +277,23 @@ export interface DateTimePickerProps<T1 = NoseurDivElement, T2 = DateTimePickerM
     showDateRanges: boolean;
     disabledYears: number[];
     hourFormat: "12" | "24";
-    type: DateTimePickerType;
+    type: ComponentRenderType;
     mode: DateTimePickerMode;
     dontOverlapDate: boolean;
     enabledWeekdays: Weekday[];
     disabledWeekdays: Weekday[];
-    showDatesSeperator: boolean;
+    showDatesSeparator: boolean;
     modeDifferenceCount: number;
     yearModeHeaderLayout: string;
     yearModeFooterLayout: string;
     monthModeHeaderLayout: string;
     monthModeFooterLayout: string;
-    monthsSeperatorLayout: string;
+    monthsSeparatorLayout: string;
     makeOverlapSelectable: boolean;
     highlightDatesInRange: boolean;
     dontUnselectOnSameDate: boolean;
     labelsMap: NoseurObject<string>;
     reportOnSelectClickOnly: boolean;
-    dialogProps: Partial<DialogProps>;
-    popoverProps: Partial<PopoverProps>
     maxMultipleModeDateSelection: number;
     dateFormat: Intl.DateTimeFormatOptions;
     selectionMode: DateTimePickerSelectionMode;
@@ -353,9 +349,7 @@ export const DateTimePickerDefaultProps: Partial<DateTimePickerProps> = {
     attrsRelay: {},
     leftLayout: "",
     rightLayout: "",
-    dialogProps: {},
     bottomLayout: "",
-    popoverProps: {},
     date: new Date(),
     enabledYears: [],
     enabledDates: [],
@@ -374,7 +368,7 @@ export const DateTimePickerDefaultProps: Partial<DateTimePickerProps> = {
     yearModeFooterLayout: "",
     monthModeFooterLayout: "",
     idleScheme: Scheme.SECONDARY,
-    type: DateTimePickerType.INLINE,
+    type: ComponentRenderType.INLINE,
     maxMultipleModeDateSelection: 20,
     mode: DateTimePickerMode.DATETIME,
     layout: DateTimePickerLayout.DEFAULT_LAYOUT,
@@ -461,10 +455,10 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
 
     toggle(event: Event, target?: HTMLElement) {
         switch (this.props.type) {
-            case DateTimePickerType.MODAL:
+            case ComponentRenderType.MODAL:
                 this.setState({ modalVisible: !this.state.modalVisible });
                 break;
-            case DateTimePickerType.POPOVER:
+            case ComponentRenderType.POPOVER:
                 this.popoverManageRef!.toggle(event, target);
                 break;
         }
@@ -1032,7 +1026,7 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
             } else if (requiredLayoutElement === DateTimePickerLayoutElement.DaysElements) {
                 const daysElements: any[] = [];
                 const row = 7, column = 6, rowColumnSum = row * column;
-                const underline = this.props.showDatesSeperator && !this.props.showGridlines;
+                const underline = this.props.showDatesSeparator && !this.props.showGridLines;
                 const monthDays = DateHelper.getAllDaysInMonth(formattedDate.year, formattedDate.month);
                 const startWeekday = monthDays[0].getDay();
                 const previousMonthPadding = startWeekday;
@@ -1248,9 +1242,9 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
         const layoutPanel = this.buildLayout(formattedDate, layoutElements, controlActionMap);
         const className = Classname.build("noseur-date-time-picker", {
             "noseur-date-time-picker-time-only": this.props.timeOnly,
-            "noseur-date-time-picker-modal": this.props.type === DateTimePickerType.MODAL,
-            "noseur-date-time-picker-inline": this.props.type === DateTimePickerType.INLINE,
-            "noseur-date-time-picker-popover": this.props.type === DateTimePickerType.POPOVER,
+            "noseur-date-time-picker-modal": this.props.type === ComponentRenderType.MODAL,
+            "noseur-date-time-picker-inline": this.props.type === ComponentRenderType.INLINE,
+            "noseur-date-time-picker-popover": this.props.type === ComponentRenderType.POPOVER,
         },
             this.props.scheme ? `${this.props.scheme}-vars` : null, this.props.className);
         const ref = (r: HTMLDivElement) => {
@@ -1260,13 +1254,13 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
         };
 
         switch (this.props.type) {
-            case DateTimePickerType.MODAL:
-                return (<Dialog {...this.props.dialogProps} ref={ref} className={className} style={this.props.style} manageRef={(m) => this.dialogManageRef = m}
-                    visible={this.state.modalVisible} onHide={() => this.setState({ modalVisible: false })} notClosable>
+            case ComponentRenderType.MODAL:
+                return (<Dialog notClosable {...this.props.attrsRelay?.dialog} ref={ref} className={className} style={this.props.style} manageRef={(m) => this.dialogManageRef = m}
+                    visible={this.state.modalVisible} onHide={() => this.setState({ modalVisible: false })}>
                     {layoutPanel}
                 </Dialog>);
-            case DateTimePickerType.POPOVER:
-                return (<Popover positional="left" outsideClickLogic={"positional"} {...this.props.popoverProps} ref={ref} className={className} style={this.props.style} manageRef={(m) => this.popoverManageRef = m}>
+            case ComponentRenderType.POPOVER:
+                return (<Popover outsideClickLogic={"positional"} {...this.props.attrsRelay?.popover} ref={ref} className={className} style={this.props.style} manageRef={(m) => this.popoverManageRef = m}>
                     {layoutPanel}
                 </Popover>);
             default:
@@ -1278,26 +1272,26 @@ export class DateTimePickerComponent extends React.Component<DateTimePickerProps
 
 }
 
-export const DateTimePicker = React.forwardRef<HTMLDivElement, Partial<DateTimePickerProps>>((props, ref) => (
-    <DateTimePickerComponent showTime={true} {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const DateTimePicker  = ({ ref, ...props }: Partial<DateTimePickerProps>) => (
+    <DateTimePickerComponent {...props} forwardRef={ref} showTime={true} />
+);
 
-export const YearPicker = React.forwardRef<HTMLDivElement, Partial<DateTimePickerProps>>((props, ref) => (
-    <DateTimePickerComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} showTime={false} mode={DateTimePickerMode.YEAR} />
-));
+export const YearPicker  = ({ ref, ...props }: Partial<DateTimePickerProps>) => (
+    <DateTimePickerComponent {...props} forwardRef={ref} showTime={false} mode={DateTimePickerMode.YEAR} />
+);
 
-export const MonthPicker = React.forwardRef<HTMLDivElement, Partial<DateTimePickerProps>>((props, ref) => (
-    <DateTimePickerComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} showTime={false} mode={DateTimePickerMode.MONTH} />
-));
+export const MonthPicker  = ({ ref, ...props }: Partial<DateTimePickerProps>) => (
+    <DateTimePickerComponent {...props} forwardRef={ref} showTime={false} mode={DateTimePickerMode.MONTH} />
+);
 
-export const DatePicker = React.forwardRef<HTMLDivElement, Partial<DateTimePickerProps>>((props, ref) => (
-    <DateTimePickerComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} showTime={false} />
-));
+export const DatePicker  = ({ ref, ...props }: Partial<DateTimePickerProps>) => (
+    <DateTimePickerComponent {...props} forwardRef={ref} showTime={false} />
+);
 
-export const TimePicker = React.forwardRef<HTMLDivElement, Partial<DateTimePickerProps>>((props, ref) => (
-    <DateTimePickerComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} showTime={true} timeOnly={true}
-        layout={DateTimePickerLayoutElement.TimeElement} popoverProps={{ ...(props.popoverProps ?? {}), pointingArrowClassName: "" }} />
-));
+export const TimePicker  = ({ ref, ...props }: Partial<DateTimePickerProps>) => (
+    <DateTimePickerComponent {...props} forwardRef={ref} showTime={true} timeOnly={true}
+    layout={DateTimePickerLayoutElement.TimeElement} attrsRelay={{ ...props.attrsRelay, popover: { ...props.attrsRelay?.popover, pointingArrowClassName: "" } as any }}/>
+);
 
 export const DateTimePickerLayoutElementsValues = Object.values(DateTimePickerLayoutElement);
 
@@ -1449,7 +1443,7 @@ export function dateTimePickerBuildLayoutElement(options: TimePickerLayoutElemen
         return (<div style={basicAttrs?.style} className={Classname.build("noseur-date-time-picker-dash", basicAttrs?.className)} key={key}>-</div>);
     } else if (layoutElement === DateTimePickerLayoutElement.SpaceElement) {
         return (<div style={basicAttrs?.style} className={Classname.build("noseur-date-time-picker-space", basicAttrs?.className)} key={key}> </div>);
-    } else if (layoutElement === DateTimePickerLayoutElement.TimeSeperator) {
+    } else if (layoutElement === DateTimePickerLayoutElement.TimeSeparator) {
         return (<span style={basicAttrs?.style} className={Classname.build("noseur-date-time-picker-time-seperator", basicAttrs?.className)} key={key}>:</span>);
     } else if (layoutElement === DateTimePickerLayoutElement.SpaceLeftRightElement) {
         return (<div style={basicAttrs?.style} className={Classname.build("noseur-date-time-picker-seperator", basicAttrs?.className)} key={key}></div>);
@@ -1457,8 +1451,11 @@ export function dateTimePickerBuildLayoutElement(options: TimePickerLayoutElemen
     return (<div className={Classname.build("noseur-date-time-picker-custom", basicAttrs?.className)}>{text ?? layoutElement}</div>);
 }
 
+// TODO position on click for popover
+// do not close if it range until twio date selected
+// do not close for multiple selection mode
 /*numberOfMonth
-monthsSeperatorLayout
+monthsSeparatorLayout
 
 https://reactjsexample.com/a-group-calendar-application-using-the-mern-stack-intended-to-bring-discord-communities-closer/
 https://reactjsexample.com/an-open-source-fullcalendar-scheduler-using-react/

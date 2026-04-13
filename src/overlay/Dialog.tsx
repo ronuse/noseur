@@ -8,7 +8,7 @@ import { Alignment } from "../constants/Alignment";
 import { ObjectHelper } from "../utils/ObjectHelper";
 import { CSSTransition } from 'react-transition-group';
 import { BaseZIndex, DOMHelper, ZIndexHandler } from "../utils/DOMUtils";
-import { ComponentBaseProps, TransitionProps } from "../core/ComponentBaseProps";
+import { ComponentBaseProps, ComponentElementBasicAttributes, NoseurGlobals, TransitionProps } from "../core/ComponentBaseProps";
 import { NoseurElement, NoseurObject, NoseurRawElement } from "../constants/Types";
 import { Transition } from "../constants/Transition";
 
@@ -34,14 +34,15 @@ export interface DialogProps extends ComponentBaseProps<HTMLDivElement, DialogMa
     footer: NoseurElement,
     disableScroll: boolean,
     closeIcon: NoseurElement,
-    dismissableModal: boolean,
-    container: NoseurRawElement,
+    dismissibleModal: boolean,
     modalProps: NoseurObject<any>,
     headerProps: NoseurObject<any>,
     contentProps: NoseurObject<any>,
     onOpenFocusRef: React.MutableRefObject<any>,
     onCloseFocusRef: React.MutableRefObject<any>,
+    container: NoseurRawElement | React.Ref<HTMLDivElement>;
     maximizeIcons: { minimize: NoseurElement, maximize: NoseurElement },
+    maximizeProps?: { minimize?: ComponentElementBasicAttributes; maximize?: ComponentElementBasicAttributes; },
 
     onShow: DialogEvent,
     onHide: DialogEvent,
@@ -61,7 +62,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
     public static defaultProps: Partial<DialogProps> = {
         notClosable: false,
         disableScroll: false,
-        dismissableModal: true,
+        dismissibleModal: true,
         closeIcon: "fa fa-times",
         alignment: Alignment.CENTER,
         baseZIndex: BaseZIndex.MODAL,
@@ -74,14 +75,15 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
 
     state: DialogState = {
         visible: false,
-        maximized: false,
         modalVisible: false,
         id: DOMHelper.uniqueElementId(),
+        maximized: this.props.maximized,
     };
 
     internalModalElement: any;
     internalDialogElement: any;
     componentUnmounted: boolean = false;
+    transitionNodeRef: React.RefObject<HTMLDivElement | null>;
 
     constructor(props: DialogProps) {
         super(props);
@@ -92,6 +94,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         this.onEntered = this.onEntered.bind(this);
         this.onModalClick = this.onModalClick.bind(this);
         this.toggleMaximize = this.toggleMaximize.bind(this);
+        this.transitionNodeRef = React.createRef<HTMLDivElement>();
     }
 
     componentDidMount() {
@@ -120,8 +123,12 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
                 visible: this.props.visible
             });
         }
-        if (prevProps.maximized !== this.props.maximized && this.props.onMaximize) {
-            this.updateScrollOnMaximizable();
+        if (prevProps.maximized !== this.props.maximized) {
+            this.setState({ maximized: this.props.maximized }, () => {
+                if (this.props.onMaximize) {
+                    this.updateScrollOnMaximizable();
+                }
+            });
         }
     }
 
@@ -137,12 +144,11 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         event.stopPropagation();
 
         this.setState({ visible: !this.props.visible });
-        if (this.props.onHide) this.props.onHide();
     }
 
     onEnter() {
         if ((this.props.disableScroll || (this.props.maximizable && this.state.maximized)) && !this.props.noOverlay) {
-            DOMHelper.addClass((this.props.container || document.body) as any, 'noseur-overflow-hidden');
+            DOMHelper.addClass((this.getRefOrHTMLElement(this.props.container)|| document.body) as any, 'noseur-overflow-hidden');
         }
     }
 
@@ -158,16 +164,17 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         ZIndexHandler.removeElementZIndex(this.internalModalElement);
         this.setState({ modalVisible: false });
         if ((this.props.disableScroll || (this.props.maximizable && this.state.maximized)) && !this.props.noOverlay) {
-            DOMHelper.removeClass((this.props.container || document.body) as any, 'noseur-overflow-hidden');
+            DOMHelper.removeClass((this.getRefOrHTMLElement(this.props.container) || document.body) as any, 'noseur-overflow-hidden');
         }
         const elementToReceiveCloseFocus = this.props.onCloseFocusRef?.current as any;
         if (elementToReceiveCloseFocus && TypeChecker.isFunction(elementToReceiveCloseFocus?.focus)) {
             elementToReceiveCloseFocus.focus();
         }
+        if (this.props.onHide) this.props.onHide();
     }
 
     onModalClick(event: any) {
-        if (this.props.dismissableModal && !this.props.noOverlay && this.internalModalElement === event.target) {
+        if (this.props.dismissibleModal && !this.props.noOverlay && this.internalModalElement === event.target) {
             this.onClose(event);
         }
     }
@@ -188,7 +195,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
     updateScrollOnMaximizable() {
         if (!this.props.disableScroll) {
             let funcIdentifier = this.state.maximized ? 'addClass' : 'removeClass';
-            ((DOMHelper as NoseurObject<Function>)[funcIdentifier])((this.props.container || document.body) as any, 'noseur-overflow-hidden');
+            ((DOMHelper as NoseurObject<Function>)[funcIdentifier])((this.getRefOrHTMLElement(this.props.container) || document.body) as any, 'noseur-overflow-hidden');
         }
     }
 
@@ -291,7 +298,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         const id = this.props.id || this.state.id;
         const className = Classname.build('noseur-dialog', this.props.className, {
             'noseur-dialog-maximized': this.state.maximized
-        });
+        }, NoseurGlobals.get(NoseurGlobals.KEYS.LAF.THEME));
         let alignment = this.props.alignment;
         if (alignment === Alignment.TOP_CENTER) alignment = Alignment.TOP;
         if (alignment === Alignment.BOTTOM_CENTER) alignment = Alignment.BOTTOM;
@@ -308,7 +315,7 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
             'noseur-p-stk': !!this.props.container,
             'noseur-component-overlay': !this.props.noOverlay,
             'noseur-dialog-visible': this.state.modalVisible
-        }, `noseur-dialog-${alignment}`, cacheClassName);
+        }, `noseur-dialog-${alignment}`, cacheClassName, this.props.maximizeProps?.[this.state.maximized ? "maximize" : "minimize"]?.className);
         const transitionTimeout = this.props.transitionTimeout ?? 500;
         const footer = this.renderFooter();
         const header = this.renderHeader(id);
@@ -317,20 +324,26 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         const elementRef = (r: HTMLDivElement) => {
             this.internalDialogElement = r;
             ObjectHelper.resolveRef(cacheModalRef, r);
+            ObjectHelper.resolveRef(this.transitionNodeRef, r);
             ObjectHelper.resolveRef(this.props.forwardRef, r, true);
         };
         if (!modalProps.onClick) modalProps.onClick = this.onModalClick;
 
-        return (<div {...modalProps} style={{ ...(modalProps.style), zIndex: this.props.baseZIndex || modalProps.style?.zIndex }} ref={(r) => {
+        return (<div {...modalProps} style={{
+            ...(modalProps.style),
+            zIndex: this.props.baseZIndex ?? modalProps.style?.zIndex,
+            ...(this.props.maximizeProps?.[this.state.maximized ? "maximize" : "minimize"]?.style),
+        }} ref={(r) => {
+            ObjectHelper.resolveRef(cacheModalRef, r);
             if (!(r && !this.state.visible && this.props.visible)) return;
             this.setState({
                 visible: this.props.visible
             });
         }}>
             <CSSTransition classNames={transition} timeout={transition === Transition.NONE ? 0 : transitionTimeout} in={this.state.visible}
-                options={this.props.transitionOptions} unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExited={this.onExited}>
+                options={this.props.transitionOptions} unmountOnExit onEnter={this.onEnter} onEntered={this.onEntered} onExited={this.onExited} nodeRef={this.transitionNodeRef}>
                 <div ref={elementRef} id={id} className={className} style={this.props.style}
-                    role="dialog" aria-labelledby={id + '-header'} aria-describedby={id + '-content'} aria-modal={this.props.dismissableModal}>
+                    role="dialog" aria-labelledby={id + '-header'} aria-describedby={id + '-content'} aria-modal={this.props.dismissibleModal}>
                     {header}
                     {content}
                     {footer}
@@ -339,15 +352,22 @@ class DialogComponent extends React.Component<DialogProps, DialogState> {
         </div>);
     }
 
+    getRefOrHTMLElement(p: NoseurRawElement | React.Ref<HTMLDivElement>) {
+        if (typeof p === "object" && ("current" in (p as any))) {
+            return (p as any).current;
+        }
+        return p;
+    }
+
     render() {
         if (!this.state.modalVisible) return null;
         const children = this.renderChildren();
-        return <Portal children={children} container={this.props.container} visible={true} />;
+        return <Portal children={children} container={this.getRefOrHTMLElement(this.props.container)} visible={true} />;
     }
 
 }
 
-export const Dialog = React.forwardRef<HTMLDivElement, Partial<DialogProps>>((props, ref) => (
-    <DialogComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const Dialog = ({ ref, ...props }: Partial<DialogProps>) => (
+    <DialogComponent {...props} forwardRef={ref} />
+);
 

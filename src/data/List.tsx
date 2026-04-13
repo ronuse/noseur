@@ -9,7 +9,7 @@ import { NoseurElement, NoseurObject, SortDirection } from '../constants/Types';
 
 export type ListTemplateHandler = (value: any, rowControlOptions?: RowControlOptions) => NoseurElement;
 
-export interface ListProps extends DataProps<HTMLUListElement> {
+export interface ListProps<D> extends DataProps<HTMLUListElement, D> {
     dataKey: string;
     sortField: string;
     children: undefined;
@@ -19,9 +19,9 @@ export interface ListProps extends DataProps<HTMLUListElement> {
     template: ListTemplateHandler | undefined;
 };
 
-class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState> {
+class ListComponent<D> extends DataComponent<HTMLUListElement, ListProps<D>, DataState<D>, D> {
 
-    public static defaultProps: Partial<ListProps> = {
+    public static defaultProps: Partial<ListProps<any>> = {
         paginate: false,
         rowsPerPage: 10,
         rowsContent: {},
@@ -29,18 +29,18 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
         internalElementProps: {},
     };
 
-    state: DataState = {
+    state: DataState<D> = {
         dataOffset: 0,
         currentPage: 1,
         activeData: this.props.data,
         rowsContent: ObjectHelper.clone(this.props.rowsContent),
     };
 
-    constructor(props: ListProps) {
+    constructor(props: ListProps<D>) {
         super(props);
     }
 
-    componentDidUpdate(prevProps: Readonly<ListProps>, _: Readonly<DataState>) {
+    componentDidUpdate(prevProps: Readonly<ListProps<D>>, _: Readonly<DataState<D>>) {
         if (prevProps.totalRecords !== this.props.totalRecords ||
             !BoolHelper.deepEqual(prevProps.data, this.props.data, [...this.props.dataRefreshKeys])
             || ((!this.state.activeData || !this.state.activeData.length) && this.props.data?.length)) {
@@ -53,8 +53,8 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
         const sortField = this.props.sortField;
 
         if (!data) return;
-        data.sort((p: NoseurObject<any>, c: NoseurObject<any>) => {
-            const prev = ObjectHelper.objectGetWithStringTemplate(p, sortField), current = ObjectHelper.objectGetWithStringTemplate(c, sortField);
+        data.sort((p: D, c: D) => {
+            const prev = ObjectHelper.objectGetWithStringTemplate(p as any, sortField), current = ObjectHelper.objectGetWithStringTemplate(c as any, sortField);
             if (this.props.compareData) return this.props.compareData(SortDirection.FORWARD, sortField, prev, current);
             const comp = BoolHelper.compare(prev, current);
             return comp;
@@ -68,10 +68,10 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
         if (!data.length && !this.props.allowNoDataPagination) data = this.state.activeData;
         const rowsContents = this.state.rowsContent;
 
-        return data.map((rowData: NoseurObject<any>, index: number) => {
+        return data.map((rowData: D, index: number) => {
             const row = index + 1;
-            let valuedRowProps = this.buildRowProps(data);;
-            const value = this.props.dataKey ? ObjectHelper.objectGetWithStringTemplate(rowData, this.props.dataKey) : rowData;
+            let valuedRowProps = this.buildRowProps(data);
+            const value = this.props.dataKey ? ObjectHelper.objectGetWithStringTemplate(rowData as any, this.props.dataKey) : rowData;
             return (<li key={index} role="row" data-n-group="row" {...valuedRowProps} ref={(r) => {
                 if (!r) return;
                 if (!(row in rowsContents)) return;
@@ -79,7 +79,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
                 this.rowContentElementMaps[row].rowElement = r;
             }}
                 onClick={this.props.onRowSelection
-                    ? () => this.props.onRowSelection(data) : undefined}>{this.props.template
+                    ? () => this.props.onRowSelection(rowData, index) : undefined}>{this.props.template
                         ? this.props.template(value, {
                             toggleContent: (() => {
                                 this.setState({ rowsContent: this.toggleRowContent(row, data) });
@@ -98,8 +98,8 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
         const className = Classname.build('noseur-data-container noseur-list', {
             "noseur-disabled": this.props.disabled,
             "noseur-data-striped": this.props.stripedRows,
-            "noseur-data-grid-h": !hasHeader && this.props.showGridlines,
-            "noseur-data-grid-f": !hasFooter && this.props.showGridlines && this.props.data?.length,
+            "noseur-data-grid-h": !hasHeader && this.props.showGridLines,
+            "noseur-data-grid-f": !hasFooter && this.props.showGridLines && this.props.data?.length,
         }, this.props.internalElementProps.className);
 
         return (<ul {...props} role="list" data-n-group="list" className={className} ref={this.props.forwardRef}>
@@ -110,6 +110,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
     render() {
         const props: NoseurObject<any> = {
             key: this.props.key,
+            id: this.props.dataId,
             style: this.props.style,
         };
         const emptyState = this.renderEmptyState();
@@ -118,8 +119,8 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
         const header = this.renderFixtures(this.props.header, "noseur-data-header");
         const footer = this.renderFixtures(this.props.footer, "noseur-data-footer");
         const className = Classname.build('noseur-data-compound', {
-            "noseur-data-grid": this.props.showGridlines,
-            "noseur-data-no-divider": this.props.noDivider && !this.props.showGridlines,
+            "noseur-data-grid": this.props.showGridLines,
+            "noseur-data-no-divider": this.props.noDivider && !this.props.showGridLines,
         }, this.props.className, (this.props.scheme ? `${this.props.scheme}-vars` : null));
         const paginator = this.renderPaginator(!!footer);
         const list = this.renderList(!!header, !!footer);
@@ -137,7 +138,7 @@ class ListComponent extends DataComponent<HTMLUListElement, ListProps, DataState
 
 }
 
-export const List = React.forwardRef<HTMLUListElement, Partial<ListProps>>((props, ref) => (
-    <ListComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLUListElement>} />
-));
+export const List  = <D,>({ ref, ...props }: Partial<ListProps<D>>) => (
+    <ListComponent {...props} forwardRef={ref} />
+);
 

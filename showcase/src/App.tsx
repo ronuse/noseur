@@ -6,17 +6,31 @@ import {
     MoneyInput, EmailInput, PasswordInput, alertDialog, DateTimeInput, Message,
     TextAreaInput, NumberInput, NoseurObject, ComposedPassword, YearPicker, MonthPicker, MessageSchemesIcons, RadioButton,
     Checkbox, Alignment, ProgressBar, ProgressBarMode, NoseurNummber, FormControl, Paginator, FileInputManageRef, Messages, MessagesManageRef, ToastManageRef, Toast, Toaster, Transition, Panel, PanelManageRef, Accordion, AccordionTab, AccordionManageRef, TabPane, TabPanel, TabPaneManageRef,
-    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, DateTimePickerType, Position, ScrollPanel, MessageSpinnerIcons,
+    Popover, Portal, Table, Column, PaginatorPageChangeOption, SortMode, Chart, ChartType, AlertDialog, AlertPopover, ViewportSensor, Orientation, List, InputManageRef, FileInput, FileInputMode, DateTimePicker, Weekday, DateTimePickerSelectionMode, TimePicker, DatePicker, DateTimePickerLayoutElement, DateTimePickerLayout, DateTimePickerMode, ComponentRenderType, Position, ScrollPanel, MessageSpinnerIcons, PaginatorProps,
+    ColorPalette,
+    ColorMap,
+    DragSensor,
+    DOMHelper,
+    DragSensorEvent,
+    Direction,
+    Bound,
+    Slider,
+    ColorSlider,
+    ColorSliderGradient,
+    ColorPicker,
+    Calendar,
+    GridView,
 } from "@ronuse/noseur";
 
 function App() {
     let progress = React.useRef(0);
     const schemes = Object.values(Scheme);
-    const onOpenRef = React.useRef<any>();
-    const onCloseRef = React.useRef<any>();
-    const chatSenderRef = React.useRef<any>();
+    const onOpenRef = React.useRef<any>(null);
+    const onCloseRef = React.useRef<any>(null);
+    const chatSenderRef = React.useRef<any>(null);
     const [state, setState] = React.useState(false);
     const inputManageRef = React.useRef<any>(null);
+    const [states, setStates] = React.useState<any>({});
     const toastManageRef = React.useRef<ToastManageRef>(null);
     const panelManageRef = React.useRef<PanelManageRef>(null);
     const tabPaneManageRef = React.useRef<TabPaneManageRef>(null);
@@ -56,51 +70,454 @@ function App() {
     });
 
     // leftLayout="CustomElementer DaysElements"
-    // leftLayout='NowElement IncrementElement TimeSeperator DecrementElement HourElement TimeSeperator MinutesElement TimeSeperator SecondsElement TimeSeperator MeridianElement WeekdaysElements DaysElements TodaysDateElement SelectedDatesElements'
+    // leftLayout='NowElement IncrementElement TimeSeparator DecrementElement HourElement TimeSeparator MinutesElement TimeSeparator SecondsElement TimeSeparator MeridianElement WeekdaysElements DaysElements TodaysDateElement SelectedDatesElements'
     function render() {
         return (
             <div className="Apps" style={{ background: "white" }}>
                 <div style={{ margin: 30 }}>
+                    <GridView column={2} gap={1}>
+                        <div style={{ width: "100%", height: 10, background: "red" }}>
+
+                        </div>
+                        <div style={{ width: "100%", height: 10, background: "red" }}>
+
+                        </div>
+                        <div style={{ width: "100%", height: 10, background: "red" }}>
+
+                        </div>
+                        <div style={{ width: "100%", height: 10, background: "red" }}>
+
+                        </div>
+                    </GridView>
+                </div>
+                {/* <div style={{ margin: 30 }}>
+                    <Calendar />
+                </div> */}
+                {/* <div style={{ margin: 30 }}>
+                    <h5>As Button Icons</h5>
+                    <Button scheme={Scheme.PRIMARY} text="Messages" leftIcon={<span className="norseu-badge norseu-secondary norseu-no-border">9</span>} />
+                    <Button scheme={Scheme.INFO} text="Emails" rightIcon={<span className="norseu-badge norseu-secondary norseu-no-border">9</span>} />
+                    <Button scheme={Scheme.WARNING} text="Type" leftIcon={<span className="norseu-tag norseu-warning">warning</span>} outlined />
+                    <Button scheme={Scheme.DANGER} text="Error" rightIcon={<span className="norseu-pill norseu-danger">danger</span>} outlined rounded />
+                    <Button text="Tags" rightIcon={(<div style={{ marginTop: "6px" }}>
+                        {//<Tag scheme={Scheme.INFO} icon="fa fa-square" text="Info" outlined />
+                        //<Tag scheme={Scheme.PRIMARY} icon="fa fa-square" text="Primary" outlined />
+                        //<Tag scheme={Scheme.DANGER} icon="fa fa-square" text="Danger" outlined />
+                        }
+                    </div>)} scheme={Scheme.SECONDARY} outlined />
+
+                    <h5>Positioned</h5>
+                    <div className="noseur-flex">
+                        <div className="noseur-badge-overlay">
+                            <span className="noseur-badge noseur-primary noseur-no-border">1</span>
+                            <Button leftIcon="fa fa-bell" scheme={Scheme.PRIMARY} outlined textOnly rounded />
+                        </div>
+                        <div className="noseur-badge-overlay">
+                            <span className="noseur-badge noseur-warning noseur-no-border" style={{ bottom: "0" }}>2</span>
+                            <Button leftIcon="fa fa-bell" scheme={Scheme.WARNING} outlined textOnly rounded />
+                        </div>
+                        <div className="noseur-badge-overlay">
+                            <span className="noseur-badge noseur-info noseur-no-border" style={{ right: "0", top: "0" }}>3</span>
+                            <Button leftIcon="fa fa-bell" scheme={Scheme.INFO} outlined textOnly rounded />
+                        </div>
+                        <div className="noseur-badge-overlay">
+                            <span className="noseur-badge noseur-danger noseur-no-border" style={{ right: "0", bottom: "0" }}>4</span>
+                            <Button leftIcon="fa fa-bell" scheme={Scheme.DANGER} outlined textOnly rounded />
+                        </div>
+                    </div>
+                </div>
+                <div style={{ margin: 30 }}>
+                    <h5>Pills with Scheme</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-pill">Default</span>
+                        <span className="noseur-pill noseur-primary">primary</span>
+                        <span className="noseur-pill noseur-secondary">secondary</span>
+                        <span className="noseur-pill noseur-success">success</span>
+                        <span className="noseur-pill noseur-warning">warning</span>
+                        <span className="noseur-pill noseur-info">info</span>
+                        <span className="noseur-pill noseur-danger">danger</span>
+                    </div>
+
+                    <h5>Outlined Pills</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-pill noseur-skeleton">primary</span>
+                        <span className="noseur-pill noseur-primary-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>primary</span>
+                        <span className="noseur-pill noseur-secondary-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>secondary</span>
+                        <span className="noseur-pill noseur-success-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>success</span>
+                        <span className="noseur-pill noseur-warning-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>warning</span>
+                        <span className="noseur-pill noseur-info-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>info</span>
+                        <span className="noseur-pill noseur-danger-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>danger</span>
+                    </div>
+                </div>
+                <div style={{ margin: 30 }}>
+                    <h5>Tags with Scheme</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-tag">Default</span>
+                        <span className="noseur-tag noseur-primary">primary</span>
+                        <span className="noseur-tag noseur-secondary">secondary</span>
+                        <span className="noseur-tag noseur-success">success</span>
+                        <span className="noseur-tag noseur-warning">warning</span>
+                        <span className="noseur-tag noseur-info">info</span>
+                        <span className="noseur-tag noseur-danger">danger</span>
+                    </div>
+
+                    <h5>Outlined Tags</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-tag noseur-skeleton">primary</span>
+                        <span className="noseur-tag noseur-primary-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>primary</span>
+                        <span className="noseur-tag noseur-secondary-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>secondary</span>
+                        <span className="noseur-tag noseur-success-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>success</span>
+                        <span className="noseur-tag noseur-warning-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>warning</span>
+                        <span className="noseur-tag noseur-info-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>info</span>
+                        <span className="noseur-tag noseur-danger-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>danger</span>
+                    </div>
+                </div>
+                <div style={{ margin: 30 }}>
+                    <h5>Badges with Scheme</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-badge">1</span>
+                        <span className="noseur-badge noseur-primary">9</span>
+                        <span className="noseur-badge noseur-secondary">4</span>
+                        <span className="noseur-badge noseur-success">99+</span>
+                        <span className="noseur-badge noseur-warning">20</span>
+                        <span className="noseur-badge noseur-info">5</span>
+                        <span className="noseur-badge noseur-danger">3</span>
+                    </div>
+
+                    <h5>Outlined Badges</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-badge noseur-skeleton">3</span>
+                        <span className="noseur-badge noseur-primary-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>9</span>
+                        <span className="noseur-badge noseur-secondary-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>4</span>
+                        <span className="noseur-badge noseur-success-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>99+</span>
+                        <span className="noseur-badge noseur-warning-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>20</span>
+                        <span className="noseur-badge noseur-info-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>5</span>
+                        <span className="noseur-badge noseur-danger-bd-cl" style={{ borderWidth: 1, borderStyle: "solid" }}>3</span>
+                    </div>
+
+                    <h5>Sizes</h5>
+                    <div className="noseur-flex noseur-showcase-badges">
+                        <span className="noseur-badge noseur-warning noseur-size-s">20</span>
+                        <span className="noseur-badge noseur-info noseur-size-m">99+</span>
+                        <span className="noseur-badge noseur-danger noseur-size-l">33</span>
+                        <span className="noseur-badge noseur-primary noseur-size-lx">69</span>
+                        <span className="noseur-badge noseur-success noseur-size-lxx">41</span>
+                    </div>
+                </div> */}
+                <div style={{ margin: 30 }}>
+                    {/* <ColorPicker /> */}
+                </div>
+                {/* <div style={{ margin: 30 }}>
+                    <ColorMap hex={states.csHex1} />
+                    <ColorMap hex={states.csHex1} style={{ marginTop: 15 }} hideAlpha />
+                </div>
+                <div style={{ margin: 30 }}>
+                    <span>{states.csHex1 ?? "..."}</span>
+                    <ColorSlider id="tcs1" orientation={Orientation.HORIZONTAL} colorGradient={ColorSliderGradient.TRANSPARENT_HORIZONTAL} primaryColor={states.csHex1} />
+                    <br />
+                    <ColorSlider colorGradient={ColorSliderGradient.TRANSPARENT} primaryColor={states.csHex1} />
+                    <br />
+                    <div style={{ width: 50, height: 50, background: states.csHex1, border: "1px solid red" }} />
+                    <ColorSlider orientation={Orientation.HORIZONTAL} colorGradient={ColorSliderGradient.RAINBOW_HORIZONTAL} onSelectColor={async ({ color }) => {
+                        setStates({ ...states, csHex1: color.hex, });
+                    }} />
+                    <br />
+                    <ColorSlider reportOnDrag={false} colorGradient={ColorSliderGradient.RAINBOW} onSelectColor={async ({ color }) => {
+                        setStates({ ...states, csHex1: color.hex });
+                    }} />
+                    <br />
+                </div>
+                <div style={{ margin: 30 }}>
+                    <Slider scheme={Scheme.WARNING} orientation={Orientation.VERTICAL} attrsRelay={{ dragSensorProps: { allowedOverflow: 10 } }} range={<div style={{ height: "100%", width: 10 } as any} />} />
+                    <Slider scheme={Scheme.WARNING} attrsRelay={{ dragSensorProps: { allowedOverflow: 10 } }} range={<div style={{ width: "100%", "--noseurSchemeMainColor": "red", height: 10 } as any} />} />
+                    <br />
+                    <Slider scheme={Scheme.INFO} value={50} handle={<Button leftIcon="fab fa-google" scheme={Scheme.INFO} />} />
+                    <Slider scheme={Scheme.PRIMARY} orientation={Orientation.VERTICAL} handle={<Button scheme={Scheme.PRIMARY} leftIcon="fab fa-google" />} />
+                    Schemes
+                    <br />
+                    {Object.keys(Scheme).map((_, index) => (<>
+                        <Slider key={index} scheme={schemes[index]} />
+                        <Slider orientation={Orientation.VERTICAL} key={index} scheme={schemes[index]} />
+                    </>))}
+                    <br />
+                    <br />
+
+                    <br />
+                    <Slider value={50} />
+                    <br />
+                    <Slider value={[20, 40, 60, 80]} />
+                    <br />
+                    Inverse
+                    <Slider inverse value={[35, 70]} onChange={(e: any) => console.log("THE VALUES -- MULTIPLE -- INVERSE", e.values)} />
+                    <br />
+                    <Slider value={[35, 70]} />
+                    <br />
+                    <Slider onChange={(e: any) => console.log("THE VALUE", e.values)} />
+                    <br />
+                    Inverse <Slider orientation={Orientation.VERTICAL} inverse />
+                    <br />
+                    Inverse <Slider inverse />
+                    <br />
+                    <Slider value={81} orientation={Orientation.VERTICAL} />
+                    <br />
+                    <Slider value={45} />
+                    <br />
+                    <Slider orientation={Orientation.VERTICAL} />
+                    <br />
+                    <Slider />
+                </div>
+                <div style={{ margin: 30 }}>
+                    <div style={{ backgroundColor: "green", width: 200, height: 200 }}>
+                        Bouundless + drag
+                        <br />
+                        <DragSensor onDragEvent={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} singleton>
+                            <span draggable>hello world</span>
+                            <div draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10 }} />
+                            yellow
+                        </DragSensor>
+                    </div>
+                    <br />
+                    <div style={{ display: "flex" }}>
+                        <div style={{ backgroundColor: "orange", width: 200, height: 200, marginRight: 20 }}>
+                            Ceiling
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} ceiling={{ top: 10, bottom: 100, right: 700, left: 3 }} />
+                        </div>
+                        <div style={{ backgroundColor: "orange", width: 200, height: 200, marginRight: 20 }}>
+                            Ceiling Left = 3
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} ceiling={{ left: 3 }} />
+                        </div>
+                        <div style={{ backgroundColor: "orange", width: 200, height: 200, marginRight: 20 }}>
+                            Ceiling Right = 700
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} ceiling={{ right: 700 }} />
+                        </div>
+                        <div style={{ backgroundColor: "orange", width: 200, height: 200, marginRight: 20 }}>
+                            Ceiling Bottom = 100
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} ceiling={{ bottom: 100 }} />
+                        </div>
+                        <div style={{ backgroundColor: "orange", width: 200, height: 200, marginRight: 20 }}>
+                            Ceiling Top = 10
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} ceiling={{ top: 10 }} />
+                        </div>
+                    </div>
+                    <br />
+                    <div style={{ display: "flex" }}>
+                        <div style={{ backgroundColor: "purple", width: 200, height: 200, marginRight: 20 }}>
+                            Bound to parent = Right
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} boundToParent={Bound.RIGHT} />
+                        </div>
+                        <div style={{ backgroundColor: "purple", width: 200, height: 200, marginRight: 20 }}>
+                            Bound to parent = Left
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} boundToParent={Bound.LEFT} />
+                        </div>
+                        <div style={{ backgroundColor: "purple", width: 200, height: 200, marginRight: 20 }}>
+                            Bound to parent = Bottom
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} boundToParent={Bound.BOTTOM} />
+                        </div>
+                        <div style={{ backgroundColor: "purple", width: 200, height: 200, marginRight: 20 }}>
+                            Bound to parent = Top
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} boundToParent={Bound.TOP} />
+                        </div>
+                        <div style={{ backgroundColor: "purple", width: 200, height: 200, marginRight: 20 }}>
+                            Bound to parent = True
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                (async () => {
+                                    DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                                })();
+                            }} boundToParent />
+                        </div>
+                    </div>
+                    <br />
+                    <div style={{ display: "flex" }}>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200, marginRight: 20 }}>
+                            North Direction Only
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} direction={Direction.NORTH} />
+                        </div>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200, marginRight: 20 }}>
+                            South Direction Only
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} direction={Direction.SOUTH} />
+                        </div>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200, marginRight: 20 }}>
+                            North + South (Vertical) Direction
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} direction={Direction.NORTH_SOUTH} />
+                        </div>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200, marginRight: 20 }}>
+                            East Direction Only
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} direction={Direction.EAST} />
+                        </div>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200, marginRight: 20 }}>
+                            West Direction Only
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} direction={Direction.WEST} />
+                        </div>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200, marginRight: 20 }}>
+                            East + West (Horizontal) Direction
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} direction={Direction.EAST_WEST} />
+                        </div>
+                        <div style={{ backgroundColor: "red", width: 200, height: 200 }}>
+                            All direction
+                            <DragSensor draggable className="grabbable" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                                DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                            }} />
+                        </div>
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "yellow", width: 200, height: 200 }}>
+                        Bound to parent + allowedOverflow={10} + on drag
+                        <DragSensor draggable className="grabbable" allowedOverflow={10} boundToParent id="drag-dot-two" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} onDragEventEnd={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} allowOnDragReset />
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "yellow", width: 200, height: 200 }}>
+                        Bound to parent + allowedOverflow={10} + on drag over
+                        <DragSensor draggable className="grabbable" allowedOverflow={10} boundToParent id="drag-dot-two" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventDragOver={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} />
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "yellow", width: 200, height: 200 }}>
+                        Bound to parent + allowedOverflow={10}
+                        <DragSensor draggable allowedOverflow={10} boundToParent id="drag-dot-two" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventEnd={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} />
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "yellow", width: 200, height: 200 }}>
+                        Bound to parent
+                        <DragSensor draggable boundToParent id="drag-dot-two" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventEnd={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} />
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "green", width: 200, height: 200 }}>
+                        Bouundless + drag
+                        <DragSensor draggable id="drag-dot-three" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEvent={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} />
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "green", width: 200, height: 200 }}>
+                        Bouundless + drag over
+                        <DragSensor draggable id="drag-dot-two" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventDragOver={(evt?: DragSensorEvent) => {
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} />
+                    </div>
+                    <br />
+                    <div style={{ backgroundColor: "green", width: 200, height: 200 }}>
+                        Bouundless
+                        <DragSensor showTrail draggable id="drag-dot-one" style={{ backgroundColor: "black", width: 20, height: 20, cursor: "pointer", borderRadius: 10, position: "absolute" }} onDragEventEnd={(evt?: DragSensorEvent) => {
+                            console.log("EVENT", evt);
+                            DOMHelper.positionElement((evt?.event.target as any), { x: evt?.left!, y: evt?.top! });
+                        }} />
+                    </div>
+                    <br />
+                    <div style={{ display: "flex" }}>
+                        <DragSensor style={{ border: "1px solid green", padding: 10, width: 120, height: 50 }} onDragEventDrop={(evt?: DragSensorEvent) => {
+                            (evt?.event.target as any).appendChild(document.getElementById("drag-element-span-1"));
+                        }}>
+                            <DragSensor id="drag-element-span-1" draggable> <span>hello world</span> </DragSensor>
+                        </DragSensor>
+                        <DragSensor ref={(e: any) => refs.current["drag-sensor-1"] = e} style={{ marginLeft: 30, border: "1px solid red", padding: 10, width: 120, height: 50 }} onDragEventDrop={(evt?: DragSensorEvent) => {
+                            (evt?.event.target as any).appendChild(document.getElementById("drag-element-span-1"));
+                        }}>
+                        </DragSensor>
+                    </div>
+                    <br />
+                </div>
+                <div style={{ margin: 30 }}>
+                    <ColorPalette grid={4} size={16} gap={3} palette={"Default"} attrsRelay={{ tile: { style: { borderRadius: 2 } } }} onSelectColor={(e) => console.log("THE EVENT", e.color)} />
+                    <br />
+                    <ColorPalette size={50} palette={"MicrosofVisualStudio"} onSelectColor={(e) => true} />
+                    <br />
+                    <ColorPalette gap={2} palette={"MicrosoftDynamicsCRM"} onSelectColor={(e) => console.log("TTHE EVENT", e)} />
+                    <br />
+                    <ColorPalette palette={"Microsoft"} onSelectColor={(e) => console.log("TTHE EVENT", e)} />
+                </div>
+                <div style={{ margin: 30 }}>
+                    <Paginator totalRecords={100} template={{
+                        layout: "Showing SizeElement of TotalRecords", customElement: (layout: string, props?: PaginatorProps) => {
+                            if (layout !== "SizeElement") return ` ${layout} `;
+                            return (<TextInput defaultValue={props?.rowsPerPage}
+                                style={{ flex: "unset", width: 20, padding: 5, height: 25 }} />);
+                        }
+                    }} />
+                    <Paginator totalRecords={100} template={{ layout: "Showing SizeElement of TotalRecords" }} />
+                    <Paginator totalRecords={100} template={{ layout: "Showing RowPerPage of TotalRecords pagecount= PageCount and intp= InitialPage currentPage: CurrentPage visible = VisiblePageCount" }} />
+                </div>
+                <div style={{ margin: 30 }}>
                     Data Manage Ref multiRowExpansion
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-list-expansion-2"].expandContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-list-expansion-2"].expandContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(1)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-list-expansion-2"].expandContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-list-expansion-2"].expandContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(2)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-list-expansion-2"].expandContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-list-expansion-2"].toggleContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-list-expansion-2"].expandContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-list-expansion-2"].collapseContent(3)} />
                     <br /><br />
                     <List multiRowExpansion manageRef={(m: any) => refs.current["dm-list-expansion-2"] = m} rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
                     }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
-                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        stripedRows showGridLines={true} style={{ marginTop: 20 }}
                         template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
                     <br />
                     <hr />
                     <br />
                     Data Manage Ref
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-list-expansion"].toggleContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-list-expansion"].expandContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-list-expansion"].collapseContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-list-expansion"].toggleContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-list-expansion"].expandContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-list-expansion"].collapseContent(1)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-list-expansion"].toggleContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-list-expansion"].expandContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-list-expansion"].collapseContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-list-expansion"].toggleContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-list-expansion"].expandContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-list-expansion"].collapseContent(2)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-list-expansion"].toggleContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-list-expansion"].expandContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-list-expansion"].collapseContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-list-expansion"].toggleContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-list-expansion"].expandContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-list-expansion"].collapseContent(3)} />
                     <br /><br />
                     <List manageRef={(m: any) => refs.current["dm-list-expansion"] = m} rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
                     }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
-                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        stripedRows showGridLines={true} style={{ marginTop: 20 }}
                         template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
                     <br />
                     <hr />
@@ -109,7 +526,7 @@ function App() {
                     <List multiRowExpansion rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
                     }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
-                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        stripedRows showGridLines={true} style={{ marginTop: 20 }}
                         template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
                     <br />
                     <hr />
@@ -117,7 +534,7 @@ function App() {
                     <List rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
                     }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
-                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        stripedRows showGridLines={true} style={{ marginTop: 20 }}
                         template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
                     <br />
                     <hr />
@@ -128,7 +545,7 @@ function App() {
                         2: <div style={{ height: 45 }}>Hello Two 22</div>,
                         3: "Hello Three 333",
                     }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
-                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        stripedRows showGridLines={true} style={{ marginTop: 20 }}
                         template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
                     <br />
                     <hr />
@@ -138,23 +555,23 @@ function App() {
                         2: <div style={{ height: 45 }}>Hello Two 22</div>,
                         3: "Hello Three 333",
                     }} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]}
-                        stripedRows showGridlines={true} style={{ marginTop: 20 }}
+                        stripedRows showGridLines={true} style={{ marginTop: 20 }}
                         template={(d: any, r: any) => (<div><Button text="Toggle" onClick={r.toggleContent} /> {d.one} --- {d.two} </div>)} />
                 </div>
                 <div style={{ margin: 30, marginTop: 100 }}>
                     Data Manage Ref multiRowExpansion
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-table-expansion-2"].expandContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-table-expansion-2"].expandContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(1)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-table-expansion-2"].expandContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-table-expansion-2"].expandContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(2)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-table-expansion-2"].expandContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-table-expansion-2"].toggleContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-table-expansion-2"].expandContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-table-expansion-2"].collapseContent(3)} />
                     <br /><br />
                     <Table multiRowExpansion manageRef={(m: any) => refs.current["dm-table-expansion-2"] = m} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]} rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
@@ -167,17 +584,17 @@ function App() {
                     <br />
                     Data Manage Ref
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-table-expansion"].toggleContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-table-expansion"].expandContent(1)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-table-expansion"].collapseContent(1)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 1" onClick={() => refs.current["dm-table-expansion"].toggleContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 1" onClick={() => refs.current["dm-table-expansion"].expandContent(1)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 1" onClick={() => refs.current["dm-table-expansion"].collapseContent(1)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-table-expansion"].toggleContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-table-expansion"].expandContent(2)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-table-expansion"].collapseContent(2)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 2" onClick={() => refs.current["dm-table-expansion"].toggleContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 2" onClick={() => refs.current["dm-table-expansion"].expandContent(2)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 2" onClick={() => refs.current["dm-table-expansion"].collapseContent(2)} />
                     <br />
-                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-table-expansion"].toggleContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-table-expansion"].expandContent(3)}/>
-                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-table-expansion"].collapseContent(3)}/>
+                    <Button scheme={Scheme.PRIMARY} text="Toggle 3" onClick={() => refs.current["dm-table-expansion"].toggleContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Expand 3" onClick={() => refs.current["dm-table-expansion"].expandContent(3)} />
+                    <Button scheme={Scheme.PRIMARY} text="Collapse 3" onClick={() => refs.current["dm-table-expansion"].collapseContent(3)} />
                     <br /><br />
                     <Table manageRef={(m: any) => refs.current["dm-table-expansion"] = m} data={[{ one: "1", two: "1" }, { one: "2", two: "22" }, { one: "3", two: "333" }]} rowExpansionTemplate={(data) => {
                         return (<div style={{ background: "red" }}>Element Number {data.one} -  {data.two}</div>);
@@ -339,7 +756,7 @@ function App() {
                         <RadioButton scheme={Scheme.PRIMARY} label={"Align Label BOTTOM"} alignLabel={Alignment.BOTTOM} />
                     </div>
                 </div>
-                <div style={{ margin: 30, /*background: "grey", */padding: 20 }}>
+                <div style={{ margin: 30, padding: 20 }}>
                     <div>
                         <Button text="Next" onClick={() => tabPaneManageRef.current?.next()} />
                         <Button text="Prev" onClick={() => tabPaneManageRef.current?.previous()} />
@@ -467,7 +884,7 @@ function App() {
                         <TabPanel header="Panel 3">3 - {basicText()}</TabPanel>
                     </TabPane>
                 </div>
-                <div style={{ margin: 30, /*background: "grey", */padding: 20 }}>
+                <div style={{ margin: 30, padding: 20 }}>
                     <div>
                         <Button text="Expand 1" onClick={() => accordionManageRef.current?.expand([1])} />
                         <Button text="Collapse 1" onClick={() => accordionManageRef.current?.collapse([1])} />
@@ -546,7 +963,7 @@ function App() {
                             <AccordionTab title={`Header 3 (${scheme})`}>{basicText()}</AccordionTab>
                         </Accordion>))}
                 </div>
-                <div style={{ margin: 30, /*background: "grey", */padding: 20 }}>
+                <div style={{ margin: 30, padding: 20 }}>
                     <div>
                         <Button text="Toggle" onClick={() => panelManageRef.current?.toggle()} />
                         <Button text="Expand" onClick={() => panelManageRef.current?.expand()} />
@@ -615,10 +1032,9 @@ function App() {
                     <Dropdown fill options={Object.keys(Transition).map((alignment, index) => ({ label: alignment, value: Object.values(Transition)[index] }))}
                         onSelectOption={(option: any) => {
                             setTransition(option.value);
-                            return true;
                         }} selectedOptionIndex={0} formControlProps={{ fill: true }} popoverProps={{ style: { height: 300, overflow: "auto" } }} />
 
-                    <Button text="PopoverX" onClick={(e: any) => refs.current["popoverx"].toggle(e/*, refs.current["portaldiv1"] */)} />
+                    <Button text="PopoverX" onClick={(e: any) => refs.current["popoverx"].toggle(e)} />
                     <Popover manageRef={(e: any) => refs.current["popoverx"] = e} matchTargetSize={false} pointingArrowClassName={""}
                         style={{ backgroundColor: "white", padding: 10, "--componentMarginTopOrBottom": "0px" } as any} transition={transition} transitionTimeout={1000}
                         onShow={() => console.log("onShow")} onHide={() => console.log("onHide")}>
@@ -887,38 +1303,49 @@ function App() {
                     <br /><br />
                     <br /><br />
                     <Button text="Modal TimePicker" onClick={(e: any) => refs.current["modal-date3"].toggle(e)} />
-                    <TimePicker type={DateTimePickerType.MODAL} manageRef={(e: any) => refs.current["modal-date3"] = e} />
+                    <TimePicker type={ComponentRenderType.MODAL} manageRef={(e: any) => refs.current["modal-date3"] = e} />
                     <br /><br />
                     <Button text="Modal YearPicker" onClick={(e: any) => refs.current["modal-year1"].toggle(e)} />
-                    <YearPicker type={DateTimePickerType.MODAL} manageRef={(e: any) => refs.current["modal-year1"] = e} />
+                    <YearPicker type={ComponentRenderType.MODAL} manageRef={(e: any) => refs.current["modal-year1"] = e} />
                     <br /><br />
                     <Button text="Modal MonthPicker" onClick={(e: any) => refs.current["modal-month1"].toggle(e)} />
-                    <MonthPicker type={DateTimePickerType.MODAL} manageRef={(e: any) => refs.current["modal-month1"] = e} />
+                    <MonthPicker type={ComponentRenderType.MODAL} manageRef={(e: any) => refs.current["modal-month1"] = e} />
                     <br /><br />
                     <Button text="Modal DatePicker" onClick={(e: any) => refs.current["modal-date2"].toggle(e)} />
-                    <DatePicker type={DateTimePickerType.MODAL} manageRef={(e: any) => refs.current["modal-date2"] = e} />
+                    <DatePicker type={ComponentRenderType.MODAL} manageRef={(e: any) => refs.current["modal-date2"] = e} />
                     <br /><br />
                     <Button text="Modal DateTimePicker" onClick={(e: any) => refs.current["modal-date1"].toggle(e)} />
-                    <DateTimePicker type={DateTimePickerType.MODAL} showTime manageRef={(e: any) => refs.current["modal-date1"] = e} />
+                    <DateTimePicker type={ComponentRenderType.MODAL} showTime manageRef={(e: any) => refs.current["modal-date1"] = e} />
                     <br /><br />
                     <br /><br />
                     <Button text="Popover TimePicker" onClick={(e: any) => refs.current["popover-date3"].toggle(e)} />
-                    <TimePicker type={DateTimePickerType.POPOVER} manageRef={(e: any) => refs.current["popover-date3"] = e} />
+                    <TimePicker type={ComponentRenderType.POPOVER} manageRef={(e: any) => refs.current["popover-date3"] = e} />
                     <br /><br />
                     <Button text="Popover Year" onClick={(e: any) => refs.current["popover-year1"].toggle(e)} />
-                    <YearPicker type={DateTimePickerType.POPOVER} manageRef={(e: any) => refs.current["popover-year1"] = e} />
+                    <YearPicker type={ComponentRenderType.POPOVER} manageRef={(e: any) => refs.current["popover-year1"] = e} />
                     <br /><br />
                     <Button text="Popover Month" onClick={(e: any) => refs.current["popover-month1"].toggle(e)} />
-                    <MonthPicker type={DateTimePickerType.POPOVER} manageRef={(e: any) => refs.current["popover-month1"] = e} />
+                    <MonthPicker type={ComponentRenderType.POPOVER} manageRef={(e: any) => refs.current["popover-month1"] = e} />
+                    <br /><br />
+                    <div style={{ display: "flex" }}>
+                        <i className="fa fa-calendar" ref={(r) => { refs.current["fa-cal-2"] = r; }}
+                            onClick={(e: any) => refs.current["popover-date01"].toggle(e)} />
+                        <div style={{ flex: 1 }} />
+                        <i className="fa fa-calendar" ref={(r) => { refs.current["fa-cal-1"] = r; }}
+                            onClick={(e: any) => refs.current["popover-date01"].toggle(e)} />
+                        <div style={{ flex: 1 }} />
+                        <i className="fa fa-calendar" ref={(r) => { refs.current["fa-cal-3"] = r; }}
+                            onClick={(e: any) => refs.current["popover-date01"].toggle(e, refs.current["fa-cal-3"] as any)} />
+                    </div>
                     <br /><br />
                     <Button text="Popover DatePicker" onClick={(e: any) => refs.current["popover-date2"].toggle(e)} />
-                    <DatePicker type={DateTimePickerType.POPOVER} manageRef={(e: any) => refs.current["popover-date2"] = e} />
+                    <DatePicker type={ComponentRenderType.POPOVER} manageRef={(e: any) => refs.current["popover-date2"] = e} />
                     <br /><br />
                     <Button text="Popover DateTimePicker" onClick={(e: any) => refs.current["popover-date1"].toggle(e)} />
-                    <DateTimePicker type={DateTimePickerType.POPOVER} showTime manageRef={(e: any) => refs.current["popover-date1"] = e} />
+                    <DateTimePicker type={ComponentRenderType.POPOVER} showTime manageRef={(e: any) => refs.current["popover-date1"] = e} />
                     <br /><br />
                     <Button text="Popover ISW DateTimePicker" onClick={(e: any) => refs.current["popover-isw-date"].toggle(e)} />
-                    <DateTimePicker type={DateTimePickerType.POPOVER} className='isw-dp' disableToDate={new Date(2023, 10, 14)} manageRef={(e: any) => refs.current["popover-isw-date"] = e} footerLayout='' dontOverlapDate />
+                    <DateTimePicker type={ComponentRenderType.POPOVER} className='isw-dp' disableToDate={new Date(2023, 10, 14)} manageRef={(e: any) => refs.current["popover-isw-date"] = e} footerLayout='' dontOverlapDate />
                     <br /><br />
                     <br /><br />
                     <DateTimePicker scheme={Scheme.DANGER} mode={DateTimePickerMode.MONTH} />
@@ -945,7 +1372,7 @@ function App() {
                     <TimePicker timeLayout={`{ ${DateTimePickerLayoutElement.PreviousElement} ${DateTimePickerLayoutElement.HourElement} ${DateTimePickerLayoutElement.NextElement} }`} />
                     <TimePicker timeLayout={`{ ${DateTimePickerLayoutElement.PreviousElement} ${DateTimePickerLayoutElement.MinutesElement} ${DateTimePickerLayoutElement.NextElement} }`} />
                     <br /><br />
-                    <TimePicker timeLayout={`< IncrementElement MinutesElement DecrementElement > TimeSeperator < IncrementElement SecondsElement DecrementElement >`} />
+                    <TimePicker timeLayout={`< IncrementElement MinutesElement DecrementElement > TimeSeparator < IncrementElement SecondsElement DecrementElement >`} />
                     <br /><br />
                     <TimePicker />
                     <br /><br />
@@ -978,7 +1405,7 @@ function App() {
                         disabledDates={[new Date(2023, 10, 24), new Date(2023, 10, 27), new Date(2023, 10, 29)]}
                         disableFromDate={new Date(2023, 10, 11)}
                         disableToDate={new Date(2023, 10, 16)} locale='en'
-                        showDatesSeperator scheme={Scheme.PRIMARY} maxMultipleModeDateSelection={5} />
+                        showDatesSeparator scheme={Scheme.PRIMARY} maxMultipleModeDateSelection={5} />
                 </div>
                 <div style={{ margin: 30 }}>
                     <br />
@@ -1014,9 +1441,9 @@ function App() {
                     <br />
                     <FileInput clickToChange rounded mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} multiple />
                     <br />
-                    <FileInput label="Select" mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} multiple />
+                    <FileInput control="Select" mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} multiple />
                     <br />
-                    <FileInput stickyPreview rounded label={<i className='fa fa-pen' />} attrsRelay={{ label: { style: { borderRadius: "50%" }, alignment: Alignment.BOTTOM_RIGHT } }} mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} />
+                    <FileInput stickyPreview rounded control={<i className='fa fa-pen' />} attrsRelay={{ control: { style: { borderRadius: "50%" }, alignment: Alignment.BOTTOM_RIGHT } }} mode={FileInputMode.PREVIEW} scheme={Scheme.SUCCESS} orientation={Orientation.HORIZONTAL} />
                     <br />
                     <FileInput mode={FileInputMode.PREVIEW} scheme={Scheme.PRIMARY} orientation={Orientation.HORIZONTAL} maxFileSize={2000000}
                         itemTemplate={(options) => (<div key={options.index} style={{ position: "relative", width: 200, height: 200 }}>
@@ -1042,7 +1469,7 @@ function App() {
                     <Button text="clear" onClick={() => console.log(inputManageRef.current?.clear())} />
                 </div>
                 <div style={{ margin: 30 }}>
-                    <List paginate scheme={Scheme.SECONDARY} stripedRows={false} showGridlines={false} dataKey="name"
+                    <List paginate scheme={Scheme.SECONDARY} stripedRows={false} showGridLines={false} dataKey="name"
                         header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
                             <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
                                 <TextInput fill />
@@ -1053,7 +1480,7 @@ function App() {
                         onPageChange={(e: PaginatorPageChangeOption) => {
                             setDynamicDataTable(Array(5).fill((e.currentPage - 1) * 5));
                         }} style={{ width: "fit-content" }} />
-                    <List paginate scheme={Scheme.PRIMARY} stripedRows showGridlines={true} template={(d) => (<div><i className={d.logo} /> {d.name}</div>)}
+                    <List paginate scheme={Scheme.PRIMARY} stripedRows showGridLines={true} template={(d) => (<div><i className={d.logo} /> {d.name}</div>)}
                         header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
                             <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
                                 <TextInput fill />
@@ -1061,16 +1488,16 @@ function App() {
                         </div>)} style={{ marginTop: 20 }} rowsPerPage={5}
                         paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }} footer={() => "The foooter"}
                         data={Array(30).fill(null).map((_, i) => ({ name: "Platform " + (i + 1), service_code: "svc_" + (i + 1), logo: "fa fa-" + Math.min(9, i + 1), }))} />
-                    <List paginate scheme={Scheme.DANGER} data={tableData} stripedRows showGridlines={false}
+                    <List paginate scheme={Scheme.DANGER} data={tableData} stripedRows showGridLines={false}
                         style={{ marginTop: 20 }} noDivider template={(d) => (<div><i className={d.logo} /> {d.name}</div>)}
                         paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }} />
-                    <List data={[]} stripedRows showGridlines={true} style={{ marginTop: 20 }} template={(d) => (<div><i className={d.logo} /> {d.name}</div>)}
+                    <List data={[]} stripedRows showGridLines={true} style={{ marginTop: 20 }} template={(d) => (<div><i className={d.logo} /> {d.name}</div>)}
                         emptyState={(<div>No data</div>)} />
                 </div>
                 <div style={{ margin: 30 }}>
                     <div id="con2" style={{ marginTop: 30, height: 200, width: 200, overflow: "auto" }}>
                         <div style={{ background: "yellow", height: 500 }}></div>
-                        <ViewportSensor ref={(r) => refs.current["vpsensor"] = r} id="vs2" style={{ width: "100%", background: "red", height: 40 }} onEnterViewport={() => {
+                        <ViewportSensor ref={(r) => { refs.current["vpsensor"] = r; }} id="vs2" style={{ width: "100%", background: "red", height: 40 }} onEnterViewport={() => {
                             console.log("Enter view port");
                             return true;
                         }} onExitViewport={() => {
@@ -1134,7 +1561,7 @@ function App() {
                         icon: "{user.profile.data.logo}"
                     }}
                         selectedOptionIndex={1}
-                        cleareable formControlProps={{ leftContent: (<i className="fa fa-search" style={{ marginLeft: 10 }} />), style: { background: "rgba(217, 217, 217, 0.2)" } }}
+                        clearable formControlProps={{ leftContent: (<i className="fa fa-search" style={{ marginLeft: 10 }} />), style: { background: "rgba(217, 217, 217, 0.2)" } }}
                         borderless style={{ width: 400 }} placeholder="Hello" scheme={Scheme.PRIMARY} renderOptionAsPlaceholder onInputComplete={(v: string) => console.log("DONE", v)} />
 
                     <br />
@@ -1167,7 +1594,7 @@ function App() {
                         icon: "{user.profile.data.logo}"
                     }}
                         selectedOptionIndex={1}
-                        cleareable formControlProps={{ leftContent: (<i className="fa fa-search" style={{ marginLeft: 10 }} />), style: { background: "rgba(217, 217, 217, 0.2)" } }}
+                        clearable formControlProps={{ leftContent: (<i className="fa fa-search" style={{ marginLeft: 10 }} />), style: { background: "rgba(217, 217, 217, 0.2)" } }}
                         borderless style={{ width: 400 }} placeholder="Hello" scheme={Scheme.PRIMARY} renderOptionAsPlaceholder onInputComplete={(v: string) => console.log("DONE", v)} />
 
                     <br />
@@ -1200,7 +1627,7 @@ function App() {
                         icon: "{user.profile.data.logo}"
                     }}
                         selectedOptionIndex={1}
-                        cleareable formControlProps={{ style: { background: "rgba(217, 217, 217, 0.2)" } }}
+                        clearable formControlProps={{ style: { background: "rgba(217, 217, 217, 0.2)" } }}
                         borderless style={{ width: 400 }} placeholder="Hello" scheme={Scheme.PRIMARY} renderOptionAsPlaceholder onInputComplete={(v: string) => console.log("DONE", v)} />
 
                     <br />
@@ -1233,7 +1660,7 @@ function App() {
                         icon: "{user.profile.data.logo}"
                     }}
                         selectedOptionIndex={1}
-                        cleareable formControlProps={{ style: { background: "rgba(217, 217, 217, 0.2)" } }}
+                        clearable formControlProps={{ style: { background: "rgba(217, 217, 217, 0.2)" } }}
                         borderless style={{ width: 400 }} placeholder="Hello" scheme={Scheme.PRIMARY} renderOptionAsPlaceholder onInputComplete={(v: string) => console.log("DONE", v)} />
 
                     <br />
@@ -1325,7 +1752,7 @@ function App() {
                     <Chart style={{ width: 700 }} type={charty} data={chartyMap[charty].data} options={chartyMap[charty].options} />
                 </div>
                 <div style={{ margin: 30 }}>
-                    <Table paginate scheme={Scheme.SECONDARY} stripedRows={false} showGridlines={false} hideHeaders={false}
+                    <Table paginate scheme={Scheme.SECONDARY} stripedRows={false} showGridLines={false} hideHeaders={false}
                         header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
                             <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
                                 <TextInput fill />
@@ -1350,7 +1777,7 @@ function App() {
                             };
                         }
                         return {};
-                    }} paginate scheme={Scheme.PRIMARY} stripedRows showGridlines={true} hideHeaders={false}
+                    }} paginate scheme={Scheme.PRIMARY} stripedRows showGridLines={true} hideHeaders={false}
                         header={() => (<div style={{ fontWeight: "bold", margin: 0, background: "#f8f9fa" }}>
                             <FormControl rightContent={"fa fa-search"} style={{ width: "100%" }}>
                                 <TextInput fill />
@@ -1362,7 +1789,7 @@ function App() {
                         <Column header="Namer" dataKey="name" />
                         <Column header="Service Code" dataKey="service_code" />
                     </Table>
-                    <Table paginate scheme={Scheme.DANGER} data={tableData} stripedRows showGridlines={false} hideHeaders={false}
+                    <Table paginate scheme={Scheme.DANGER} data={tableData} stripedRows showGridLines={false} hideHeaders={false}
                         sortMode={SortMode.MULTIPLE} style={{ marginTop: 20 }} noDivider
                         paginatorTemplate={{ layout: "PreviousPageElement PageElements NextPageElement" }}>
                         <Column template={(logo: any) => <i className={logo} />} dataKey="logo" />
@@ -1376,7 +1803,7 @@ function App() {
                         }} />
                         <Column canUnsort sortable header="Service Code" dataKey="service_code" />
                     </Table>
-                    <Table data={[]} stripedRows showGridlines={true} hideHeaders={false} style={{ marginTop: 20 }}
+                    <Table data={[]} stripedRows showGridLines={true} hideHeaders={false} style={{ marginTop: 20 }}
                         emptyState={(<div>No data</div>)}>
                         <Column template={(logo: any) => <i className={logo} />} dataKey="logo" />
                         <Column header="Name" dataKey="name" />
@@ -1408,7 +1835,7 @@ function App() {
                     </Dialog>
                     <Dialog transition={transition} visible={showDialog} disableScroll={true} alignment={dialogAlignment} notClosable={false}
                         icons={["One", "two",]} header={<i className='fa fa-user' />} noOverlay={false} modalProps={{ style: { background: "rgba(35, 97, 204, 0.4)" } }}
-                        closeIcon={<span>Close</span>} dismissableModal={false} container={refs.current["dialogDiv1"]}
+                        closeIcon={<span>Close</span>} dismissibleModal={false} container={refs.current["dialogDiv1"]}
                         contentProps={{ style: { background: "red" } }} headerProps={{ style: { background: "green", borderBottom: "none" } }}
                         footer={<div style={{ background: "yellow", borderTop: "none" }}>
                             <Button text="Cancel" leftIcon="fa fa-times" textOnly scheme={Scheme.DANGER} onClick={() => setShowDialog(false)} />
@@ -1426,7 +1853,7 @@ function App() {
                         <TextInput ref={onOpenRef} scheme={Scheme.PRIMARY} fill /><br />
                         <br />
                     </Dialog>
-                    <div ref={(e) => refs.current["dialogDiv1"] = e} style={{ background: "red", height: 500, overflow: "auto" }}>
+                    <div ref={(e) => { refs.current["dialogDiv1"] = e; }} style={{ background: "red", height: 500, overflow: "auto" }}>
                         <div style={{ height: 900, background: "green", width: 300 }}></div>
                     </div>
                 </div>
@@ -1452,8 +1879,8 @@ function App() {
                                     ]
                                 },
                             ]}
-                            cleareable
-                            /*highlight editable*/
+                            clearable
+                            //*highlight editable
                             scheme={Scheme.SUCCESS}
                             placeholder='Select a country'
                             optionMap={{
@@ -1480,7 +1907,7 @@ function App() {
                     </FormControl>
                 </div>
                 <div style={{ margin: 30 }}>
-                    <Button text="Popover1" onClick={(e: any) => refs.current["popover1"].toggle(e/*, refs.current["portaldiv1"] */)} />
+                    <Button text="Popover1" onClick={(e: any) => refs.current["popover1"].toggle(e)} />
                     <Popover manageRef={(e: any) => refs.current["popover1"] = e} matchTargetSize={false}
                         onOpenFocusRef={onOpenRef} onCloseFocusRef={onCloseRef} pointingArrowClassName={""}
                         style={{ backgroundColor: "white", padding: 10 }}
@@ -1498,7 +1925,7 @@ function App() {
                     <TextInput ref={onCloseRef} scheme={Scheme.DANGER} fill /><br />
                 </div>
                 <div style={{ margin: 30 }}>
-                    <div ref={(e) => refs.current["portaldiv1"] = e} style={{ background: "red" }}></div>
+                    <div ref={(e) => { refs.current["portaldiv1"] = e; }} style={{ background: "red" }}></div>
                     <Portal visible={true}>
                         <span>Hello World</span>
                     </Portal>
@@ -1724,6 +2151,7 @@ function App() {
                     <br />
                     <br />
                 </div>
+                <DateTimePicker type={ComponentRenderType.POPOVER} showTime manageRef={(e: any) => refs.current["popover-date01"] = e} /> */}
 
             </div>
         );

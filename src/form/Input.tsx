@@ -7,12 +7,14 @@ import { Classname } from "../utils/Classname";
 import { ObjectHelper } from "../utils/ObjectHelper";
 import { ComponentBaseProps } from '../core/ComponentBaseProps';
 import { InputFilter, InputHelper } from "../utils/InputHelper";
-import { NoseurFormElement, NoseurInputValue } from "../constants/Types";
+import { NoseurElement, NoseurFormElement, NoseurInputValue } from "../constants/Types";
 
 export type InputOnInputCompleteHandler = (value: string) => void;
+export type InputOnFirstInputCompleteHandler = (value?: string) => void;
 
 export interface BareInputManageRef<T> {
     clear: () => void;
+    setValue: (value: T) => void;
     value: () => T | null | undefined;
 }
 
@@ -35,18 +37,20 @@ export interface InputProps extends ComponentBaseProps<NoseurFormElement, InputM
     borderless: boolean;
     inputFilter: RegExp;
     placeholder: string;
+    children: NoseurElement;
     autoGrowHeight: boolean;
+    value: NoseurInputValue;
     defaultValue: NoseurInputValue;
     completeInputOnBlurOnly: boolean;
     completeInputOnEnterPressOnly: boolean;
 
     onInputComplete: InputOnInputCompleteHandler | undefined;
+    onFirstInput: InputOnFirstInputCompleteHandler | undefined;
     onInputEmpty: React.FormEventHandler<NoseurFormElement> | undefined;
-    onFirstInput: React.FormEventHandler<NoseurFormElement> | undefined;
 };
 
 interface InputState {
-    hasValue: boolean;
+    value: NoseurInputValue;
 };
 
 class Input extends React.Component<InputProps, InputState> {
@@ -58,7 +62,7 @@ class Input extends React.Component<InputProps, InputState> {
     };
 
     state: InputState = {
-        hasValue: !!this.props.defaultValue
+        value: this.props.value ?? this.props.defaultValue
     };
 
     internalInputElement: NoseurFormElement | undefined;
@@ -87,6 +91,12 @@ class Input extends React.Component<InputProps, InputState> {
                 if (!this.internalInputElement) return null;
                 return this.internalInputElement.value;
             },
+            setValue: (value: any) => {
+                this.setState({ value }, () => {
+                    if (!this.internalInputElement) return;
+                    this.internalInputElement.value = value;
+                });
+            },
         });
     }
 
@@ -99,7 +109,7 @@ class Input extends React.Component<InputProps, InputState> {
         const valueParts = value.split("");
         const maskParts = new Set(this.props.maskSlot);
         const resolvedValue = this.props.mask.split("");
-        const [ from, to ] = [ element.selectionStart, element.selectionEnd ];
+        const [from, to] = [element.selectionStart, element.selectionEnd];
         console.log("SELECTEION", from, to);
         /*for (let index = 0, valueIndex = 0; index < resolvedValue.length && (!!valueParts[valueIndex] && valueIndex < resolvedValue.length); index++) {
             console.log("PLACEHOLDER INDEX", valueParts[valueIndex], index);
@@ -109,7 +119,7 @@ class Input extends React.Component<InputProps, InputState> {
         for (let index = from, sindex = 0; index < resolvedValue.length && sindex < valueParts.length; index++) {
             console.log("PLACEHOLDER INDEX", from, index, resolvedValue[index]);
             if (maskParts.has(resolvedValue[index])) {
-                maskSlotIndexes[""+index] = sindex;
+                maskSlotIndexes["" + index] = sindex;
                 sindex++;
             }
         }
@@ -142,13 +152,14 @@ class Input extends React.Component<InputProps, InputState> {
     }
 
     onInput(event: React.FormEvent<NoseurFormElement>) {
-        this.props.onInput && this.props.onInput(event);
-        const valueLength = (event.target as HTMLFormElement).value.length;
+        this.props.onInput && this.props.onInput(event as any);
+        const value = (event.target as HTMLFormElement).value;
+        const valueLength = value.length;
+        const hasValue = !!this.state.value;
         if (this.props.mask) this.resolveMask(event.target as HTMLFormElement);
-        if (this.props.onFirstInput && !this.state.hasValue) this.props.onFirstInput(event);
-        if (this.props.onInputEmpty && this.state.hasValue && !valueLength) this.props.onInputEmpty(event);
-        if (!this.state.hasValue && valueLength) this.setState({ hasValue: true });
-        if (!valueLength) this.setState({ hasValue: false });
+        if (this.props.onFirstInput && !hasValue) this.props.onFirstInput(value);
+        if (this.props.onInputEmpty && hasValue && !valueLength) this.props.onInputEmpty(event);
+        this.setState({ value });
         if (this.props.autoGrowHeight) {
             (event.target as HTMLFormElement).style.height = DOMHelper.calculateHeight(event.target as HTMLFormElement) + "px";
         }
@@ -168,7 +179,7 @@ class Input extends React.Component<InputProps, InputState> {
     }
 
     render() {
-        const eventProps = ObjectHelper.extractEventProps(this.props, [ "onInputEmpty", "onFirstInput", "onInputComplete" ]);
+        const eventProps = ObjectHelper.extractEventProps(this.props, ["onInputEmpty", "onFirstInput", "onInputComplete"]);
         const className = Classname.build(
             (!this.props.noStyle && this.props.highlight) ? `${this.props.scheme}-bd-cl` : null,
             (!this.props.noStyle && this.props.scheme && !this.props.flushed) ? `${this.props.scheme}-bd-3px-bx-sw-fc` : null,
@@ -192,10 +203,11 @@ class Input extends React.Component<InputProps, InputState> {
             type: this.props.type,
             name: this.props.name,
             style: this.props.style,
+            children: this.props.children,
             required: this.props.required,
             readOnly: this.props.readOnly,
+            defaultValue: this.state.value,
             placeholder: this.props.placeholder,
-            defaultValue: this.props.defaultValue,
 
             onBlur: this.onBlur,
             onKeyUp: this.onKeyUp,
@@ -208,6 +220,10 @@ class Input extends React.Component<InputProps, InputState> {
                 ObjectHelper.resolveRef(this.props.forwardRef, el);
             }
         };
+        if (this.props.value) (props as any).value = this.props.value;
+        if (this.internalInputElement && !this.internalInputElement.value && this.internalInputElement.value !== this.state.value) {
+            this.internalInputElement.value = this.state.value as any ?? "";
+        }
         return (this.props.type === "textarea"
             ? <textarea {...props} />
             : <input {...props} />);
@@ -215,26 +231,26 @@ class Input extends React.Component<InputProps, InputState> {
 
 }
 
-export const TextInput = React.forwardRef<HTMLInputElement, Partial<InputProps>>((props, ref) => (
-    <Input {...props} forwardRef={ref as React.ForwardedRef<NoseurFormElement>} />
-));
+export const TextInput = ({ ref, ...props }: Partial<InputProps>) => {
+    return (<Input {...props} forwardRef={ref} />);
+};
 
-export const EmailInput = React.forwardRef<HTMLInputElement, Partial<InputProps>>((props, ref) => (
-    <Input {...props} type="email" forwardRef={ref as React.ForwardedRef<NoseurFormElement>} />
-));
+export const EmailInput = ({ ref, ...props }: Partial<InputProps>) => (
+    <Input {...props} forwardRef={ref} type="email" />
+);
 
-export const NumberInput = React.forwardRef<HTMLInputElement, Partial<InputProps>>((props, ref) => (
-    <Input {...props} type="number" forwardRef={ref as React.ForwardedRef<NoseurFormElement>} />
-));
+export const NumberInput = ({ ref, ...props }: Partial<InputProps>) => (
+    <Input {...props} forwardRef={ref} type="number" />
+);
 
-export const TextAreaInput = React.forwardRef<HTMLInputElement, Partial<InputProps>>((props, ref) => (
-    <Input {...props} type="textarea" forwardRef={ref as React.ForwardedRef<NoseurFormElement>} />
-));
+export const TextAreaInput = ({ ref, ...props }: Partial<InputProps>) => (
+    <Input {...props} forwardRef={ref} type="textarea" />
+);
 
-export const PasswordInput = React.forwardRef<HTMLInputElement, Partial<InputProps>>((props, ref) => (
-    <Input {...props} type="password" forwardRef={ref as React.ForwardedRef<NoseurFormElement>} />
-));
+export const PasswordInput = ({ ref, ...props }: Partial<InputProps>) => (
+    <Input {...props} forwardRef={ref} type="password" />
+);
 
-export const MoneyInput = React.forwardRef<HTMLInputElement, Partial<InputProps>>((props, ref) => (
-    <Input {...props} inputFilter={InputFilter.MONEY} forwardRef={ref as React.ForwardedRef<NoseurFormElement>} />
-));
+export const MoneyInput = ({ ref, ...props }: Partial<InputProps>) => (
+    <Input {...props} forwardRef={ref} inputFilter={InputFilter.MONEY} />
+);

@@ -1,5 +1,7 @@
 
 export enum Transition {
+	INFINITE = 'noseur-transition-infinite',
+
 	//ROTATE = "noseur-rotate",
 	//ROTATE_IN = "noseur-rotate",
 	//ROTATE_OUT = "noseur-rotate",
@@ -81,3 +83,5 @@ export enum Transition {
 	ROTATE_IN_UP_LEFT_OUT_DOWN_LEFT = "noseur-rotate-in-up-out-dl",
 	ROTATE_IN_DOWN_RIGHT_OUT_UP_RIGHT = "noseur-rotate-in-dr-out-ur",
 }
+
+export const Animation = Transition;

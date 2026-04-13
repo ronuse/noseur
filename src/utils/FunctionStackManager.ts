@@ -8,8 +8,8 @@ export class FunctionStackManager {
     stack: NoseurObject<Function[]> = {};
 
     constructor() {
-        this.push = this.register;
-        this.popSmoke = this.invokeAllAndClear;
+        this.push = this.register.bind(this);
+        this.popSmoke = this.invokeAllAndClear.bind(this);
     }
 
     register(key: string, ...funsies: Function[]) {

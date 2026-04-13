@@ -26,19 +26,20 @@ export interface TabPanelHeaderOptions {
 
 export type TabPanelHeaderTemplate = (options?: TabPanelHeaderOptions) => NoseurElement;
 
-export type TabPanelAttributtesRelays = {
-    header: ComponentElementBasicAttributes;
+export type TabPanelAttributesRelays = {
+    header?: ComponentElementBasicAttributes;
 }
 
 export interface TabPanelManageRef {
 
 }
 
-export interface TabPanelProps extends ComponentBaseProps<HTMLDivElement, TabPanelManageRef, TabPanelAttributtesRelays> {
+export interface TabPanelProps extends ComponentBaseProps<HTMLDivElement, TabPanelManageRef, TabPanelAttributesRelays> {
     fill: boolean;
     idleScheme: Scheme;
     removable: boolean;
     header: NoseurLabel;
+    noUnderline: boolean;
     leftIcon: NoseurElement;
     rightIcon: NoseurElement;
     removeIcon: NoseurElement;
@@ -64,10 +65,10 @@ class TabPanelComponent extends React.Component<TabPanelProps> {
 export type TabPaneEventHandler = (index: number) => boolean | void;
 export type TabPaneChangeEventHandler = (state: "active" | "close", index: number) => void;
 
-export type TabPaneAttributtesRelays = {
-    content: ComponentElementBasicAttributes;
-    navigator: {
-        headers?: ComponentElementBasicAttributes;
+export type TabPaneAttributesRelays = {
+    content?: ComponentElementBasicAttributes;
+    navigator?: {
+        headers?: TabPanelAttributesRelays & ComponentElementBasicAttributes;
         control?: {
             prev?: ComponentElementBasicAttributes;
             next?: ComponentElementBasicAttributes;
@@ -78,15 +79,18 @@ export type TabPaneAttributtesRelays = {
 export interface TabPaneManageRef {
     next: () => void;
     previous: () => void;
+    activeTab: () => number;
     readd: (index: number) => void;
     switch: (index: number) => void;
     remove: (index: number) => void;
 }
 
-export interface TabPaneProps extends ComponentBaseProps<HTMLDivElement, TabPaneManageRef, TabPaneAttributtesRelays>, TransitionProps {
+export interface TabPaneProps extends ComponentBaseProps<HTMLDivElement, TabPaneManageRef, TabPaneAttributesRelays>, TransitionProps {
     cyclic: boolean;
+    idleScheme: Scheme;
     activeIndex: number;
     scrollable: boolean;
+    noUnderline: boolean;
     alignment: Alignment;
     renderActiveTabOnly: boolean;
     children: React.ReactElement<TabPanelProps> | React.ReactElement<TabPanelProps>[] | any;
@@ -142,6 +146,7 @@ class TabPaneComponent extends React.Component<TabPaneProps, TabPaneState> {
     componentDidMount() {
         ObjectHelper.resolveManageRef(this, {
             next: () => this.navigateTab("next"),
+            activeTab: () => this.state.activeIndex,
             previous: () => this.navigateTab("prev"),
             readd: (index: number) => this.onRemoveHeader(index, "readd"),
             remove: (index: number) => this.onRemoveHeader(index, "remove"),
@@ -210,12 +215,18 @@ class TabPaneComponent extends React.Component<TabPaneProps, TabPaneState> {
 
     renderHeader(tab: React.ReactElement<TabPanelProps, string | React.JSXElementConstructor<any>>, index: number, selected: boolean, key: NoseurInputValue) {
         const hasTemplate = !!tab.props.headerTemplate;
-        let scheme = (selected ? (tab.props.scheme ?? this.props.scheme) : tab.props.idleScheme) ?? Scheme.SECONDARY;
+        let scheme = (selected ? (tab.props.scheme ?? this.props.scheme) : (tab.props.idleScheme ?? this.props.idleScheme)) ?? Scheme.SECONDARY;
         if ((tab.props.scheme ?? this.props.scheme) === Scheme.SKELETON) scheme = Scheme.SKELETON;
         const className = Classname.build("noseur-tabpanel-header", {
             "noseur-active": selected,
             "noseur-flex-1": tab.props.fill,
+            "noseur-tabpanel-noline": tab.props.noUnderline ?? this.props.noUnderline,
         }, (scheme !== Scheme.SKELETON ? `${scheme}-vars` : scheme), tab.props.attrsRelay?.header?.className);
+        const style = {
+            ...this.props.attrsRelay?.navigator?.headers?.header?.style,
+            ...tab.props.attrsRelay?.header?.style,
+            ...tab.props.style,
+        };
         const removeElement = (hasTemplate || tab.props.removable ? MicroBuilder.buildIcon(tab.props.removeIcon ?? "fa fa-times", {
             scheme,
             relativeAlignment: tab.props.rightIcon ? Alignment.RIGHT : Alignment.NONE
@@ -229,8 +240,8 @@ class TabPaneComponent extends React.Component<TabPaneProps, TabPaneState> {
                 className,
                 removeElement,
                 props: tab.props,
-                idleScheme: tab.props.idleScheme,
                 onClick: (e: any) => this.onHeaderClick(e, tab, index),
+                idleScheme: tab.props.idleScheme ?? this.props.idleScheme,
                 titleElement: MicroBuilder.buildLabel(tab.props.header, { scheme }),
                 leftIconElement: MicroBuilder.buildIcon(tab.props.leftIcon, { scheme }),
                 rightIconElement: MicroBuilder.buildIcon(tab.props.rightIcon, { scheme }),
@@ -241,7 +252,7 @@ class TabPaneComponent extends React.Component<TabPaneProps, TabPaneState> {
             {MicroBuilder.buildIcon(tab.props.rightIcon, { scheme })}
             {removeElement}
         </div>) : tab.props.rightIcon;
-        return (<Button disabled={tab.props.disabled} key={key} scheme={scheme} className={className} id={tab.props.attrsRelay?.header?.id} style={tab.props.attrsRelay?.header?.style}
+        return (<Button disabled={tab.props.disabled} key={key} scheme={scheme} className={className} id={tab.props.attrsRelay?.header?.id} style={style}
             leftIcon={tab.props.leftIcon} rightIcon={rightIcon} outlined textOnly onClick={(e: any) => this.onHeaderClick(e, tab, index)}>{tab.props.header}</Button>);
     }
 
@@ -274,7 +285,7 @@ class TabPaneComponent extends React.Component<TabPaneProps, TabPaneState> {
     renderContentAndNavigator(orientation: "vertical" | "horizontal") {
         const { headers, contents } = this.renderTabs();
         const scheme = this.props.attrsRelay?.navigator?.scheme ?? this.props.scheme;
-        const contentClassName = Classname.build("noseur-tabpane-content", this.props.attrsRelay?.content?.className);
+        const contentClassName = Classname.build("noseur-tabpane-content noseur-unset-scheme-vars", this.props.attrsRelay?.content?.className);
         const scrollLeftElement = this.props.scrollable ? MicroBuilder.buildIcon(this.props.scrollIcons[orientation].prev, {
             id: this.props.attrsRelay?.navigator?.control?.prev?.id,
             style: this.props.attrsRelay?.navigator?.control?.prev?.style,
@@ -337,10 +348,10 @@ class TabPaneComponent extends React.Component<TabPaneProps, TabPaneState> {
 
 }
 
-export const TabPanel = React.forwardRef<HTMLDivElement, Partial<TabPanelProps>>((props, ref) => (
-    <TabPanelComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const TabPanel = ({ ref, ...props }: Partial<TabPanelProps>) => (
+    <TabPanelComponent {...props} forwardRef={ref} />
+);
 
-export const TabPane = React.forwardRef<HTMLDivElement, Partial<TabPaneProps>>((props, ref) => (
-    <TabPaneComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const TabPane = ({ ref, ...props }: Partial<TabPaneProps>) => (
+    <TabPaneComponent {...props} forwardRef={ref} />
+);

@@ -16,7 +16,7 @@ export enum TableSelectionMode {
 
 export type TableSelectionEventHandler = (value: any) => NoseurElement;
 
-export interface TableProps extends DataProps<HTMLTableElement> {
+export interface TableProps<D> extends DataProps<HTMLTableElement, D> {
     sortMode: SortMode;
     sortIcons: SortIcons;
     hideHeaders: boolean;
@@ -24,18 +24,18 @@ export interface TableProps extends DataProps<HTMLTableElement> {
     canDisableSort: boolean;
     sortOrder: null | 0 | 1 | -1;
     selectionMode: TableSelectionMode;
-    children: React.ReactElement<ColumnProps> | React.ReactElement<ColumnProps>[];
+    children: React.JSX.Element | React.JSX.Element[] | React.ReactElement | React.ReactElement[];
 
     onColumnSelection: TableSelectionEventHandler;
 };
 
-interface TableState extends DataState {
+interface TableState<D> extends DataState<D> {
     lastSortColumn?: string;
 };
 
-class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableState> {
+class TableComponent<D> extends DataComponent<HTMLTableElement, TableProps<D>, TableState<D>, D> {
 
-    public static defaultProps: Partial<TableProps> = {
+    public static defaultProps: Partial<TableProps<any>> = {
         rowsContent: {},
         paginate: false,
         rowsPerPage: 10,
@@ -49,7 +49,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
         },
     };
 
-    state: TableState = {
+    state: TableState<D> = {
         dataOffset: 0,
         currentPage: 1,
         activeData: this.props.data,
@@ -59,18 +59,18 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
     usedDataKeys: any[] = [];
     columnSelfRefs: NoseurObject<any> = {};
 
-    constructor(props: TableProps) {
+    constructor(props: TableProps<D>) {
         super(props);
 
         this.onSort = this.onSort.bind(this);
         this.resolveRowContentPositions = this.resolveRowContentPositions.bind(this);
     }
 
-    componentDidUpdate(prevProps: Readonly<TableProps>, _: Readonly<TableState>) {
+    componentDidUpdate(prevProps: Readonly<TableProps<D>>, _: Readonly<TableState<D>>) {
         if (prevProps.totalRecords !== this.props.totalRecords ||
             !BoolHelper.deepEqual(prevProps.data, this.props.data, [this.usedDataKeys, ...this.props.dataRefreshKeys])
             || ((!this.state.activeData || !this.state.activeData.length) && this.props.data?.length)) {
-            this.setState({ activeData: this.props.data ?? [] });
+            this.setState({ activeData: this.props.data });
             Object.keys(this.columnSelfRefs).forEach((dk: string) => {
                 this.columnSelfRefs[dk]!.unSort();
             });
@@ -88,15 +88,15 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
         }
         if (sortDirection == SortDirection.NONE) {
             this.setState({
-                activeData: (this.props.data || []).map((v: NoseurObject<any>, index: number) => {
-                    v[dataKey] = ObjectHelper.objectGetWithStringTemplate((this.props.data || [])[index], dataKey);
+                activeData: (this.props.data || []).map((v: D, index: number) => {
+                    (v as any)[dataKey] = ObjectHelper.objectGetWithStringTemplate(((this.props.data ?? []) as any)[index], dataKey);
                     return v;
                 }), lastSortColumn: dataKey
             });
             return;
         }
-        data.sort((p: NoseurObject<any>, c: NoseurObject<any>) => {
-            const prev = ObjectHelper.objectGetWithStringTemplate(p, dataKey), current = ObjectHelper.objectGetWithStringTemplate(c, dataKey);
+        data.sort((p: D, c: D) => {
+            const prev = ObjectHelper.objectGetWithStringTemplate(p as any, dataKey), current = ObjectHelper.objectGetWithStringTemplate(c as any, dataKey);
             if (this.props.compareData) return this.props.compareData(sortDirection, dataKey, prev, current);
             const comp = BoolHelper.compare(prev, current);
             if (comp == 1 && sortDirection == SortDirection.BACKWARD) return -1;
@@ -109,22 +109,22 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
         if (!this.state.activeData || this.state.isLoading) return;
         let data = this.state.activeData.slice(this.state.dataOffset, (this.props.rowsPerPage + this.state.dataOffset));
         if (!data.length && !this.props.allowNoDataPagination) data = this.state.activeData;
-        const children: any = (this.props.children as any).length ? this.props.children : [this.props.children];
+        const children: any = ObjectHelper.flattenChildren(this.props.children);
         const rowsContents = this.state.rowsContent;
 
-        const rows = data.map((data: NoseurObject<any>, index: number) => {
+        const rows = data.map((data: D, index: number) => {
             const row = index + 1;
-            const columns = children?.map((child: React.ReactElement<ColumnProps>, sindex: number) => {
+            const columns = children?.filter((child: React.ReactElement<ColumnProps>) => !child.props?.doNotRender)?.map((child: React.ReactElement<ColumnProps>, sindex: number) => {
                 return React.createElement(ColumnComponent, {
                     ...(child.props),
                     sortable: false,
-                    key: (child.props.key ?? sindex),
+                    key: (child.props.key ?? child.props.dataKey ?? (child.props.header ? `${child.props.header}` : undefined) ?? sindex),
                     rowControlOptions: {
                         toggleContent: (() => {
                             this.setState({ rowsContent: this.toggleRowContent(row, data) });
                         }).bind(this)
                     },
-                    value: (child.props.dataKey ? ObjectHelper.objectGetWithStringTemplate(data, child.props.dataKey) : data),
+                    value: (child.props.dataKey ? ObjectHelper.objectGetWithStringTemplate(data as any, child.props.dataKey) : data),
                 });
             });
             let valuedRowProps = this.buildRowProps(data);
@@ -134,7 +134,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
                 if (!(row in this.rowContentElementMaps)) this.rowContentElementMaps[row] = {};
                 this.rowContentElementMaps[row].rowElement = r;
             }}
-                onClick={this.props.onRowSelection ? () => this.props.onRowSelection(data) : undefined}>{columns}</tr>);
+                onClick={this.props.onRowSelection ? () => this.props.onRowSelection(data, index) : undefined}>{columns}</tr>);
         });
 
         return (<tbody key="body" className="noseur-tbody" data-n-group="body">
@@ -143,8 +143,8 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
     }
 
     renderTableHeader() {
-        const children: any = (this.props.children as any).length ? this.props.children : [this.props.children];
-        const columns = children?.map((child: React.ReactElement<ColumnProps>, index: number) => {
+        const children: any = ObjectHelper.flattenChildren(this.props.children);
+        const columns = children?.filter((child: React.ReactElement<ColumnProps>) => !child.props.doNotRender)?.map((child: React.ReactElement<ColumnProps>, index: number) => {
             const cachedOnSort = child.props.onSort;
             const onSort = (sortDirection: SortDirection) => {
                 if (cachedOnSort) cachedOnSort(sortDirection);
@@ -171,7 +171,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
                 template: undefined,
                 group: "column-header",
                 manageRef: columnSelfRef!,
-                key: (child.props.key || index),
+                key: (child.props.key ?? child.props.dataKey ?? (child.props.header ? `${child.props.header}` : undefined) ?? index),
                 valueClassName: "noseur-column-header",
                 sortIcons: (this.props.sortIcons || child.props.sortIcons),
                 value: (typeof child.props.header == "function"
@@ -187,14 +187,14 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
 
     renderTableFooter() {
         let hasNoFooter = true;
-        const children: any = (this.props.children as any).length ? this.props.children : [this.props.children];
+        const children: any = ObjectHelper.flattenChildren(this.props.children);
         const columns = children?.map((child: React.ReactElement<ColumnProps>, index: number) => {
             if (child.props.footer) hasNoFooter = false;
             return React.createElement(ColumnComponent, {
                 ...(child.props),
                 element: "th",
                 group: "column-footer",
-                key: (child.props.key || index),
+                key: (child.props.key ?? child.props.dataKey ?? (child.props.header ? `${child.props.header}` : undefined) ?? index),
                 valueClassName: "noseur-column-footer",
                 value: (typeof child.props.footer == "function"
                     ? child.props.footer()
@@ -213,15 +213,15 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
             id: this.props.id,
             ...this.props.internalElementProps,
         };
-        if (!(this.props.children as any)?.length) return null;
+        if (!(this.props.children as any)) return null;
         const tableBody = this.renderTableBody();
         const tableFooter = this.renderTableFooter();
         const tableHeader = this.props.hideHeaders ? null : this.renderTableHeader();
         const className = Classname.build('noseur-data-container noseur-table', {
             "noseur-disabled": this.props.disabled,
             "noseur-data-striped": this.props.stripedRows,
-            "noseur-data-grid-h": !hasHeader && this.props.showGridlines,
-            "noseur-data-grid-f": !hasFooter && this.props.showGridlines && this.props.data?.length,
+            "noseur-data-grid-h": !hasHeader && this.props.showGridLines,
+            "noseur-data-grid-f": !hasFooter && this.props.showGridLines && this.props.data?.length,
         }, this.props.internalElementProps.className);
 
         return (<table {...props} role="table" data-n-group="table" className={className} ref={this.props.forwardRef}>
@@ -234,6 +234,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
     render() {
         const props: NoseurObject<any> = {
             key: this.props.key,
+            id: this.props.dataId,
             style: this.props.style,
         };
         const emptyState = this.renderEmptyState();
@@ -242,8 +243,8 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
         const header = this.renderFixtures(this.props.header, "noseur-data-header");
         const footer = this.renderFixtures(this.props.footer, "noseur-data-footer");
         const className = Classname.build('noseur-data-compound', {
-            "noseur-data-grid": this.props.showGridlines,
-            "noseur-data-no-divider": this.props.noDivider && !this.props.showGridlines,
+            "noseur-data-grid": this.props.showGridLines,
+            "noseur-data-no-divider": this.props.noDivider && !this.props.showGridLines,
         }, this.props.className, (this.props.scheme ? `${this.props.scheme}-vars` : null));
         const paginator = this.renderPaginator(!!footer);
         const table = this.renderTable(!!header, !!footer);
@@ -261,7 +262,7 @@ class TableComponent extends DataComponent<HTMLTableElement, TableProps, TableSt
 
 }
 
-export const Table = React.forwardRef<HTMLTableElement, Partial<TableProps>>((props, ref) => (
-    <TableComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLTableElement>} />
-));
+export const Table = <D,>({ ref, ...props }: Partial<TableProps<D>>) => (
+    <TableComponent {...props} forwardRef={ref} />
+);
 

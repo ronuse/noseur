@@ -166,10 +166,10 @@ class AccordionComponent extends React.Component<AccordionProps, AccordionState>
 
 }
 
-export const AccordionTab = React.forwardRef<HTMLDivElement, Partial<AccordionTabProps>>((props, ref) => (
-    <AccordionTabComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const AccordionTab  = ({ ref, ...props }: Partial<AccordionTabProps>) => (
+    <AccordionTabComponent {...props} forwardRef={ref} />
+);
 
-export const Accordion = React.forwardRef<HTMLDivElement, Partial<AccordionProps>>((props, ref) => (
-    <AccordionComponent {...props} forwardRef={ref as React.ForwardedRef<HTMLDivElement>} />
-));
+export const Accordion  = ({ ref, ...props }: Partial<AccordionProps>) => (
+    <AccordionComponent {...props} forwardRef={ref} />
+);
