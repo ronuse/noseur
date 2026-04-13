@@ -9,8 +9,7 @@
         "node_modules"
     ],
     "compilerOptions": {
-        "target": "ES2022",
-        "module": "NodeNext",
+        "module": "esnext",
         "lib": [
             "dom",
             "esnext"
@@ -25,7 +24,7 @@
         "noFallthroughCasesInSwitch": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "moduleResolution": "NodeNext",
+        "moduleResolution": "bundler",
         "jsx": "react",
         "esModuleInterop": true,
         "skipLibCheck": true,
